@@ -1,7 +1,8 @@
-import { decodeToken } from "@/utils/decode";
 import { POST } from "../requests/methods";
+import { decodeToken } from '../../utils/decode'
 
 async function signIn(credentials) {
+  console.log('cre',credentials)
   const { email, password } = credentials;
 
   try {

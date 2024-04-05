@@ -1,7 +1,13 @@
 import NextAuth from "next-auth";
 import authConfig from "./auth.config";
 
-export const { signIn, signOut } = NextAuth({
+export const {
+  handlers: { GET, POST },
+  auth,
+  signIn,
+  signOut,
+  update
+} = NextAuth({
   pages: {
     signIn: "/auth/login",
     newUser: "/auth/signup",

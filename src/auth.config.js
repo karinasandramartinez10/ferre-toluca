@@ -1,5 +1,5 @@
 import CredentialsProviders from "next-auth/providers/credentials";
-import signIn from "@modules/auth/signin";
+import signIn from "./modules/auth/signin";
 
 export default {
   providers: [

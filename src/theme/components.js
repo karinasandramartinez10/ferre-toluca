@@ -52,5 +52,30 @@ export const components = {
         },
       ],
     },
+    MuiTextField: {
+      defaultProps: {
+        size: "small",
+        InputProps: {
+          sx: {
+            borderRadius: "8px",
+            backgroundColor: "#FFF",
+          },
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          borderRadius: "8px",
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          borderRadius: "8px",
+        },
+      },
+    },
   },
 };

@@ -56,9 +56,9 @@ const largeSizes = {
 
 export const container = {
   xs: 0,
-  sm: 640,
+  sm: 620,
   md: 768,
-  lg: 1280,
+  lg: 1180,
   xl: 1440,
 };
 
