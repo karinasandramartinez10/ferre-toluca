@@ -1,4 +1,5 @@
 import { Box } from "@mui/material";
+import { AuthNavbar } from "../../../navbars/auth/AuthNavbar";
 
 export const metadata = {
   title: "SignUp",
@@ -9,7 +10,7 @@ const Layout = ({ children }) => {
   return (
     <>
       <nav>
-        {/* <AuthNavbar /> */}
+         {/* <AuthNavbar />  */}
       </nav>
       <main>
         <Box display="flex" justifyContent="center" alignItems="center">

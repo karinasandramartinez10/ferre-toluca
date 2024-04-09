@@ -23,7 +23,6 @@ import { differenceInYears } from "date-fns";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-// import "./styles.css";
 import {
   AlternateEmailOutlined,
   Visibility,
@@ -36,6 +35,7 @@ import Image from "next/image";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { MuiTelInput } from "mui-tel-input";
+import { useRouter } from "next/navigation";
 
 const phoneRegExp = /^\+\d{9,15}$/; //TODO: add number international validation support
 
@@ -57,7 +57,8 @@ const SignUp = () => {
   const isDesktop = useResponsive("up", "lg");
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  // const handleMouseDownPassword = () => setShowPassword(!showPassword);
+
+  const router = useRouter()
 
   const SignUpSchema = yup.object().shape({
     name: yup.string().required("Nombre es obligatorio"),
@@ -142,8 +143,9 @@ const SignUp = () => {
       return;
     }
 
-    const res = await signIn("credentials", { email, password, redirectTo: "/" });
-    console.log('res',res)
+    await signIn("credentials", { email, password, redirectTo: "/" });
+    window.location.replace('/');
+    router.replace('/')
   };
 
   return (

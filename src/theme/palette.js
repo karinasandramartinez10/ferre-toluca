@@ -3,11 +3,6 @@ import { colors } from "@mui/material";
 export const palette = {
   ...colors,
   palette: {
-/*     mode: "dark",
-    background: {
-      default: "#0F1115",
-      //  default: "#121212"
-    }, */
     primary: {
       main: "#512da8",
       light: "#d8d8d8",

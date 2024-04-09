@@ -1,31 +1,71 @@
-"use client"
-import { Button, Typography } from "@mui/material";
-import { useState } from "react";
-import './style.css'
+"use client";
 
-export const Login = () => {
+import { Button, Grid } from "@mui/material";
+import Image from "next/image";
+import { signIn } from "next-auth/react";
+import { useSnackbar } from "notistack";
+import { LoginContainer } from "./LoginContainer";
+import { LoginForm } from "./LoginForm";
+
+const Login = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleSubmit = async ({ email, password }) => {
+    try {
+      await signIn("credentials", {
+        email,
+        password,
+        // redirect: false,
+      });
+    } catch (error) {
+      console.log(error)
+      enqueueSnackbar("There was an error", {
+        variant: "error",
+        autoHideDuration: 5000,
+        anchorOrigin: {
+          vertical: "top",
+          horizontal: "right",
+        },
+      });
+      return;
+    }
+  };
+
   return (
-    <div className="container" id="container">
-      <div className={`form-container sign-in`}>
-        <form>
-          <Typography variant="h1">Iniciar sesión</Typography>
-          <input type="email" placeholder="Email" />
-          <input type="password" placeholder="Password" />
-          <a href="#">Forget Your Password?</a>
-          <Button>Iniciar sesión</Button>
-        </form>
-      </div>
-      <div className="toggle-container">
-        <div className="toggle">
-          <div className="toggle-panel toggle-right">
-            <h1>Hello, Friend!</h1>
-            <p>
-              Register with your personal details to use all of site features
-            </p>
-            <Button variant="secondary">Registrarse</Button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Grid container position="relative" mt={0} spacing={3}>
+      <Grid
+        item
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        minHeight="100vh"
+        justifyContent="center"
+        xs={12}
+      >
+        <LoginContainer>
+          <LoginForm onSubmit={handleSubmit}>
+            {({ loading }) => (
+              <>
+                <Button loading={loading} type="submit" fullWidth>
+                  Iniciar sesión
+                </Button>
+              </>
+            )}
+          </LoginForm>
+        </LoginContainer>
+        <Image
+          src={"/pexels-tools.jpg"}
+          alt="Picture of the author"
+          fill
+          quality={100}
+          style={{
+            opacity: 0.4,
+            objectFit: "cover",
+          }}
+        />
+      </Grid>
+    </Grid>
   );
 };
+
+export default Login;

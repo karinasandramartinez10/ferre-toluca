@@ -1,6 +1,6 @@
 import SignUp from "./SignUp";
 
-const SignUpPage = () => {
+const SignUpPage = async () => {
   return <SignUp />;
 };
 export default SignUpPage;
