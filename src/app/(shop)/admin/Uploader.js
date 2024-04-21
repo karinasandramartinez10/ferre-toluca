@@ -1,14 +1,14 @@
 "use client";
 import { Grid, Stack, TextField, Typography } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { Dropzone } from "../../components/Dropzone";
+import { Dropzone } from "../../../components/Dropzone";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { LoadingButton } from "@mui/lab";
 import { useSnackbar } from "notistack";
-import { addProduct } from "../../api/admin";
+import { addProduct } from "../../../api/admin";
 import { useSession } from "next-auth/react";
-import { toCapitalizeFirstLetter } from "../../utils/cases";
+import { toCapitalizeFirstLetter } from "../../../utils/cases";
 import { useState } from "react";
 
 const defaultFormValues = {

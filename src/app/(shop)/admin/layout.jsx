@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth } from "../../auth";
+import { auth } from "../../../auth";
 import AdminLayoutPage from "./AdminLayoutPage";
 
 export default async function AdminLayout({ children }) {
