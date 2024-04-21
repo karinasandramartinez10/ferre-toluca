@@ -6,6 +6,7 @@ import { signIn } from "next-auth/react";
 import { useSnackbar } from "notistack";
 import { LoginContainer } from "./LoginContainer";
 import { LoginForm } from "./LoginForm";
+import { LoadingButton } from "@mui/lab";
 
 const Login = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -18,7 +19,7 @@ const Login = () => {
         // redirect: false,
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       enqueueSnackbar("There was an error", {
         variant: "error",
         autoHideDuration: 5000,
@@ -46,9 +47,9 @@ const Login = () => {
           <LoginForm onSubmit={handleSubmit}>
             {({ loading }) => (
               <>
-                <Button loading={loading} type="submit" fullWidth>
+                <LoadingButton loading={loading} type="submit" fullWidth>
                   Iniciar sesión
-                </Button>
+                </LoadingButton>
               </>
             )}
           </LoginForm>

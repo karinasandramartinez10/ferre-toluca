@@ -2,7 +2,6 @@ import axios from "axios";
 import { api } from "../config";
 
 export const registerUser = async (body) => {
-  console.log(body);
   try {
     await api.post("/auth/signup", body);
     return {

@@ -1,8 +1,4 @@
-import { createTheme } from "@mui/material";
-import { breakpoints } from "./breakpoints";
 import { palette } from "./palette";
-
-const theme = createTheme(breakpoints);
 
 export const components = {
   components: {
@@ -15,12 +11,12 @@ export const components = {
       styleOverrides: {
         root: {
           minWidth: 96,
-          color: "#FFFFFF",
+          color: "#FFF !important",
           lineHeight: 1,
           fontSize: "0.75rem",
           boxShadow: "none",
           padding: "10px 45px",
-          border: "1px solid transparent",
+          backgroundColor: palette.palette.primary.main,
           borderRadius: 8,
           fontWeight: 600,
           letterSpacing: "0.5px",
@@ -28,17 +24,18 @@ export const components = {
           height: "38px",
           marginTop: "10px",
           transition: "all 0.3s ease",
+          "&:hover": {
+            backgroundColor: palette.palette.primary.hover,
+          },
+          "&:disabled": {
+            backgroundColor: palette.palette.primary.disabled,
+            color: "#FFF",
+          },
         },
       },
       variants: [
         {
           props: { variant: "primary" },
-          style: {
-            backgroundColor: palette.palette.primary.main,
-            "&:hover": {
-              backgroundColor: palette.palette.primary.hover,
-            },
-          },
         },
         {
           props: { variant: "secondary" },

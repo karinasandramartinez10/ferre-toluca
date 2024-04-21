@@ -9,10 +9,13 @@ export const palette = {
       hover: "#7c5bc0",
       // dark: "#c00041",
       // contrastText: "#DD0745",
-      // disabled: "#34282b"
+      disabled: "#b0a3d6",
     },
-    
-/*     secondary: {
+    grey: {
+      main: "#5a6162",
+      text: "#9d9d9d"
+    },
+    /*     secondary: {
       main: "#13161b",
       dark: "#0f1115",
       light: "#FFFFFF",
@@ -20,10 +23,7 @@ export const palette = {
     warning: {
       main: "#FEC400"
     },
-    grey: {
-      main: "#5a6162",
-      text: "#9d9d9d"
-    },
+
     green: {
       main: "#248924"
     }  */

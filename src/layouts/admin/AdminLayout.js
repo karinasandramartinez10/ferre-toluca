@@ -11,36 +11,44 @@ import {
   ListItemButton,
   Stack,
   Toolbar,
-  Typography,
 } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
 import useResponsive from "../../hooks/use-responsive";
+import { usePathname } from "next/navigation";
+import NextLink from "next/link";
 
 const drawerWidth = 200;
 
 const listItems = [
   {
     text: "Inicio",
+    pathname: "/",
     icon: <Home sx={{ fontSize: 20 }} />,
   },
   {
     text: "Panel",
+    pathname: "/admin",
     icon: <Dashboard sx={{ fontSize: 20 }} />,
   },
   {
     text: "Órdenes",
+    pathname: "/order",
     icon: <Storefront sx={{ fontSize: 20 }} />,
   },
 ];
 
 const AdminDesktopLayout = ({ children, drawer }) => (
-  <section>
-    <aside>
+  <section style={{ margin: "0 auto", maxWidth: "1280px" }}>
+    <main
+      style={{
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: drawerWidth,
+        padding: "24px",
+      }}
+    >
       <Drawer
         variant="permanent"
-        //   open={open}
-        // onClose={() => setOpen(false)}
         sx={{
           width: drawerWidth,
           flexShrink: 0,
@@ -52,13 +60,6 @@ const AdminDesktopLayout = ({ children, drawer }) => (
       >
         {drawer}
       </Drawer>
-    </aside>
-    <main
-      style={{
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: drawerWidth,
-      }}
-    >
       {children}
     </main>
   </section>
@@ -100,7 +101,13 @@ const AdminMobileLayout = ({ children, drawer }) => {
           </Toolbar>
         </AppBar>
       </nav>
-      <main style={{ margin: "68px auto" }}>
+      <main
+        style={{
+          margin: "68px auto",
+          paddingLeft: "16px",
+          paddingRight: "16px",
+        }}
+      >
         <Drawer
           variant="temporary"
           open={mobileOpen}
@@ -127,6 +134,7 @@ const AdminMobileLayout = ({ children, drawer }) => {
 
 export const AdminLayout = ({ children }) => {
   const isDesktop = useResponsive("up", "md");
+  const pathname = usePathname();
 
   const drawer = (
     <List sx={{ padding: 2, borderRadius: 1 }}>
@@ -144,24 +152,33 @@ export const AdminLayout = ({ children }) => {
       </Box>
       <Stack gap={1}>
         {listItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              sx={(theme) => ({
-                color: theme.palette.primary.main,
-                borderRadius: 2,
-                alignItems: "flex-start",
-                gap: 1,
-                "&:hover": {
-                  color: "#FFF",
-                  backgroundColor: theme.palette.primary.hover,
-                  transition: "background-color 0.3s ease",
-                },
-              })}
-            >
-              {item.icon}
-              {item.text}
-            </ListItemButton>
-          </ListItem>
+          <NextLink key={item.text} href={item.pathname}>
+            <ListItem disablePadding>
+              <ListItemButton
+                sx={(theme) => ({
+                  color:
+                    pathname === item.pathname
+                      ? "#FFF"
+                      : theme.palette.primary.main,
+                  borderRadius: 2,
+                  alignItems: "flex-start",
+                  gap: 1,
+                  backgroundColor:
+                    pathname === item.pathname
+                      ? theme.palette.primary.hover
+                      : "transparent",
+                  "&:hover": {
+                    color: "#FFF",
+                    backgroundColor: theme.palette.primary.hover,
+                    transition: "background-color 0.3s ease",
+                  },
+                })}
+              >
+                {item.icon}
+                {item.text}
+              </ListItemButton>
+            </ListItem>
+          </NextLink>
         ))}
       </Stack>
     </List>

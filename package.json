@@ -21,6 +21,7 @@
     "axios": "^1.6.8",
     "date-fns": "^3.6.0",
     "deepmerge": "^4.3.1",
+    "filesize": "^10.1.1",
     "jsonwebtoken": "^9.0.2",
     "mui-tel-input": "^5.1.2",
     "next": "14.1.4",
@@ -28,11 +29,11 @@
     "notistack": "^3.0.1",
     "react": "^18",
     "react-dom": "^18",
+    "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.51.2",
     "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@types/node": "20.11.30",
     "eslint": "^8",
     "eslint-config-next": "14.1.4"
   }
