@@ -4,6 +4,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import Providers from "../providers/providers";
 import { auth } from "../auth";
 import { SessionProvider } from "next-auth/react";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

@@ -4,9 +4,9 @@ export const palette = {
   ...colors,
   palette: {
     primary: {
-      main: "#512da8",
-      light: "#d8d8d8",
-      hover: "#7c5bc0",
+      main: "#ea281a",
+      light: "#f67003",
+      hover: "#fdb902",
       // dark: "#c00041",
       // contrastText: "#DD0745",
       disabled: "#b0a3d6",

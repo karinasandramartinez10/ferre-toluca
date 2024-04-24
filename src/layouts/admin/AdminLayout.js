@@ -62,6 +62,7 @@ const AdminDesktopLayout = ({ children, drawer }) => (
       </Drawer>
       {children}
     </main>
+    <footer></footer>
   </section>
 );
 

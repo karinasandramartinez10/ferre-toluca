@@ -17,3 +17,18 @@ body {
 a:-webkit-any-link {
   text-decoration: none;
 }
+
+.main-layout {
+  margin: 74px auto;
+  max-width: 1280px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+@media (max-width: 1300px) {
+ .main-layout {
+  padding-left: 16px;
+  padding-right: 16px;
+
+ }
+}

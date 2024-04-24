@@ -11,7 +11,7 @@ export const components = {
       styleOverrides: {
         root: {
           minWidth: 96,
-          color: "#FFF !important",
+          color: "#FFF",
           lineHeight: 1,
           fontSize: "0.75rem",
           boxShadow: "none",
@@ -71,6 +71,21 @@ export const components = {
       styleOverrides: {
         root: {
           borderRadius: "8px",
+        },
+      },
+    },
+    MuiAppBar: {
+      defaultProps: {
+        elevation: 0,
+        position: "fixed",
+      },
+      styleOverrides: {
+        root: {
+          backgroundColor: palette.palette.primary.light,
+/*           height: 64,
+          [theme.breakpoints.up("lg")]: {
+            height: 70,
+          }, */
         },
       },
     },
