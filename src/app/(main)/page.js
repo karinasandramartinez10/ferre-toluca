@@ -1,10 +1,8 @@
-"use client"
-import Image from "next/image";
-import { logout } from "../../actions/logout";
+import { auth } from "../../auth";
+import { MainPage } from "./MainPage";
 
-export default function Page() {
-  return (
+export default async function Page() {
+  const session = await auth();
 
-    <div>asdasd</div>
-  );
+  return <MainPage session={session} />;
 }

@@ -2,11 +2,11 @@ import { MainNavbar } from "../../navbars/main/MainNavbar";
 
 export const MainLayout = ({ children }) => {
   return (
-    <section className="main-layout">
+    <section>
       <nav>
         <MainNavbar />
       </nav>
-      <main >{children}</main>
+      <main className="main-layout">{children}</main>
       <footer></footer>
     </section>
   );

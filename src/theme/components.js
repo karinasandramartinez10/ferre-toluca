@@ -82,7 +82,8 @@ export const components = {
       styleOverrides: {
         root: {
           backgroundColor: palette.palette.primary.light,
-/*           height: 64,
+          height: 64,
+          /*           
           [theme.breakpoints.up("lg")]: {
             height: 70,
           }, */

@@ -47,7 +47,12 @@ const Login = () => {
           <LoginForm onSubmit={handleSubmit}>
             {({ loading }) => (
               <>
-                <LoadingButton loading={loading} type="submit" fullWidth>
+                <LoadingButton
+                  loading={loading}
+                  type="submit"
+                  fullWidth
+                  // href="/auth/login"
+                >
                   Iniciar sesión
                 </LoadingButton>
               </>

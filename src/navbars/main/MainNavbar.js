@@ -41,6 +41,7 @@ const MainNavbarDesktop = ({ session }) => {
             sx={{ marginTop: 0 }}
             variant="contained"
             startIcon={<Avatar sx={{ width: "26px", height: "26px" }} />}
+            href="/auth/login"
           >
             Iniciar sesión
           </Button>
