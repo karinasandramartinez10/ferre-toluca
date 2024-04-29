@@ -1,12 +1,13 @@
+"use server";
 
 import { signOut } from "../auth";
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 
-const removeAllCookies = () => {
+/* const removeAllCookies = () => {
   Object.keys(Cookies.get()).forEach((cookie) => Cookies.remove(cookie));
-};
+}; */
 
 export const logout = async () => {
-  removeAllCookies();
+  // removeAllCookies();
   await signOut();
 };

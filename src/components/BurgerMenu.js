@@ -26,6 +26,9 @@ const BurgerMenuItem = ({ icon, text, href, onClose }) => {
             alignItems: "center",
             fontWeight: 600,
             textDecoration: "none",
+            "&:hover": {
+              cursor: "pointer",
+            },
           }}
         >
           <ListItemIcon
@@ -47,7 +50,9 @@ const BurgerMenuSection = ({ title, items, onClose }) => {
   return (
     <List sx={{}}>
       <ListItemText
-        sx={{ paddingLeft: 2 }}
+        sx={{
+          paddingLeft: 2,
+        }}
         primary={title ? title : null}
         primaryTypographyProps={{
           color: "primary.main",
@@ -63,8 +68,7 @@ const BurgerMenuSection = ({ title, items, onClose }) => {
 };
 
 export const BurgerMenu = ({ toggleDrawer, sections, showLogout, src }) => {
-  console.log(sections);
-  const logoutButton = <Button onClick={logout}>Cerrar sesión</Button>;
+  const logoutButton = <Button onClick={() => logout()}>Cerrar sesión</Button>;
 
   return (
     <Box sx={{ p: 2, height: 1 }}>
@@ -83,7 +87,7 @@ export const BurgerMenu = ({ toggleDrawer, sections, showLogout, src }) => {
             color="primary"
             // sx={{ color: "#FFF"}}
           >
-            <CloseIcon  />
+            <CloseIcon />
           </IconButton>
         </Box>
         <Divider />

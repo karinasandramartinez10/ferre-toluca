@@ -6,6 +6,7 @@ import { ProductCard } from "../../components/ProductCard";
 import { fetchProducts } from "../../api/products";
 import { Loading } from "../../components/Loading";
 import { ErrorUI } from "../../components/Error";
+import { QuoteModal } from "./QuoteModal";
 
 export const MainPage = ({ session }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -14,6 +15,11 @@ export const MainPage = ({ session }) => {
   const [totalPages, setTotalPages] = useState(0);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const isAuthenticated = !!session?.user;
   const isAdmin = session?.user.role === "admin";
@@ -23,7 +29,6 @@ export const MainPage = ({ session }) => {
       setLoading(true);
       const fetchedData = await fetchProducts(currentPage, size);
       if (fetchedData.error) {
-        console.error(fetchedData.error);
         setLoading(false);
         setError(fetchedData.error);
         return;
@@ -50,6 +55,11 @@ export const MainPage = ({ session }) => {
 
   if (error) return <ErrorUI main />;
 
+  const handleQuote = (product) => {
+    setSelectedProduct(product);
+    handleOpen();
+  };
+
   const productList = products.map((product, index) => (
     <Grid item xs={12} sm={4} md={4} key={index}>
       <ProductCard
@@ -57,12 +67,14 @@ export const MainPage = ({ session }) => {
         product={product}
         showQuoteButton={isAuthenticated}
         isAdmin={isAdmin}
+        handleQuote={handleQuote}
       />
     </Grid>
   ));
 
   return (
     <>
+      <QuoteModal open={open} onClose={handleClose} product={selectedProduct} />
       <Grid
         container
         spacing={{ xs: 2, md: 3 }}

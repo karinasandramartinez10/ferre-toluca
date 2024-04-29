@@ -1,4 +1,5 @@
 "use client";
+
 import {
   AppBar,
   Avatar,
@@ -19,6 +20,7 @@ import {
 } from "./list-items";
 import { BurgerMenu } from "../../components/BurgerMenu";
 import { Menu } from "@mui/icons-material";
+import { logout } from "../../actions/logout";
 
 const MainNavbarDesktop = ({ session }) => {
   const isAuthenticated = !!session?.user;
@@ -47,7 +49,11 @@ const MainNavbarDesktop = ({ session }) => {
           </Button>
         </Box>
       ) : (
-        <div>Hola</div>
+        <Box display="flex" gap={1}>
+          <Button href="/admin">Ir al panel</Button>
+
+          <Button onClick={() => logout()}>Cerrar sesión</Button>
+        </Box>
       )}
     </Box>
   );

@@ -9,7 +9,12 @@ import {
 } from "@mui/material";
 import React from "react";
 
-export const ProductCard = ({ product, showQuoteButton, isAdmin }) => {
+export const ProductCard = ({
+  product,
+  showQuoteButton,
+  isAdmin,
+  handleQuote,
+}) => {
   const quoteButton = () => {
     if (isAdmin) return null;
     if (!showQuoteButton) {
@@ -20,7 +25,11 @@ export const ProductCard = ({ product, showQuoteButton, isAdmin }) => {
       );
     }
 
-    return <Button fullWidth>Solicitar cotización</Button>;
+    return (
+      <Button fullWidth onClick={() => handleQuote(product)}>
+        Solicitar cotización
+      </Button>
+    );
   };
 
   return (

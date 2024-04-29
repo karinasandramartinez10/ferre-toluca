@@ -32,8 +32,8 @@ const listItems = [
     icon: <Dashboard sx={{ fontSize: 20 }} />,
   },
   {
-    text: "Órdenes",
-    pathname: "/order",
+    text: "Cotizaciones",
+    pathname: "/quotes",
     icon: <Storefront sx={{ fontSize: 20 }} />,
   },
 ];
