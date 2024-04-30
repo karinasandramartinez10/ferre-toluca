@@ -14,3 +14,20 @@ export const createQuote = async (body, token) => {
     throw new Error(error.response.data.message);
   }
 };
+
+
+export const fetchQuotes = async (token) => {
+try {
+  const { data } = await api.get("/quote", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  })
+  return data.data
+
+} catch (error) {
+  console.log(error)
+  throw new Error(error.response.data.message);
+}
+}

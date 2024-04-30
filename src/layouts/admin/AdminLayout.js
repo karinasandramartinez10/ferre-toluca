@@ -33,7 +33,7 @@ const listItems = [
   },
   {
     text: "Cotizaciones",
-    pathname: "/quotes",
+    pathname: "/admin/quotes",
     icon: <Storefront sx={{ fontSize: 20 }} />,
   },
 ];
