@@ -67,6 +67,7 @@ export const QuoteModal = ({ open, onClose, product }) => {
       );
       reset();
       setLoading(false);
+      onClose()
     } catch (error) {
       setLoading(false);
       enqueueSnackbar("Hubo un error al solicitar la cotización", {

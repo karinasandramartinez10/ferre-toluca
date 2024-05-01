@@ -51,7 +51,7 @@ export const Quotes = () => {
     },
     {
       field: "createdAt",
-      headerName: "Cotización creada",
+      headerName: "Fecha",
       width: 140,
       valueFormatter: (val) => {
         if (val == null) {
@@ -69,7 +69,7 @@ export const Quotes = () => {
           <Button
             sx={{ width: 100, height: 35 }}
             onClick={() => {
-              handleDetailsClick(params.row.id);
+              handleDetailsClick(params.row);
             }}
           >
             Ver más
@@ -100,8 +100,8 @@ export const Quotes = () => {
     setOpen(false);
   };
 
-  const handleDetailsClick = (id) => {
-    setSelectedQuote(id);
+  const handleDetailsClick = (quote) => {
+    setSelectedQuote(quote);
     setOpen(true);
   };
 
@@ -139,6 +139,7 @@ export const Quotes = () => {
           header="Información de la cotización"
           open={open}
           onClose={handleClose}
+          quote={selectedQuote}
         />
       )}
     </Box>

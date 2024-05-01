@@ -24,6 +24,11 @@ import { logout } from "../../actions/logout";
 
 const MainNavbarDesktop = ({ session }) => {
   const isAuthenticated = !!session?.user;
+  const isAdmin = session?.user.role === "admin";
+
+  const Logout = () => {
+    logout();
+  };
 
   return (
     <Box
@@ -50,9 +55,8 @@ const MainNavbarDesktop = ({ session }) => {
         </Box>
       ) : (
         <Box display="flex" gap={1}>
-          <Button href="/admin">Ir al panel</Button>
-
-          <Button onClick={() => logout()}>Cerrar sesión</Button>
+          {isAdmin && <Button href="/admin">Ir al panel</Button>}
+          <Button onClick={Logout}>Cerrar sesión</Button>
         </Box>
       )}
     </Box>
