@@ -5,19 +5,19 @@ import {
   AppBar,
   Box,
   Drawer,
+  Grid,
   IconButton,
   List,
   ListItem,
   ListItemButton,
   Stack,
   Toolbar,
+  Typography,
 } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
-import useResponsive from "../../hooks/use-responsive";
 import { usePathname } from "next/navigation";
 import NextLink from "next/link";
-
 const drawerWidth = 200;
 
 const listItems = [
@@ -38,33 +38,57 @@ const listItems = [
   },
 ];
 
-const AdminDesktopLayout = ({ children, drawer }) => (
-  <section style={{ margin: "0 auto", maxWidth: "1280px" }}>
-    <main
-      style={{
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: drawerWidth,
-        padding: "24px",
+const getPageTitle = (pathname) => {
+  if (pathname === "/admin") return "Agregar Producto";
+  if (pathname === "/admin/quotes") return "Todas las cotizaciones";
+  return;
+};
+
+const AdminDesktopLayout = ({ children, drawer, pathname }) => {
+  return (
+    <Box
+      component="section"
+      sx={{
+        margin: "0 auto",
+        maxWidth: "1280px",
+        display: { xs: "none", md: "block" },
       }}
     >
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: {
-            width: drawerWidth,
-            boxSizing: "border-box",
-          },
+      <nav></nav>
+      <main
+        style={{
+          width: `calc(100% - ${drawerWidth}px)`,
+          marginLeft: drawerWidth,
+          padding: "24px",
         }}
       >
-        {drawer}
-      </Drawer>
-      {children}
-    </main>
-    <footer></footer>
-  </section>
-);
+        <Drawer
+          variant="permanent"
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            [`& .MuiDrawer-paper`]: {
+              width: drawerWidth,
+              boxSizing: "border-box",
+            },
+          }}
+        >
+          {drawer}
+        </Drawer>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Typography variant="h1">{getPageTitle(pathname)}</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            {children}
+          </Grid>
+        </Grid>
+      </main>
+      <footer></footer>
+    </Box>
+  );
+};
 
 const AdminMobileLayout = ({ children, drawer }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -86,7 +110,7 @@ const AdminMobileLayout = ({ children, drawer }) => {
   };
 
   return (
-    <section>
+    <Box component="section" sx={{ display: { xs: "block", md: "none" } }}>
       <nav>
         <AppBar position="fixed">
           <Toolbar sx={{ minHeight: "56px !important" }}>
@@ -129,12 +153,11 @@ const AdminMobileLayout = ({ children, drawer }) => {
         </Drawer>
         {children}
       </main>
-    </section>
+    </Box>
   );
 };
 
 export const AdminLayout = ({ children }) => {
-  const isDesktop = useResponsive("up", "md");
   const pathname = usePathname();
 
   const drawer = (
@@ -185,9 +208,12 @@ export const AdminLayout = ({ children }) => {
     </List>
   );
 
-  if (isDesktop) {
-    return <AdminDesktopLayout drawer={drawer}>{children}</AdminDesktopLayout>;
-  } else {
-    return <AdminMobileLayout drawer={drawer}>{children}</AdminMobileLayout>;
-  }
+  return (
+    <>
+      <AdminDesktopLayout pathname={pathname} drawer={drawer}>
+        {children}
+      </AdminDesktopLayout>
+      ;<AdminMobileLayout drawer={drawer}>{children}</AdminMobileLayout>;
+    </>
+  );
 };
