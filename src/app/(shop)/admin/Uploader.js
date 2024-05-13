@@ -15,11 +15,14 @@ const defaultFormValues = {
   name: "",
   description: "",
   image: null,
+  specifications: "",
 };
 
 const ProductSchema = yup.object().shape({
   name: yup.string().required("El nombre es requerido"),
   description: yup.string().required("La descripción es requerida"),
+  code: yup.string().required("El código es requerida"),
+  specifications: yup.string().required("Las características son requeridas"),
 });
 
 export const Uploader = () => {
@@ -71,6 +74,11 @@ export const Uploader = () => {
         "description",
         toCapitalizeFirstLetter(values.description)
       );
+      requestBody.append("code", values.code.toUpperCase());
+      requestBody.append(
+        "specifications",
+        toCapitalizeFirstLetter(values.specifications)
+      );
 
       await addProduct(requestBody, data.user.access_token);
       enqueueSnackbar("Producto añadido exitósamente", {
@@ -82,7 +90,7 @@ export const Uploader = () => {
         },
       });
       reset();
-      handleRemoveFile()
+      handleRemoveFile();
       setLoading(false);
 
       return;
@@ -157,6 +165,70 @@ export const Uploader = () => {
               helperText={error?.message && error.message}
               variant="outlined"
               rows={4}
+              inputProps={{
+                form: {
+                  autocomplete: "off",
+                },
+                style: {
+                  textTransform: "capitalize",
+                },
+              }}
+              InputProps={{
+                style: { textTransform: "capitalize" },
+                sx: {
+                  borderRadius: "8px",
+                  background: "#FFF",
+                },
+              }}
+              {...field}
+            />
+          )}
+        />
+      </Stack>
+      <Stack gap={1} width="100%">
+        <Typography fontWeight={600}>Código</Typography>
+        <Controller
+          control={control}
+          name="code"
+          render={({ field, fieldState: { invalid, error } }) => (
+            <TextField
+              label=""
+              fullWidth
+              error={invalid}
+              helperText={error?.message && error.message}
+              variant="outlined"
+              inputProps={{
+                form: {
+                  autocomplete: "off",
+                },
+                style: {
+                  textTransform: "capitalize",
+                },
+              }}
+              InputProps={{
+                style: { textTransform: "capitalize" },
+                sx: {
+                  borderRadius: "8px",
+                  background: "#FFF",
+                },
+              }}
+              {...field}
+            />
+          )}
+        />
+      </Stack>
+      <Stack gap={1} width="100%">
+        <Typography fontWeight={600}>Características</Typography>
+        <Controller
+          control={control}
+          name="specifications"
+          render={({ field, fieldState: { invalid, error } }) => (
+            <TextField
+              label=""
+              fullWidth
+              error={invalid}
+              helperText={error?.message && error.message}
+              variant="outlined"
               inputProps={{
                 form: {
                   autocomplete: "off",

@@ -90,22 +90,14 @@ const AdminDesktopLayout = ({ children, drawer, pathname }) => {
   );
 };
 
-const AdminMobileLayout = ({ children, drawer }) => {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
-
-  const handleDrawerClose = () => {
-    setIsClosing(true);
-    setMobileOpen(false);
-  };
-
+const AdminMobileLayout = ({ children, drawer, pathname, ...props }) => {
   const handleDrawerTransitionEnd = () => {
-    setIsClosing(false);
+    props.setIsClosing(false);
   };
 
   const handleDrawerToggle = () => {
-    if (!isClosing) {
-      setMobileOpen(!mobileOpen);
+    if (!props.isClosing) {
+      props.setMobileOpen(!props.mobileOpen);
     }
   };
 
@@ -135,9 +127,9 @@ const AdminMobileLayout = ({ children, drawer }) => {
       >
         <Drawer
           variant="temporary"
-          open={mobileOpen}
+          open={props.mobileOpen}
           onTransitionEnd={handleDrawerTransitionEnd}
-          onClose={handleDrawerClose}
+          onClose={props.handleDrawerClose}
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
           }}
@@ -151,14 +143,29 @@ const AdminMobileLayout = ({ children, drawer }) => {
         >
           {drawer}
         </Drawer>
-        {children}
+        <Grid container spacing={2}>
+          <Grid item xs={12} mt={1}>
+            <Typography variant="h1">{getPageTitle(pathname)}</Typography>
+          </Grid>
+          <Grid item xs={12}>
+            {children}
+          </Grid>
+        </Grid>
       </main>
     </Box>
   );
 };
 
 export const AdminLayout = ({ children }) => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
   const pathname = usePathname();
+
+  const handleDrawerClose = () => {
+    setIsClosing(true);
+    setMobileOpen(false);
+  };
 
   const drawer = (
     <List sx={{ padding: 2, borderRadius: 1 }}>
@@ -197,6 +204,7 @@ export const AdminLayout = ({ children }) => {
                     transition: "background-color 0.3s ease",
                   },
                 })}
+                onClick={() => handleDrawerClose()}
               >
                 {item.icon}
                 {item.text}
@@ -213,7 +221,17 @@ export const AdminLayout = ({ children }) => {
       <AdminDesktopLayout pathname={pathname} drawer={drawer}>
         {children}
       </AdminDesktopLayout>
-      ;<AdminMobileLayout drawer={drawer}>{children}</AdminMobileLayout>;
+      <AdminMobileLayout
+        pathname={pathname}
+        drawer={drawer}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
+        isClosing={isClosing}
+        setIsClosing={setIsClosing}
+      >
+        {children}
+      </AdminMobileLayout>
+      ;
     </>
   );
 };
