@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useSnackbar } from "notistack";
@@ -45,10 +45,11 @@ const Login = () => {
       >
         <LoginContainer>
           <LoginForm onSubmit={handleSubmit}>
-            {({ loading }) => (
+            {({ loading, isValid }) => (
               <>
                 <LoadingButton
                   loading={loading}
+                  disabled={!isValid}
                   type="submit"
                   fullWidth
                   // href="/auth/login"
