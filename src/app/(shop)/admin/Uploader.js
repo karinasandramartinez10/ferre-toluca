@@ -15,13 +15,14 @@ const defaultFormValues = {
   name: "",
   description: "",
   image: null,
+  code: "",
   specifications: "",
 };
 
 const ProductSchema = yup.object().shape({
   name: yup.string().required("El nombre es requerido"),
   description: yup.string().required("La descripción es requerida"),
-  code: yup.string().required("El código es requerida"),
+  code: yup.string().required("El código es requerido"),
   specifications: yup.string().required("Las características son requeridas"),
 });
 
