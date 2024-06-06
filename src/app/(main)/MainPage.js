@@ -22,7 +22,7 @@ export const MainPage = ({ session }) => {
   const handleClose = () => setOpen(false);
 
   const isAuthenticated = !!session?.user;
-  const isAdmin = session?.user.role === "admin";
+  const isAdmin = session?.user?.role === "admin";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,6 +54,15 @@ export const MainPage = ({ session }) => {
   }
 
   if (error) return <ErrorUI main />;
+
+  if (products.length === 0)
+    return (
+      <Grid>
+        <Typography textAlign="center" variant="h2">
+          Aun no hemos agregado productos
+        </Typography>
+      </Grid>
+    );
 
   const handleQuote = (product) => {
     setSelectedProduct(product);
