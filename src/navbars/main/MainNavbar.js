@@ -24,7 +24,7 @@ import { logout } from "../../actions/logout";
 
 const MainNavbarDesktop = ({ session }) => {
   const isAuthenticated = !!session?.user;
-  const isAdmin = session?.user.role === "admin";
+  const isAdmin = session?.user?.role === "admin";
 
   const Logout = () => {
     logout();
@@ -66,7 +66,7 @@ const MainNavbarDesktop = ({ session }) => {
 const MainNavbarMobile = ({ session }) => {
   const [openNavbar, setOpenNavbar] = useState(false);
   const isAuthenticated = !!session?.user;
-  const isAdmin = session?.user.role === "admin";
+  const isAdmin = session?.user?.role === "admin";
 
   const toggleDrawer = (open) => (event) => {
     if (

@@ -22,7 +22,7 @@ export const MainPage = ({ session }) => {
   const handleClose = () => setOpen(false);
 
   const isAuthenticated = !!session?.user;
-  const isAdmin = session?.user.role === "admin";
+  const isAdmin = session?.user?.role === "admin";
 
   useEffect(() => {
     const fetchData = async () => {
