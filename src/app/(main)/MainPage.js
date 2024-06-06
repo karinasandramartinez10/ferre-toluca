@@ -55,6 +55,15 @@ export const MainPage = ({ session }) => {
 
   if (error) return <ErrorUI main />;
 
+  if (products.length === 0)
+    return (
+      <Grid>
+        <Typography textAlign="center" variant="h2">
+          Aun no hemos agregado productos
+        </Typography>
+      </Grid>
+    );
+
   const handleQuote = (product) => {
     setSelectedProduct(product);
     handleOpen();
