@@ -1,39 +1,22 @@
 "use client";
 
 import { LoadingButton } from "@mui/lab";
-import {
-  Box,
-  Button,
-  FormControl,
-  FormControlLabel,
-  Grid,
-  MenuItem,
-  Radio,
-  RadioGroup,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import {
-  DataGrid,
-  GridActionsCellItem,
-  GridRowModes,
-  GridToolbarContainer,
-} from "@mui/x-data-grid";
+import { Grid } from "@mui/material";
+
 import React, { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Dropzone } from "../../../../components/Dropzone";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useSession } from "next-auth/react";
 import { useSnackbar } from "notistack";
-import { Add, Delete } from "@mui/icons-material";
 import { v4 as uuidv4 } from "uuid";
 import { toCapitalizeFirstLetter } from "../../../../utils/cases";
 import { postProduct } from "../../../../api/admin";
 import { getBrands } from "../../../../api/brand";
 import { validateRows } from "./helpers";
+import { ProductTable } from "./ProductTable";
+import AddProductFields from "./AddProductFields";
 
 const defaultFormValues = {
   brandId: "",
@@ -46,44 +29,6 @@ const ProductSchema = yup.object().shape({
   brandId: yup.string().required("La marca es requerida"),
   category: yup.string().required("La categoría es requerida"),
 });
-
-function EditToolbar(props) {
-  const { setRows, setRowModesModel } = props;
-
-  const handleClick = () => {
-    const id = uuidv4();
-    setRows((oldRows) => [
-      ...oldRows,
-      {
-        id,
-        name: "",
-        description: "",
-        code: "",
-        specifications: "",
-        color: "",
-        size: "",
-        isNew: true,
-      },
-    ]);
-    setRowModesModel((oldModel) => ({
-      ...oldModel,
-      [id]: { mode: GridRowModes.Edit, fieldToFocus: "name" },
-    }));
-  };
-
-  return (
-    <GridToolbarContainer>
-      <Button
-        sx={{ marginBottom: "8px" }}
-        color="primary"
-        startIcon={<Add />}
-        onClick={handleClick}
-      >
-        Agregar
-      </Button>
-    </GridToolbarContainer>
-  );
-}
 
 const AddProduct = () => {
   const [brands, setBrands] = useState([]);
@@ -252,118 +197,21 @@ const AddProduct = () => {
         alignItems: { xs: "center", sm: "flex-start" },
       }}
     >
-      <Stack gap={1} width="100%">
-        <Typography fontWeight={600}>Selecciona una marca</Typography>
-        <Controller
-          control={control}
-          name="brandId"
-          render={({ field }) => (
-            <FormControl sx={{ minWidth: 120 }} size="small">
-              <Select {...field} fullWidth sx={{ background: "#FFF" }}>
-                {brands.map((brand) => (
-                  <MenuItem key={brand.id} value={brand.id}>
-                    {brand.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        />
-        <Typography fontWeight={600}>Selecciona una categoría</Typography>
-        <Controller
-          control={control}
-          name="category"
-          render={({ field }) => (
-            <TextField {...field} label="Categoría" fullWidth size="small" />
-          )}
-        />
+      <AddProductFields
+        control={control}
+        brands={brands}
+        hasSubCategory={hasSubCategory}
+      />
 
-        <Typography fontWeight={600}>¿Tiene subcategoría?</Typography>
-        <Controller
-          control={control}
-          name="hasSubCategory"
-          render={({ field }) => (
-            <FormControl component="fieldset">
-              <RadioGroup {...field} row>
-                <FormControlLabel value="yes" control={<Radio />} label="Sí" />
-                <FormControlLabel value="no" control={<Radio />} label="No" />
-              </RadioGroup>
-            </FormControl>
-          )}
-        />
-
-        {hasSubCategory === "yes" && (
-          <Controller
-            control={control}
-            name="subCategory"
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Subcategoría"
-                fullWidth
-                size="small"
-              />
-            )}
-          />
-        )}
-      </Stack>
-
-      <Box
-        sx={{
-          height: 500,
-          width: "100%",
-        }}
-      >
-        <DataGrid
-          rows={rows}
-          columns={[
-            { field: "name", headerName: "Nombre", width: 150, editable: true },
-            { field: "code", headerName: "Código", width: 100, editable: true },
-            {
-              field: "description",
-              headerName: "Descripción",
-              width: 150,
-              editable: true,
-            },
-            { field: "color", headerName: "Color", width: 150, editable: true },
-            { field: "size", headerName: "Tamaño", width: 150, editable: true },
-            {
-              field: "specifications",
-              headerName: "Características",
-              width: 150,
-              editable: true,
-            },
-            {
-              field: "actions",
-              type: "actions",
-              headerName: "Acciones",
-              cellClassName: "actions",
-              getActions: ({ id }) => {
-                return [
-                  <GridActionsCellItem
-                    icon={<Delete />}
-                    label="Delete"
-                    onClick={handleDeleteClick(id)}
-                    color="inherit"
-                  />,
-                ];
-              },
-            },
-          ]}
-          editMode="row"
-          // pageSize={5}
-          // rowsPerPageOptions={[5]}
-          rowModesModel={rowModesModel}
-          onRowModesModelChange={handleRowModesModelChange}
-          processRowUpdate={processRowUpdate}
-          slots={{
-            toolbar: EditToolbar,
-          }}
-          slotProps={{
-            toolbar: { setRows, setRowModesModel },
-          }}
-        />
-      </Box>
+      <ProductTable
+        rows={rows}
+        setRows={setRows}
+        rowModesModel={rowModesModel}
+        setRowModesModel={setRowModesModel}
+        handleDeleteClick={handleDeleteClick}
+        processRowUpdate={processRowUpdate}
+        handleRowModesModelChange={handleRowModesModelChange}
+      />
 
       <Dropzone
         unregister={unregister}
@@ -375,6 +223,7 @@ const AddProduct = () => {
         setPhoto={setPhoto}
         onRemove={handleRemoveFile}
       />
+
       <Grid item xs={12} textAlign="end">
         <LoadingButton
           // disabled={!isValid}
