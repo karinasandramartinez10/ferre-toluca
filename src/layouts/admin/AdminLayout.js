@@ -39,8 +39,13 @@ const listItems = [
 ];
 
 const getPageTitle = (pathname) => {
-  if (pathname === "/admin") return "Agregar Producto";
+  if (pathname === "/admin") return "Productos";
   if (pathname === "/admin/quotes") return "Todas las cotizaciones";
+  return;
+};
+
+const getPageSubtitle = (pathname) => {
+  if (pathname === "/admin") return "Agregar productos";
   return;
 };
 
@@ -78,7 +83,15 @@ const AdminDesktopLayout = ({ children, drawer, pathname }) => {
 
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography variant="h1">{getPageTitle(pathname)}</Typography>
+            <Box display="flex" alignItems="center" gap={1.5}>
+              <Typography variant="h1">{getPageTitle(pathname)}</Typography>
+              <Typography
+                sx={{ color: "#838383", fontWeight: 500 }}
+                variant="body"
+              >
+                {getPageSubtitle(pathname)}
+              </Typography>
+            </Box>
           </Grid>
           <Grid item xs={12}>
             {children}
@@ -145,7 +158,15 @@ const AdminMobileLayout = ({ children, drawer, pathname, ...props }) => {
         </Drawer>
         <Grid container spacing={2}>
           <Grid item xs={12} mt={1}>
-            <Typography variant="h1">{getPageTitle(pathname)}</Typography>
+            <Stack display="flex" gap={1}>
+              <Typography variant="h1">{getPageTitle(pathname)}</Typography>
+              <Typography
+                sx={{ color: "#979799", fontWeight: 600 }}
+                variant="body"
+              >
+                {getPageSubtitle(pathname)}
+              </Typography>
+            </Stack>
           </Grid>
           <Grid item xs={12}>
             {children}

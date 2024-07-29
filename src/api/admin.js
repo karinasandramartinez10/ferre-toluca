@@ -1,6 +1,6 @@
 import { api } from "../config";
 
-export const addProduct = async (body, token) => {
+export const postProduct = async (body, token) => {
   try {
     const resp = await api.post("/product", body, {
       headers: {

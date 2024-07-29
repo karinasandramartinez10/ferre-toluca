@@ -1,5 +1,7 @@
-import { Uploader } from "./Uploader";
+import AddProduct from './add-product/AddProduct'
 
 export const Admin = () => {
-  return <Uploader />;
+  return (
+   <AddProduct />
+  )
 };

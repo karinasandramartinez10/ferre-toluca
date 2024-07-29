@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { LoadingButton } from "@mui/lab";
 import { useSnackbar } from "notistack";
-import { addProduct } from "../../../api/admin";
+import { postProduct } from "../../../api/admin";
 import { useSession } from "next-auth/react";
 import { toCapitalizeFirstLetter } from "../../../utils/cases";
 import { useState } from "react";
