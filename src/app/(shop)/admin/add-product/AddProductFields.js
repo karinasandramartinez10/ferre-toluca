@@ -8,10 +8,11 @@ import {
   Stack,
   TextField,
   Typography,
+  Autocomplete,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 
-const AddProductFields = ({ brands, hasSubCategory, control }) => {
+const AddProductFields = ({ brands, categories, control, hasSubCategory }) => {
   return (
     <Stack gap={1} width="100%">
       <Typography fontWeight={600}>Selecciona una marca</Typography>
@@ -35,7 +36,20 @@ const AddProductFields = ({ brands, hasSubCategory, control }) => {
         control={control}
         name="category"
         render={({ field }) => (
-          <TextField {...field} label="Categoría" fullWidth size="small" />
+          <Autocomplete
+            {...field}
+            freeSolo
+            options={categories.map((category) => category.name)}
+            renderInput={(params) => (
+              <TextField {...params} label="Categoría" fullWidth size="small" />
+            )}
+            onChange={(_, value) => field.onChange(value)}
+            onInputChange={(_, value) => {
+              if (!categories.find((category) => category.name === value)) {
+                field.onChange(value);
+              }
+            }}
+          />
         )}
       />
 

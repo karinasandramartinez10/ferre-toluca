@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from "uuid";
 import { toCapitalizeFirstLetter } from "../../../../utils/cases";
 import { postProduct } from "../../../../api/admin";
 import { getBrands } from "../../../../api/brand";
+import { getCategories } from "../../../../api/category";
 import { validateRows } from "./helpers";
 import { ProductTable } from "./ProductTable";
 import AddProductFields from "./AddProductFields";
@@ -32,6 +33,7 @@ const ProductSchema = yup.object().shape({
 
 const AddProduct = () => {
   const [brands, setBrands] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [rows, setRows] = useState([
@@ -77,6 +79,19 @@ const AddProduct = () => {
     fetchBrands();
   }, []);
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoriesData = await getCategories();
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
   const handleRemoveFile = () => {
     unregister("image");
     URL.revokeObjectURL(photo?.preview);
@@ -88,7 +103,7 @@ const AddProduct = () => {
   };
 
   const onSubmit = async (values) => {
-    // console.log(values);
+     console.log(values);
 
     if (!validateRows(rows)) {
       enqueueSnackbar("Debes completar todos los campos de los productos", {
@@ -117,33 +132,56 @@ const AddProduct = () => {
       const requestBody = new FormData();
       requestBody.append("image", values.image);
       requestBody.append("brandId", values.brandId);
-      requestBody.append("category", values.category);
-      requestBody.append("subCategory", values.subCategory);
+
+      const selectedCategory = categories.find(
+        (cat) => cat.name === values.category
+      );
+      if (selectedCategory) {
+        requestBody.append("categoryId", selectedCategory.id);
+      } else {
+        requestBody.append(
+          "category",
+          toCapitalizeFirstLetter(values.category)
+        );
+      }
+
+      if (values.hasSubCategory && values.subCategory) {
+        requestBody.append(
+          "subCategory",
+          toCapitalizeFirstLetter(values.subCategory)
+        );
+      }
+
       rows.forEach((product, index) => {
         requestBody.append(
           `products[${index}][name]`,
-          toCapitalizeFirstLetter(product.name.trim())
+          product.name ? toCapitalizeFirstLetter(product.name.trim()) : ""
         );
         requestBody.append(
           `products[${index}][description]`,
-          toCapitalizeFirstLetter(product.description.trim())
+          product.description
+            ? toCapitalizeFirstLetter(product.description)
+            : ""
         );
         requestBody.append(
           `products[${index}][code]`,
-          product.code.toUpperCase()
+          product.code ? product.code.toUpperCase() : ""
         );
         requestBody.append(
           `products[${index}][specifications]`,
-          toCapitalizeFirstLetter(product.specifications.trim())
+          product.specifications
+            ? toCapitalizeFirstLetter(product.specifications)
+            : ""
         );
         requestBody.append(
           `products[${index}][color]`,
-          toCapitalizeFirstLetter(product.color.trim())
+          product.color ? toCapitalizeFirstLetter(product.color.trim()) : ""
         );
-        requestBody.append(`products[${index}][size]`, product.size.trim());
+        requestBody.append(
+          `products[${index}][size]`,
+          product.size ? product.size : ""
+        );
       });
-
-      console.log(requestBody);
 
       await postProduct(requestBody, data.user.access_token);
       enqueueSnackbar("Producto(s) añadido(s) exitósamente", {
@@ -198,8 +236,9 @@ const AddProduct = () => {
       }}
     >
       <AddProductFields
-        control={control}
         brands={brands}
+        categories={categories}
+        control={control}
         hasSubCategory={hasSubCategory}
       />
 
