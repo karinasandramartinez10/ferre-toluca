@@ -1,5 +1,5 @@
 import { Add, Delete } from "@mui/icons-material";
-import { Box, Button } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import {
   DataGrid,
   GridActionsCellItem,
@@ -8,14 +8,15 @@ import {
 } from "@mui/x-data-grid";
 import { v4 as uuidv4 } from "uuid";
 
-function EditToolbar({ setRows, setRowModesModel }) {
+function EditToolbar({ rows, setRows, setRowModesModel }) {
   const handleClick = () => {
+    const newName = rows[0]?.name || "";
     const id = uuidv4();
     setRows((oldRows) => [
       ...oldRows,
       {
         id,
-        name: "",
+        name: newName,
         description: "",
         code: "",
         specifications: "",
@@ -32,14 +33,15 @@ function EditToolbar({ setRows, setRowModesModel }) {
 
   return (
     <GridToolbarContainer>
-      <Button
-        sx={{ marginBottom: "8px" }}
-        color="primary"
-        startIcon={<Add />}
+      <IconButton
+        size="small"
+        edge="start"
+        aria-label="menu"
         onClick={handleClick}
+        color="primary"
       >
-        Agregar
-      </Button>
+        <Add />
+      </IconButton>
     </GridToolbarContainer>
   );
 }
@@ -51,7 +53,7 @@ export const ProductTable = ({
   setRowModesModel,
   handleDeleteClick,
   processRowUpdate,
-  handleRowModesModelChange
+  handleRowModesModelChange,
 }) => {
   return (
     <Box
@@ -106,8 +108,9 @@ export const ProductTable = ({
           toolbar: EditToolbar,
         }}
         slotProps={{
-          toolbar: { setRows, setRowModesModel },
+          toolbar: { rows, setRows, setRowModesModel },
         }}
+        sx={{ gap: 1 }}
       />
     </Box>
   );

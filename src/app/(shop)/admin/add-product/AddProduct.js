@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import { Dropzone } from "../../../../components/Dropzone";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useSession } from "next-auth/react";
 import { useSnackbar } from "notistack";
 import { v4 as uuidv4 } from "uuid";
 import { toCapitalizeFirstLetter } from "../../../../utils/cases";
@@ -31,23 +30,23 @@ const ProductSchema = yup.object().shape({
   category: yup.string().required("La categoría es requerida"),
 });
 
-const AddProduct = () => {
+const initialRows = [
+  {
+    id: uuidv4(),
+    name: "",
+    description: "",
+    code: "",
+    specifications: "",
+  },
+];
+
+const AddProduct = ({ user }) => {
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
-  const [rows, setRows] = useState([
-    {
-      id: uuidv4(),
-      name: "",
-      description: "",
-      code: "",
-      specifications: "",
-    },
-  ]);
+  const [rows, setRows] = useState(initialRows);
   const [rowModesModel, setRowModesModel] = useState({});
-
-  const { data } = useSession();
 
   const {
     control,
@@ -67,29 +66,18 @@ const AddProduct = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    const fetchBrands = async () => {
+    const fetchInitialData = async () => {
       try {
         const brandsData = await getBrands();
-        setBrands(brandsData);
-      } catch (error) {
-        console.error("Error fetching brands:", error);
-      }
-    };
-
-    fetchBrands();
-  }, []);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
         const categoriesData = await getCategories();
+        setBrands(brandsData);
         setCategories(categoriesData);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching initial data:", error);
       }
     };
 
-    fetchCategories();
+    fetchInitialData();
   }, []);
 
   const handleRemoveFile = () => {
@@ -103,8 +91,6 @@ const AddProduct = () => {
   };
 
   const onSubmit = async (values) => {
-     console.log(values);
-
     if (!validateRows(rows)) {
       enqueueSnackbar("Debes completar todos los campos de los productos", {
         variant: "error",
@@ -183,7 +169,7 @@ const AddProduct = () => {
         );
       });
 
-      await postProduct(requestBody, data.user.access_token);
+      await postProduct(requestBody, user.access_token);
       enqueueSnackbar("Producto(s) añadido(s) exitósamente", {
         variant: "success",
         autoHideDuration: 5000,
@@ -194,6 +180,7 @@ const AddProduct = () => {
       });
       reset();
       handleRemoveFile();
+      setRows(initialRows);
       setLoading(false);
 
       return;

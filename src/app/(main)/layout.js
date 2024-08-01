@@ -6,5 +6,17 @@ export const metadata = {
 };
 
 export default function Layout({ children }) {
-  return <MainLayout>{children}</MainLayout>;
+  return (
+    <MainLayout
+      AppBarProps={{
+        height: { xs: "54px", md: "64px" },
+      }}
+      ToolbarProps={{
+        height: { xs: "54px", md: "64px" },
+        minHeight: { xs: "54px", md: "64px" },
+      }}
+    >
+      {children}
+    </MainLayout>
+  );
 }

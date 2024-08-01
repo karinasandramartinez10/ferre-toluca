@@ -13,13 +13,14 @@ export const palette = {
     },
     grey: {
       main: "#5a6162",
-      text: "#9d9d9d"
+      text: "#9d9d9d",
     },
-    /*     secondary: {
+    secondary: {
       main: "#13161b",
       dark: "#0f1115",
       light: "#FFFFFF",
     },
+    /* 
     warning: {
       main: "#FEC400"
     },

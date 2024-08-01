@@ -55,7 +55,7 @@ const MainNavbarDesktop = ({ session }) => {
         </Box>
       ) : (
         <Box display="flex" gap={1}>
-          {isAdmin && <Button href="/admin">Ir al panel</Button>}
+          {isAdmin && <Button href="/admin/add-product">Ir al panel</Button>}
           <Button onClick={Logout}>Cerrar sesión</Button>
         </Box>
       )}
@@ -120,12 +120,12 @@ const MainNavbarMobile = ({ session }) => {
   );
 };
 
-export const MainNavbar = () => {
+export const MainNavbar = ({ AppBarProps, ToolbarProps }) => {
   const { data: session } = useSession();
 
   return (
-    <AppBar>
-      <Toolbar>
+    <AppBar sx={AppBarProps}>
+      <Toolbar sx={ToolbarProps}>
         <MainNavbarDesktop session={session} />
         <MainNavbarMobile session={session} />
       </Toolbar>
