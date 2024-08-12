@@ -14,20 +14,24 @@ import { toCapitalizeFirstLetter } from "../../../../utils/cases";
 import { postProduct } from "../../../../api/admin";
 import { getBrands } from "../../../../api/brand";
 import { getCategories } from "../../../../api/category";
+import { getSubcategories } from "../../../../api/subcategories";
 import { validateRows } from "./helpers";
 import { ProductTable } from "./ProductTable";
 import AddProductFields from "./AddProductFields";
+import { getProductTypes } from "../../../../api/productTypes";
 
 const defaultFormValues = {
   brandId: "",
-  category: "",
-  hasSubCategory: "no",
-  subCategory: "",
+  categoryId: "",
+  hasType: "no",
+  subCategoryId: "",
+  typeId: "",
 };
 
 const ProductSchema = yup.object().shape({
   brandId: yup.string().required("La marca es requerida"),
-  category: yup.string().required("La categoría es requerida"),
+  categoryId: yup.string().required("La categoría es requerida"),
+  subCategoryId: yup.string().required("La subcategoría es requerida"),
 });
 
 const initialRows = [
@@ -43,6 +47,8 @@ const initialRows = [
 const AddProduct = ({ user }) => {
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [rows, setRows] = useState(initialRows);
@@ -70,8 +76,12 @@ const AddProduct = ({ user }) => {
       try {
         const brandsData = await getBrands();
         const categoriesData = await getCategories();
+        const subcategoriesData = await getSubcategories();
+        const typesData = await getProductTypes();
         setBrands(brandsData);
         setCategories(categoriesData);
+        setSubcategories(subcategoriesData);
+        setTypes(typesData);
       } catch (error) {
         console.error("Error fetching initial data:", error);
       }
@@ -91,6 +101,7 @@ const AddProduct = ({ user }) => {
   };
 
   const onSubmit = async (values) => {
+    console.log(values);
     if (!validateRows(rows)) {
       enqueueSnackbar("Debes completar todos los campos de los productos", {
         variant: "error",
@@ -118,24 +129,10 @@ const AddProduct = ({ user }) => {
       const requestBody = new FormData();
       requestBody.append("image", values.image);
       requestBody.append("brandId", values.brandId);
-
-      const selectedCategory = categories.find(
-        (cat) => cat.name === values.category
-      );
-      if (selectedCategory) {
-        requestBody.append("categoryId", selectedCategory.id);
-      } else {
-        requestBody.append(
-          "category",
-          toCapitalizeFirstLetter(values.category)
-        );
-      }
-
-      if (values.hasSubCategory && values.subCategory) {
-        requestBody.append(
-          "subCategory",
-          toCapitalizeFirstLetter(values.subCategory)
-        );
+      requestBody.append("categoryId", values.categoryId);
+      requestBody.append("subCategoryId", values.subCategoryId);
+      if (values.hasType && values.typeId) {
+        requestBody.append("typeId", values.typeId);
       }
 
       rows.forEach((product, index) => {
@@ -209,7 +206,7 @@ const AddProduct = ({ user }) => {
     setRowModesModel(newRowModesModel);
   };
 
-  const hasSubCategory = watch("hasSubCategory");
+  const hasType = watch("hasType");
 
   return (
     <Grid
@@ -225,8 +222,10 @@ const AddProduct = ({ user }) => {
       <AddProductFields
         brands={brands}
         categories={categories}
+        subcategories={subcategories}
+        types={types}
         control={control}
-        hasSubCategory={hasSubCategory}
+        hasType={hasType}
       />
 
       <ProductTable

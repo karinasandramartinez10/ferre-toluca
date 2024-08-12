@@ -6,13 +6,18 @@ import {
   RadioGroup,
   Select,
   Stack,
-  TextField,
   Typography,
-  Autocomplete,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
 
-const AddProductFields = ({ brands, categories, control, hasSubCategory }) => {
+const AddProductFields = ({
+  brands,
+  categories,
+  subcategories,
+  types,
+  control,
+  hasType,
+}) => {
   return (
     <Stack gap={1} width="100%">
       <Typography fontWeight={600}>Selecciona una marca</Typography>
@@ -31,32 +36,45 @@ const AddProductFields = ({ brands, categories, control, hasSubCategory }) => {
           </FormControl>
         )}
       />
+
       <Typography fontWeight={600}>Selecciona una categoría</Typography>
       <Controller
         control={control}
-        name="category"
+        name="categoryId"
         render={({ field }) => (
-          <Autocomplete
-            {...field}
-            freeSolo
-            options={categories.map((category) => category.name)}
-            renderInput={(params) => (
-              <TextField {...params} label="Categoría" fullWidth size="small" />
-            )}
-            onChange={(_, value) => field.onChange(value)}
-            onInputChange={(_, value) => {
-              if (!categories.find((category) => category.name === value)) {
-                field.onChange(value);
-              }
-            }}
-          />
+          <FormControl sx={{ minWidth: 120 }} size="small">
+            <Select {...field} fullWidth sx={{ background: "#FFF" }}>
+              {categories.map((category) => (
+                <MenuItem key={category.id} value={category.id}>
+                  {category.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         )}
       />
 
-      <Typography fontWeight={600}>¿Tiene subcategoría?</Typography>
+      <Typography fontWeight={600}>Selecciona una subcategoría</Typography>
       <Controller
         control={control}
-        name="hasSubCategory"
+        name="subCategoryId"
+        render={({ field }) => (
+          <FormControl sx={{ minWidth: 120 }} size="small">
+            <Select {...field} fullWidth sx={{ background: "#FFF" }}>
+              {subcategories.map((subcategory) => (
+                <MenuItem key={subcategory.id} value={subcategory.id}>
+                  {subcategory.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+      />
+
+      <Typography fontWeight={600}>¿Tiene un subtipo?</Typography>
+      <Controller
+        control={control}
+        name="hasType"
         render={({ field }) => (
           <FormControl component="fieldset">
             <RadioGroup {...field} row>
@@ -67,12 +85,20 @@ const AddProductFields = ({ brands, categories, control, hasSubCategory }) => {
         )}
       />
 
-      {hasSubCategory === "yes" && (
+      {hasType === "yes" && (
         <Controller
           control={control}
-          name="subCategory"
+          name="typeId"
           render={({ field }) => (
-            <TextField {...field} label="Subcategoría" fullWidth size="small" />
+            <FormControl sx={{ minWidth: 120 }} size="small">
+              <Select {...field} fullWidth sx={{ background: "#FFF" }}>
+                {types.map((type) => (
+                  <MenuItem key={type.id} value={type.id}>
+                    {type.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
           )}
         />
       )}

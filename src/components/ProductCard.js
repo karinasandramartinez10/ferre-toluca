@@ -36,7 +36,7 @@ export const ProductCard = ({
     <Card>
       <CardMedia
         component="img"
-        image={product.Files[0].path}
+        image={product.Files && product.Files[0]?.path}
         sx={{ height: 235, objectFit: "contain" }}
         alt={product.name}
       />
