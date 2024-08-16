@@ -101,7 +101,6 @@ const AddProduct = ({ user }) => {
   };
 
   const onSubmit = async (values) => {
-    console.log(values);
     if (!validateRows(rows)) {
       enqueueSnackbar("Debes completar todos los campos de los productos", {
         variant: "error",

@@ -1,53 +1,33 @@
 "use client";
 
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { ProductCard } from "../../components/ProductCard";
-import { fetchProducts } from "../../api/products";
+import { getBrands } from "../../api/brand";
 import { Loading } from "../../components/Loading";
 import { ErrorUI } from "../../components/Error";
-import { QuoteModal } from "./QuoteModal";
+import BrandCarousel from "./BrandCarousel";
 
 export const MainPage = ({ session }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [size, _] = useState(10);
-  const [products, setProducts] = useState([]);
-  const [totalPages, setTotalPages] = useState(0);
+  const [brands, setBrands] = useState([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const isAuthenticated = !!session?.user;
-  const isAdmin = session?.user?.role === "admin";
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInitialData = async () => {
       setLoading(true);
-      const fetchedData = await fetchProducts(currentPage, size);
-      if (fetchedData.error) {
+      try {
+        const brandsData = await getBrands();
+        setBrands(brandsData);
         setLoading(false);
-        setError(fetchedData.error);
-        return;
+      } catch (error) {
+        setLoading(false);
+        setError(true);
+        console.error("Error fetching initial data:", error);
       }
-      setLoading(false);
-      setProducts(fetchedData.data.products);
-      setTotalPages(fetchedData.data.totalPages);
     };
 
-    fetchData();
-  }, [currentPage]);
-
-  const handlePageChange = (direction) => {
-    if (direction === "prev" && currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    } else if (direction === "next" && currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
+    fetchInitialData();
+  }, []);
 
   if (loading) {
     return <Loading />;
@@ -55,71 +35,22 @@ export const MainPage = ({ session }) => {
 
   if (error) return <ErrorUI main />;
 
-  if (products.length === 0)
-    return (
-      <Grid>
-        <Typography textAlign="center" variant="h2">
-          Aun no hemos agregado productos
-        </Typography>
-      </Grid>
-    );
-
-  const handleQuote = (product) => {
-    setSelectedProduct(product);
-    handleOpen();
-  };
-
-  const productList = products.map((product, index) => (
-    <Grid item xs={12} sm={4} md={4} key={index}>
-      <ProductCard
-        key={product.id}
-        product={product}
-        showQuoteButton={isAuthenticated}
-        isAdmin={isAdmin}
-        handleQuote={handleQuote}
-      />
-    </Grid>
-  ));
-
   return (
-    <>
-      <QuoteModal open={open} onClose={handleClose} product={selectedProduct} />
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-        sx={{ minHeight: "500px" }}
-      >
-        {productList}
-      </Grid>
-      {totalPages > 1 && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            mt: 5,
-            alignItems: "baseline",
-          }}
-        >
-          <Button
-            variant="contained"
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange("prev")}
-          >
-            Página anterior
-          </Button>
-          <Typography sx={{ mx: 2 }}>
-            Página {currentPage} de {totalPages}
-          </Typography>
-          <Button
-            variant="contained"
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange("next")}
-          >
-            Página siguiente
-          </Button>
-        </Box>
-      )}
-    </>
+    <Grid
+      container
+      rowGap={{ 
+        xs: 1,
+        md: 0
+      }}
+      sx={{
+        paddingLeft: { xs: "16px", md: "32px" },
+        paddingRight: { xs: "16px", md: "32px" },
+      }}
+    >
+      <Typography component="h1" variant="h1">
+        Marcas
+      </Typography>
+      <BrandCarousel brands={brands} />
+    </Grid>
   );
 };
