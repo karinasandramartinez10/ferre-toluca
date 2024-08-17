@@ -124,7 +124,7 @@ export const MainNavbar = ({ AppBarProps, ToolbarProps }) => {
   const { data: session } = useSession();
 
   return (
-    <AppBar sx={AppBarProps}>
+    <AppBar sx={{ justifyContent: "center"}}>
       <Toolbar sx={ToolbarProps}>
         <MainNavbarDesktop session={session} />
         <MainNavbarMobile session={session} />
