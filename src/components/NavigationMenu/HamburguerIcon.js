@@ -7,7 +7,7 @@ const HamburguerIcon = ({ onToggle }) => {
       edge="start"
       color="inherit"
       aria-label="menu"
-      sx={{ display: { xs: "block", md: "none" }, marginLeft: 0 }}
+      sx={{ display: { md: "none" }, marginLeft: 0 }}
       onClick={onToggle(true)}
     >
       <MenuIcon sx={{ color: "#FFF" }} />

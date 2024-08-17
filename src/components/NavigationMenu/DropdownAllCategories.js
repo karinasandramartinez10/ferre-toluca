@@ -1,9 +1,17 @@
-import { Box, Button, Menu, MenuItem, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import {
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
 } from "@mui/icons-material";
 import Link from "next/link";
+import { Menu as MenuIcon } from "@mui/icons-material";
 
 const DropdownAllCategories = ({
   anchorEl,
@@ -14,27 +22,43 @@ const DropdownAllCategories = ({
 }) => {
   return (
     <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
-      <Button
-        onClick={onOpen}
-        sx={{
-          height: "44px",
-          color: "white",
-          textTransform: "none",
-          paddingX: 2,
-          backgroundColor: "#f67003",
-          borderRadius: 0,
-          fontSize: "14px",
-          fontWeight: 700,
-          "&:hover": {
-            backgroundColor: "#f67003",
-          },
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-        endIcon={open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-      >
-        Todas las Colecciones
-      </Button>
+      <Box display="flex" sx={{ background: "#f67003" }}>
+        <Box
+          display="flex"
+          alignItems="center"
+          sx={{ paddingX: "8px", cursor: "pointer" }}
+          onClick={onOpen}
+        >
+          <MenuIcon sx={{ color: "#FFF" }} />
+          <Button
+            disableRipple
+            sx={{
+              height: "46px",
+              color: "white",
+              textTransform: "none",
+              paddingX: 2,
+              backgroundColor: "#f67003",
+              borderRadius: 0,
+              fontSize: "14px",
+              fontWeight: 700,
+              "&:hover": {
+                backgroundColor: "#f67003",
+              },
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+            endIcon={
+              open ? (
+                <ExpandLessIcon sx={{ fontSize: "26px !important" }} />
+              ) : (
+                <ExpandMoreIcon sx={{ fontSize: "26px !important" }} />
+              )
+            }
+          >
+            Todas las categorías
+          </Button>
+        </Box>
+      </Box>
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
