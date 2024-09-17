@@ -1,9 +1,9 @@
 import {
   Box,
   Button,
-  IconButton,
   Menu,
   MenuItem,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@mui/icons-material";
 import Link from "next/link";
 import { Menu as MenuIcon } from "@mui/icons-material";
+import { getCategoryIcon, trimCategoryName } from "../../helpers/categories";
 
 const DropdownAllCategories = ({
   anchorEl,
@@ -78,24 +79,54 @@ const DropdownAllCategories = ({
           },
         }}
       >
-        {categories.map((category) => (
-          <MenuItem key={category.name} onClick={onClose}>
-            <Link href={category.path} passHref>
-              <Typography
-                sx={{
-                  color: "#f67003",
-                  textDecoration: "none",
-                  fontSize: "14px",
-                  "&:hover": {
-                    color: "#ea281a",
-                  },
-                }}
-              >
-                {category.name}
-              </Typography>
-            </Link>
-          </MenuItem>
-        ))}
+        {categories.map((category) => {
+          const { trimmedName, isTrimmed } = trimCategoryName(category.name);
+          return (
+            <MenuItem
+              key={category.name}
+              onClick={onClose}
+              sx={{
+                "&:hover .category-text": {
+                  color: "#ea281a",
+                },
+                "&:hover .MuiSvgIcon-root": {
+                  color: "#ea281a",
+                },
+              }}
+            >
+              <Link href={category.path} passHref>
+                <Box display="flex" alignItems="center" gap={1}>
+                  {getCategoryIcon(category.path)}
+                  {isTrimmed ? (
+                    <Tooltip title={category.name} enterDelay={1000}>
+                      <Typography
+                        className="category-text"
+                        sx={{
+                          color: "secondary.main",
+                          textDecoration: "none",
+                          fontSize: "14px",
+                        }}
+                      >
+                        {trimmedName}
+                      </Typography>
+                    </Tooltip>
+                  ) : (
+                    <Typography
+                      className="category-text"
+                      sx={{
+                        color: "secondary.main",
+                        textDecoration: "none",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {category.name}
+                    </Typography>
+                  )}
+                </Box>
+              </Link>
+            </MenuItem>
+          );
+        })}
       </Menu>
     </Box>
   );

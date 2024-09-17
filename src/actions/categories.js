@@ -3,14 +3,13 @@
 function createCategoryPath(name) {
   return name
     .toLowerCase() // Convertir a minúsculas
-    .replace(/\s+/g, "-") // Reemplazar espacios por guiones
-    .replace(/[^a-z0-9\-]/g, ""); // Eliminar caracteres no permitidos (opcional)
+    .replace(/\s+/g, "-"); // Reemplazar espacios por guiones
 }
 
 export async function getCategories() {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/category`,
-    { cache: "force-cache"}
+    { cache: "force-cache" }
   );
 
   if (!res.ok) {

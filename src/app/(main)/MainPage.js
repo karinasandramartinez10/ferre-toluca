@@ -10,7 +10,7 @@ export const MainPage = ({ session, brands }) => {
 
   return (
     <>
-      <BrandCarousel brands={brands} />;
+      <BrandCarousel brands={brands} />
     </>
   );
 };

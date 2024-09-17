@@ -1,7 +1,7 @@
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import { Box, Grid } from "@mui/material";
 import { useRouter } from "next/navigation";
-import React from "react";
+import { useState } from "react";
 import Slider from "react-slick";
 import { BannerCard } from "../../components/BannerCard";
 
@@ -27,7 +27,7 @@ const PrevArrow = (props) => {
   );
 };
 
-const settings = {
+const settings = (handleBeforeChange, handleAfterChange) => ({
   dots: true,
   infinite: true,
   speed: 500,
@@ -36,6 +36,8 @@ const settings = {
   rows: 2,
   nextArrow: <NextArrow />,
   prevArrow: <PrevArrow />,
+  beforeChange: handleBeforeChange,
+  afterChange: handleAfterChange,
   responsive: [
     {
       breakpoint: 1280,
@@ -78,13 +80,19 @@ const settings = {
       },
     },
   ],
-};
+});
 
 const BrandCarousel = ({ brands }) => {
+  const [dragging, setDragging] = useState(false);
   const router = useRouter();
 
+  const handleBeforeChange = () => setDragging(true);
+  const handleAfterChange = () => setDragging(false);
+
   const handleBrandClick = (brandName, brandId) => {
-    router.push(`/brands/${brandName}?id=${brandId}`);
+    if (!dragging) {
+      router.push(`/brands/${brandName}?id=${brandId}`);
+    }
   };
 
   return (
@@ -94,11 +102,11 @@ const BrandCarousel = ({ brands }) => {
       sx={(theme) => ({
         paddingBottom: theme.spacing(2),
         paddingTop: {
-          md: "8px !important"
-        }
+          md: "8px !important",
+        },
       })}
     >
-      <Slider {...settings}>
+      <Slider {...settings(handleBeforeChange, handleAfterChange)}>
         {brands.map((brand, index) => (
           <Box key={index} mt={1} mb={2} pr={2}>
             <BannerCard
