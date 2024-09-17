@@ -21,6 +21,7 @@ import {
 import { BurgerMenu } from "../../components/BurgerMenu";
 import { Menu } from "@mui/icons-material";
 import { logout } from "../../actions/logout";
+import CartIcon from "../../components/CartIcon";
 
 const MainNavbarDesktop = ({ session }) => {
   const isAuthenticated = !!session?.user;
@@ -55,10 +56,11 @@ const MainNavbarDesktop = ({ session }) => {
         </Box>
       ) : (
         <Box display="flex" gap={1}>
-          {isAdmin && <Button href="/admin">Ir al panel</Button>}
+          {isAdmin && <Button href="/admin/add-product">Ir al panel</Button>}
           <Button onClick={Logout}>Cerrar sesión</Button>
         </Box>
       )}
+      <CartIcon />
     </Box>
   );
 };
@@ -120,12 +122,12 @@ const MainNavbarMobile = ({ session }) => {
   );
 };
 
-export const MainNavbar = () => {
+export const MainNavbar = ({ AppBarProps, ToolbarProps }) => {
   const { data: session } = useSession();
 
   return (
-    <AppBar>
-      <Toolbar>
+    <AppBar sx={{ justifyContent: "center"}}>
+      <Toolbar sx={ToolbarProps}>
         <MainNavbarDesktop session={session} />
         <MainNavbarMobile session={session} />
       </Toolbar>

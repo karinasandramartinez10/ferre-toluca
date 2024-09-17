@@ -9,38 +9,38 @@ import {
   IconButton,
   Divider,
   Button,
+  ListItemButton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Image from "next/image";
 import NextLink from "next/link";
 import { logout } from "../actions/logout";
+import { usePathname } from "next/navigation";
 
 const BurgerMenuItem = ({ icon, text, href, onClose }) => {
+  const pathname = usePathname();
+
   return (
     <NextLink href={href} passHref legacyBehavior>
-      <ListItem onClick={onClose(false)}>
-        <Link
-          color="primary.light"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            fontWeight: 600,
-            textDecoration: "none",
+      <ListItem onClick={onClose(false)} disableGutters disablePadding>
+        <ListItemButton
+          sx={(theme) => ({
+            color: pathname === href ? "#FFF" : theme.palette.primary.main,
+            borderRadius: 2,
+            alignItems: "flex-start",
+            gap: 1,
+            backgroundColor:
+              pathname === href ? theme.palette.primary.hover : "transparent",
             "&:hover": {
-              cursor: "pointer",
+              color: "#FFF",
+              backgroundColor: theme.palette.primary.hover,
+              transition: "background-color 0.3s ease",
             },
-          }}
+          })}
         >
-          <ListItemIcon
-            sx={(theme) => ({
-              minWidth: "32px",
-              color: theme.palette.primary.main,
-            })}
-          >
-            {icon}
-          </ListItemIcon>
-          <ListItemText primary={text} />
-        </Link>
+          {icon}
+          {text}
+        </ListItemButton>
       </ListItem>
     </NextLink>
   );
@@ -48,7 +48,7 @@ const BurgerMenuItem = ({ icon, text, href, onClose }) => {
 
 const BurgerMenuSection = ({ title, items, onClose }) => {
   return (
-    <List sx={{}}>
+    <List sx={{ display: "flex", flexDirection: "column", gap: 1}}>
       <ListItemText
         sx={{
           paddingLeft: 2,
@@ -85,7 +85,6 @@ export const BurgerMenu = ({ toggleDrawer, sections, showLogout, src }) => {
             aria-label="menu"
             onClick={toggleDrawer(false)}
             color="primary"
-            // sx={{ color: "#FFF"}}
           >
             <CloseIcon />
           </IconButton>

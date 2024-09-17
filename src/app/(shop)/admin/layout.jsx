@@ -1,13 +1,10 @@
-import { redirect } from "next/navigation";
-import { auth } from "../../../auth";
-import AdminLayoutPage from "./AdminLayoutPage";
+import { AdminLayout } from "../../../layouts/admin/AdminLayout";
 
-export default async function AdminLayout({ children }) {
-  const session = await auth();
+export const metadata = {
+  title: 'Panel de administrador',
+}
 
-  if (session?.user?.role !== "admin") {
-    redirect("/auth/login");
-  }
+export default function AdminLayoutPage({ children }) {
 
-  return <AdminLayoutPage>{children}</AdminLayoutPage>
+  return <AdminLayout>{children}</AdminLayout>
 }

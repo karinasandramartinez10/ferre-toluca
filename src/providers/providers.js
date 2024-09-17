@@ -3,13 +3,14 @@
 import { SnackbarProvider } from "notistack";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { mainTheme } from "../theme/mainTheme";
+import { OrderProvider } from "../context/order/OrderProvider";
 
 export function Providers({ children }) {
   return (
     <ThemeProvider theme={mainTheme}>
       <SnackbarProvider maxSnack={3}>
         <CssBaseline />
-        {children}
+        <OrderProvider>{children}</OrderProvider>
       </SnackbarProvider>
     </ThemeProvider>
   );

@@ -24,7 +24,7 @@ export const adminSectionsMobile = [
       {
         icon: <Dashboard />,
         text: "Panel",
-        href: `/admin`,
+        href: `/admin/add-product`,
       },
     ],
   },
