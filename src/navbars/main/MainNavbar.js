@@ -21,6 +21,7 @@ import {
 import { BurgerMenu } from "../../components/BurgerMenu";
 import { Menu } from "@mui/icons-material";
 import { logout } from "../../actions/logout";
+import CartIcon from "../../components/CartIcon";
 
 const MainNavbarDesktop = ({ session }) => {
   const isAuthenticated = !!session?.user;
@@ -59,6 +60,7 @@ const MainNavbarDesktop = ({ session }) => {
           <Button onClick={Logout}>Cerrar sesión</Button>
         </Box>
       )}
+      <CartIcon />
     </Box>
   );
 };

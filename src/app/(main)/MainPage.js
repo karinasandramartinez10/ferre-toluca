@@ -8,9 +8,5 @@ export const MainPage = ({ session, brands }) => {
   if (!brands) return <Loading />;
   if (brands.length === 0) return <ErrorUI main />;
 
-  return (
-    <>
-      <BrandCarousel brands={brands} />
-    </>
-  );
+  return <BrandCarousel brands={brands} />;
 };

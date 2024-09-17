@@ -113,6 +113,7 @@ const BrandCarousel = ({ brands }) => {
               height="120px"
               src={`/images/${brand.codeName}.png`}
               onClick={() => handleBrandClick(brand.codeName, brand.id)}
+              alt={brand.name}
             />
           </Box>
         ))}
