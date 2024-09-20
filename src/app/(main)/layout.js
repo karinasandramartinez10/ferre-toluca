@@ -12,20 +12,7 @@ export default async function Layout({ children }) {
 
   return (
     <MainLayout categories={categories}>
-      <Grid
-        container
-        rowGap={{
-          xs: 1,
-          md: 0,
-        }}
-        sx={{
-          paddingLeft: { xs: "16px", md: "32px" },
-          paddingRight: { xs: "16px", md: "32px" },
-        }}
-      >
-
-        {children}
-      </Grid>
+      <Grid container>{children}</Grid>
     </MainLayout>
   );
 }

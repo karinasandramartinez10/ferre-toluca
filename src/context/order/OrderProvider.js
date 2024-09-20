@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useReducer } from "react";
+import { useEffect, useState, useMemo, useReducer } from "react";
 import OrderContext from "./OrderContext";
 import {
   loadOrderFromLocalStorage,
@@ -8,20 +8,27 @@ import {
 } from "./OrderActions";
 import { initialOrderState, orderReducer } from "./OrderReducer";
 import { OrderTypes } from "./OrderTypes";
+import { Box, CircularProgress } from "@mui/material";
 
 export const OrderProvider = ({ children }) => {
   const [state, dispatch] = useReducer(orderReducer, initialOrderState);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const localData = loadOrderFromLocalStorage();
-    if (localData) {
-      dispatch({ type: OrderTypes.loadFromLocalStorage, payload: localData });
+    if (typeof window !== "undefined") {
+      const localData = loadOrderFromLocalStorage();
+      if (localData && localData.length > 0) {
+        dispatch({ type: OrderTypes.loadFromLocalStorage, payload: localData });
+      }
+      setLoading(false); 
     }
   }, []);
 
   useEffect(() => {
-    saveOrderToLocalStorage(state.orderItems);
-  }, [state.orderItems]);
+    if (!loading) {
+      saveOrderToLocalStorage(state.orderItems);
+    }
+  }, [state.orderItems, loading]);
 
   const addToOrder = (product, quantity) => {
     dispatch({
@@ -57,6 +64,20 @@ export const OrderProvider = ({ children }) => {
     () => state.orderItems.reduce((total, item) => total + item.quantity, 0),
     [state.orderItems]
   );
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );  }
 
   return (
     <OrderContext.Provider
