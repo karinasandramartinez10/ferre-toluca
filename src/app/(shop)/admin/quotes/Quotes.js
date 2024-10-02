@@ -3,35 +3,35 @@
 import { Box, Button, Stack, styled } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { fetchQuotes } from "../../../../api/quote";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
 import { formatDateDayAbrev } from "../../../../utils/date";
 import { formatPhoneNumber } from "../../../../utils/phoneNumber";
-import { ViewModalQuote } from "./ViewModalQuote";
 
-const StyledGridOverlay = styled('div')(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  height: '100%',
-  '& .ant-empty-img-1': {
-    fill: theme.palette.mode === 'light' ? '#aeb8c2' : '#262626',
+const StyledGridOverlay = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  height: "100%",
+  "& .ant-empty-img-1": {
+    fill: theme.palette.mode === "light" ? "#aeb8c2" : "#262626",
   },
-  '& .ant-empty-img-2': {
-    fill: theme.palette.mode === 'light' ? '#f5f5f7' : '#595959',
+  "& .ant-empty-img-2": {
+    fill: theme.palette.mode === "light" ? "#f5f5f7" : "#595959",
   },
-  '& .ant-empty-img-3': {
-    fill: theme.palette.mode === 'light' ? '#dce0e6' : '#434343',
+  "& .ant-empty-img-3": {
+    fill: theme.palette.mode === "light" ? "#dce0e6" : "#434343",
   },
-  '& .ant-empty-img-4': {
-    fill: theme.palette.mode === 'light' ? '#fff' : '#1c1c1c',
+  "& .ant-empty-img-4": {
+    fill: theme.palette.mode === "light" ? "#fff" : "#1c1c1c",
   },
-  '& .ant-empty-img-5': {
-    fillOpacity: theme.palette.mode === 'light' ? '0.8' : '0.08',
-    fill: theme.palette.mode === 'light' ? '#f5f5f5' : '#fff',
+  "& .ant-empty-img-5": {
+    fillOpacity: theme.palette.mode === "light" ? "0.8" : "0.08",
+    fill: theme.palette.mode === "light" ? "#f5f5f5" : "#fff",
   },
 }));
 
@@ -82,12 +82,17 @@ function CustomNoRowsOverlay() {
   );
 }
 
+const calculateTotalQuantity = (products) => {
+  return products.reduce(
+    (acc, product) => acc + (product?.QuoteProduct?.quantity || 0),
+    0
+  );
+};
+
 export const Quotes = () => {
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [selectedQuote, setSelectedQuote] = useState(null);
-  const [open, setOpen] = useState(false);
 
   const { data } = useSession();
 
@@ -103,9 +108,15 @@ export const Quotes = () => {
     },
     {
       field: "product",
-      headerName: "Producto",
+      headerName: "# Productos",
       width: 150,
-      valueGetter: (_, row) => row?.Product?.name || "",
+      valueGetter: (_, row) => row?.Products?.length || "",
+    },
+    {
+      field: "quantity",
+      headerName: "Cantidad Total",
+      width: 150,
+      valueGetter: (_, row) => calculateTotalQuantity(row?.Products),
     },
     {
       field: "email",
@@ -137,14 +148,9 @@ export const Quotes = () => {
       width: 120,
       renderCell: (params) => (
         <Stack>
-          <Button
-            sx={{ width: 100, height: 35 }}
-            onClick={() => {
-              handleDetailsClick(params.row);
-            }}
-          >
-            Ver más
-          </Button>
+          <Link href={`/admin/quotes/${params.row.id}`} passHref>
+            <Button sx={{ width: 100, height: 35 }}>Ver más</Button>
+          </Link>
         </Stack>
       ),
     },
@@ -166,16 +172,6 @@ export const Quotes = () => {
     fetchData();
   }, []);
 
-  const handleClose = () => {
-    setSelectedQuote(null);
-    setOpen(false);
-  };
-
-  const handleDetailsClick = (quote) => {
-    setSelectedQuote(quote);
-    setOpen(true);
-  };
-
   if (loading) {
     return <Loading />;
   }
@@ -183,7 +179,7 @@ export const Quotes = () => {
   if (error) return <ErrorUI />;
 
   return (
-    <Box sx={{ height: {xs: 550, md: 700}, width: "100%" }}>
+    <Box sx={{ height: { xs: 550, md: 700 }, width: "100%" }}>
       <DataGrid
         rows={quotes}
         columns={columns}
@@ -208,14 +204,6 @@ export const Quotes = () => {
           noRowsOverlay: CustomNoRowsOverlay,
         }}
       />
-      {selectedQuote && (
-        <ViewModalQuote
-          header="Información de la cotización"
-          open={open}
-          onClose={handleClose}
-          quote={selectedQuote}
-        />
-      )}
     </Box>
   );
 };

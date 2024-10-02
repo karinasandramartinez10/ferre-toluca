@@ -8,8 +8,27 @@ import {
 } from "@mui/icons-material";
 import { useOrder } from "../../../hooks/order/useOrder";
 import Image from "next/image";
+import * as yup from "yup";
+import { signIn, useSession } from "next-auth/react";
+import { useSnackbar } from "notistack";
+import { createQuote } from "../../../api/quote";
+import { Controller, useForm } from "react-hook-form";
+import { LoadingButton } from "@mui/lab";
+import { useState } from "react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { LoginContainer } from "../../auth/login/LoginContainer";
+import { LoginForm } from "../../auth/login/LoginForm";
+
+const QuoteSchema = yup.object().shape({
+  message: yup.string().required("El mensaje es requerido"),
+});
 
 const CheckoutPage = () => {
+  const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
+
+  const isAuthenticated = !!session?.user;
+
   const {
     orderItems,
     updateQuantity,
@@ -18,16 +37,64 @@ const CheckoutPage = () => {
     totalItems,
   } = useOrder();
 
+  const {
+    control,
+    handleSubmit,
+    formState: { isValid },
+    reset,
+  } = useForm({
+    resolver: yupResolver(QuoteSchema),
+    mode: "onChange",
+    defaultValues: {
+      message: "",
+    },
+  });
+
+  const { enqueueSnackbar } = useSnackbar();
+
   const handleQuantityChange = (productId, newQuantity) => {
     if (newQuantity > 0) {
       updateQuantity(productId, newQuantity);
     }
   };
 
-  const handleCheckout = () => {
-    // Aquí puedes manejar la lógica de checkout
-    alert("Procediendo a generar la orden...");
-    // Redirigir a otra página o realizar otra acción
+  const handleCheckout = async (values) => {
+    setLoading(true);
+    try {
+      const products = orderItems.map((item) => ({
+        ProductId: item.product.id,
+        quantity: item.quantity,
+      }));
+
+      const requestBody = {
+        message: values.message,
+        products,
+      };
+
+      await createQuote(requestBody, session.user.access_token);
+      enqueueSnackbar("Solicitud de orden enviada correctamente.", {
+        variant: "success",
+        autoHideDuration: 5000,
+        anchorOrigin: {
+          vertical: "top",
+          horizontal: "right",
+        },
+      });
+      clearOrder();
+      reset();
+    } catch (error) {
+      console.log(error);
+      enqueueSnackbar("Hubo un error al procesar la orden", {
+        variant: "error",
+        autoHideDuration: 5000,
+        anchorOrigin: {
+          vertical: "top",
+          horizontal: "right",
+        },
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (orderItems.length === 0) {
@@ -39,6 +106,27 @@ const CheckoutPage = () => {
       </Box>
     );
   }
+
+  const onSignIn = async ({ email, password }) => {
+    try {
+      await signIn("credentials", {
+        email,
+        password,
+        // redirect: false,
+      });
+    } catch (error) {
+      console.log(error);
+      enqueueSnackbar("There was an error", {
+        variant: "error",
+        autoHideDuration: 5000,
+        anchorOrigin: {
+          vertical: "top",
+          horizontal: "right",
+        },
+      });
+      return;
+    }
+  };
 
   return (
     <Box width="100%" sx={{ p: 2 }}>
@@ -67,8 +155,8 @@ const CheckoutPage = () => {
           />
 
           <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="body2">{product.name}</Typography>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="subtitle1">{product.name}</Typography>
+            <Typography variant="body3" color="text.secondary">
               {product.code}
             </Typography>
 
@@ -114,20 +202,88 @@ const CheckoutPage = () => {
         </Box>
       ))}
 
-      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-        <Typography variant="h6">Total de productos: {totalItems}</Typography>
-        {/* Si tuvieras un precio total, lo mostrarías aquí */}
-        {/* <Typography variant="h6">Precio Total: ${totalPrice}</Typography> */}
-      </Box>
+      {isAuthenticated ? (
+        <>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+            <Typography variant="h6">
+              Total de productos: {totalItems}
+            </Typography>
+            {/* Si tuvieras un precio total, lo mostrarías aquí */}
+            {/* <Typography variant="h6">Precio Total: ${totalPrice}</Typography> */}
+          </Box>
 
-      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-        <Button variant="outlined" color="secondary" onClick={clearOrder}>
-          Vaciar Carrito
-        </Button>
-        <Button variant="contained" color="primary" onClick={handleCheckout}>
-          Proceder a la Orden
-        </Button>
-      </Box>
+          <Box mt={2}>
+            <Typography id="quote-modal-description">
+              Agrega un mensaje
+            </Typography>
+            <Controller
+              control={control}
+              name="message"
+              render={({ field, fieldState: { invalid, error } }) => (
+                <TextField
+                  label=""
+                  multiline
+                  fullWidth
+                  placeholder="Quisiera saber si..."
+                  error={invalid}
+                  helperText={error?.message && error.message}
+                  variant="outlined"
+                  rows={4}
+                  inputProps={{
+                    form: {
+                      autocomplete: "off",
+                    },
+                  }}
+                  InputProps={{
+                    sx: {
+                      borderRadius: "8px",
+                      background: "#FFF",
+                    },
+                  }}
+                  {...field}
+                />
+              )}
+            />
+
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}
+            >
+              <Button variant="outlined" color="secondary" onClick={clearOrder}>
+                Vaciar Carrito
+              </Button>
+
+              <LoadingButton
+                disabled={!isValid}
+                loading={loading}
+                variant="contained"
+                onClick={handleSubmit(handleCheckout)}
+                // fullWidth
+              >
+                Solicitar cotización
+              </LoadingButton>
+            </Box>
+          </Box>
+        </>
+      ) : (
+        <LoginContainer>
+          <LoginForm onSubmit={onSignIn}>
+            {({ loading, isValid }) => (
+              <>
+                <LoadingButton
+                  loading={loading}
+                  disabled={!isValid}
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  // href="/auth/login"
+                >
+                  Iniciar sesión
+                </LoadingButton>
+              </>
+            )}
+          </LoginForm>
+        </LoginContainer>
+      )}
     </Box>
   );
 };

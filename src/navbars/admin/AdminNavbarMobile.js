@@ -58,7 +58,7 @@ const AdminNavbarMobile = () => {
         edge="start"
         aria-label="menu"
         onClick={toggleDrawer(true)}
-        sx={{ padding: 0, color: "#FFF" }}
+        color="primary"
       >
         <Menu />
       </IconButton>
