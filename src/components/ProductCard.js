@@ -20,11 +20,11 @@ export const ProductCard = ({ product }) => {
   };
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: { xs: "100%", md: 345 } }}>
       <CardMedia
         component="img"
         image={product.Files && product.Files[0]?.path}
-        sx={{ height: 200, objectFit: "contain" }}
+        sx={{ height: 180, objectFit: "contain" }}
         alt={product.name}
       />
 

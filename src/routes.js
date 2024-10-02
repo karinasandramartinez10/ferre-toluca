@@ -3,7 +3,7 @@
  * These routes do not require authentication
  */
 
-export const publicRoutes = ["/", /^\/brands\/.*/];
+export const publicRoutes = ["/", /^\/brands\/.*/, "/checkout"];
 
 /**
  * An array of routes that are used for authentication

@@ -17,6 +17,7 @@ import {
   Remove as RemoveIcon,
 } from "@mui/icons-material";
 import { useOrder } from "../hooks/order/useOrder";
+import Link from "next/link";
 
 const CartIcon = () => {
   const { orderItems, removeFromOrder, updateQuantity, totalItems } =
@@ -61,7 +62,7 @@ const CartIcon = () => {
         }}
         slotProps={{
           paper: {
-            style: { maxHeight: 400, overflow: "auto", width: 350 }, // Limitar la altura del popover y ajustar el ancho
+            style: { maxHeight: 400, overflow: "auto", width: 350 },
           },
         }}
       >
@@ -73,7 +74,7 @@ const CartIcon = () => {
           ) : (
             <>
               <Typography variant="subtitle1" sx={{ mb: 2 }}>
-                {orderItems.length} productos
+                {totalItems} productos
               </Typography>
               {orderItems.map(({ product, quantity }) => (
                 <Box
@@ -149,11 +150,11 @@ const CartIcon = () => {
                 color="primary"
                 fullWidth
                 sx={{ mb: 1 }}
+                LinkComponent={Link}
+                href="/checkout"
+                onClick={handleClose}
               >
                 Ir a generar orden
-              </Button>
-              <Button variant="outlined" color="secondary" fullWidth>
-                Editar carrito
               </Button>
             </>
           )}

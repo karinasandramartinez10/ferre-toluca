@@ -15,35 +15,38 @@ export const components = {
       styleOverrides: {
         root: {
           minWidth: 96,
-          color: "#FFF",
           lineHeight: 1,
           fontSize: "0.75rem",
           boxShadow: "none",
           padding: "6px 16px",
-          backgroundColor: palette.palette.primary.main,
           borderRadius: 8,
           fontWeight: 600,
           letterSpacing: "0.5px",
           cursor: "pointer",
           height: "38px",
-          transition: "all 0.3s ease",
-          "&:hover": {
-            backgroundColor: palette.palette.primary.hover,
-          },
-          "&:disabled": {
-            backgroundColor: palette.palette.primary.disabled,
-            color: "#FFF",
-          },
         },
       },
       variants: [
         {
           props: { variant: "primary" },
+          style: {
+            backgroundColor: palette.palette.primary.main,
+            color: "#FFF",
+            transition: "all 0.3s ease",
+            "&:hover": {
+              backgroundColor: palette.palette.primary.hover,
+            },
+            "&:disabled": {
+              backgroundColor: palette.palette.primary.disabled,
+              color: "#FFF",
+            },
+          },
         },
         {
           props: { variant: "secondary" },
           style: {
             backgroundColor: "transparent",
+            color: palette.palette.secondary.main,
             borderColor: "#fff",
             "&:hover": {
               backgroundColor: "#512da8",
