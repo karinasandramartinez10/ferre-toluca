@@ -1,9 +1,8 @@
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import { Box, Grid, Typography } from "@mui/material";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Slider from "react-slick";
-import { BannerCard } from "../../components/BannerCard";
+import { ProductCard } from "../../components/ProductCard";
 
 const NextArrow = (props) => {
   const { className, style, onClick } = props;
@@ -29,11 +28,9 @@ const PrevArrow = (props) => {
 
 const settings = (handleBeforeChange, handleAfterChange) => ({
   dots: true,
-  infinite: true,
   speed: 500,
-  slidesToShow: 6,
-  slidesToScroll: 6,
-  rows: 2,
+  slidesToShow: 4,
+  slidesToScroll: 4,
   nextArrow: <NextArrow />,
   prevArrow: <PrevArrow />,
   beforeChange: handleBeforeChange,
@@ -42,82 +39,57 @@ const settings = (handleBeforeChange, handleAfterChange) => ({
     {
       breakpoint: 1280,
       settings: {
-        slidesToShow: 6,
-        slidesToScroll: 6,
-        rows: 2,
+        slidesToShow: 4,
+        slidesToScroll: 4,
       },
     },
     {
       breakpoint: 1024,
       settings: {
-        slidesToShow: 5,
-        slidesToScroll: 5,
-        rows: 2,
+        slidesToShow: 4,
+        slidesToScroll: 4,
       },
     },
     {
       breakpoint: 768,
       settings: {
-        slidesToShow: 4,
-        slidesToScroll: 4,
-        rows: 2,
+        slidesToShow: 3,
+        slidesToScroll: 3,
       },
     },
     {
       breakpoint: 600,
       settings: {
-        slidesToShow: 3,
-        slidesToScroll: 3,
-        rows: 2,
+        slidesToShow: 2,
+        slidesToScroll: 2,
       },
     },
     {
       breakpoint: 480,
       settings: {
-        slidesToShow: 2,
-        slidesToScroll: 2,
-        rows: 2,
+        slidesToShow: 1,
+        slidesToScroll: 1,
       },
     },
   ],
 });
 
-const BrandCarousel = ({ brands }) => {
-  const [dragging, setDragging] = useState(false);
-  const router = useRouter();
+const Products = ({ products }) => {
+  const [_, setDragging] = useState(false);
 
   const handleBeforeChange = () => setDragging(true);
   const handleAfterChange = () => setDragging(false);
 
-  const handleBrandClick = (brandName, brandId) => {
-    if (!dragging) {
-      router.push(`/brands/${brandName}?id=${brandId}`);
-    }
-  };
 
   return (
-    <Grid
-      item
-      xs={12}
-      sx={(theme) => ({
-        paddingBottom: theme.spacing(2),
-        paddingTop: {
-          md: "8px !important",
-        },
-      })}
-    >
+    <Grid item xs={12} mt={2}>
       <Typography component="h1" variant="h1">
-        Marcas
+        Productos
       </Typography>
       <Slider {...settings(handleBeforeChange, handleAfterChange)}>
-        {brands.map((brand, index) => (
+        {products.map((product, index) => (
           <Box key={index} mt={1} mb={2} pr={2}>
-            <BannerCard
-              height="120px"
-              src={`/images/${brand.codeName}.png`}
-              onClick={() => handleBrandClick(brand.codeName, brand.id)}
-              alt={brand.name}
-            />
+            <ProductCard key={product.id} product={product} />
           </Box>
         ))}
       </Slider>
@@ -125,4 +97,4 @@ const BrandCarousel = ({ brands }) => {
   );
 };
 
-export default BrandCarousel;
+export default Products;

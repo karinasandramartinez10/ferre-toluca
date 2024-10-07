@@ -20,7 +20,7 @@ export const ProductCard = ({ product }) => {
   };
 
   return (
-    <Card sx={{ maxWidth: { xs: "100%", md: 345 } }}>
+    <Card sx={{ maxWidth: { xs: "100%", md: 345 }, display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 400 }}>
       <CardMedia
         component="img"
         image={product.Files && product.Files[0]?.path}
@@ -28,7 +28,7 @@ export const ProductCard = ({ product }) => {
         alt={product.name}
       />
 
-      <CardContent sx={{ minHeight: 130 }}>
+      <CardContent sx={{ flexGrow: 1 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
           <Typography
             variant="body2"
