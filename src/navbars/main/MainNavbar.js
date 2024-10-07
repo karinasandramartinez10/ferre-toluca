@@ -7,7 +7,9 @@ import {
   Button,
   Drawer,
   IconButton,
+  Popover,
   Toolbar,
+  Typography,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -19,13 +21,24 @@ import {
   userSectionsMobile,
 } from "./list-items";
 import { BurgerMenu } from "../../components/BurgerMenu";
-import { Menu } from "@mui/icons-material";
+import { Menu, Person } from "@mui/icons-material";
 import { logout } from "../../actions/logout";
 import CartIcon from "../../components/CartIcon";
 
 const MainNavbarDesktop = ({ session }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
   const isAuthenticated = !!session?.user;
   const isAdmin = session?.user?.role === "admin";
+
+  const handlePopoverOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
 
   const Logout = () => {
     logout();
@@ -43,24 +56,67 @@ const MainNavbarDesktop = ({ session }) => {
           <Image src={"/pexels-tools.jpg"} alt="logo" width="80" height="30" />
         </Link>
       </Box>
-      {!isAuthenticated ? (
-        <Box sx={{ display: { xs: "none", md: "block" } }}>
-          <Button
-            sx={{ marginTop: 0 }}
-            variant="contained"
-            startIcon={<Avatar sx={{ width: "26px", height: "26px" }} />}
-            href="/auth/login"
-          >
-            Iniciar sesión
-          </Button>
-        </Box>
-      ) : (
-        <Box display="flex" gap={1}>
-          {isAdmin && <Button href="/admin/add-product">Ir al panel</Button>}
-          <Button onClick={Logout}>Cerrar sesión</Button>
-        </Box>
-      )}
-      <CartIcon />
+      <Box display="flex" alignItems="center" gap={2}>
+        {/* Ícono de usuario con Popover */}
+        <IconButton onClick={handlePopoverOpen}>
+          <Person sx={{ fontSize: 30 }} /> {/* Ícono de persona */}
+        </IconButton>
+        <Popover
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handlePopoverClose}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+        >
+          <Box sx={{ p: 2 }}>
+            {isAuthenticated ? (
+              <>
+                {isAdmin && (
+                  <Button
+                    href="/admin/add-product"
+                    fullWidth
+                    sx={{ mb: 1 }}
+                  >
+                    Ir al panel
+                  </Button>
+                )}
+                <Button
+                  onClick={Logout}
+                  color="error"
+                  fullWidth
+                  variant="outlined"
+                >
+                  Cerrar sesión
+                </Button>
+              </>
+            ) : (
+              <>
+                <Typography fontWeight={700} variant="body1" sx={{ mb: 1 }}>
+                  Accede o crea una cuenta
+                </Typography>
+                <Button variant="contained" href="/auth/login" fullWidth>
+                  Iniciar sesión
+                </Button>
+                <Button
+                  variant="outlined"
+                  href="/auth/register"
+                  fullWidth
+                  sx={{ mt: 1 }}
+                >
+                  Crear una cuenta
+                </Button>
+              </>
+            )}
+          </Box>
+        </Popover>
+        <CartIcon />
+      </Box>
     </Box>
   );
 };
@@ -106,7 +162,7 @@ const MainNavbarMobile = ({ session }) => {
         edge="start"
         aria-label="menu"
         onClick={toggleDrawer(true)}
-        sx={{ padding: 0, color: "#FFF" }}
+        color="primary"
       >
         <Menu />
       </IconButton>
@@ -126,7 +182,7 @@ export const MainNavbar = ({ AppBarProps, ToolbarProps }) => {
   const { data: session } = useSession();
 
   return (
-    <AppBar sx={{ justifyContent: "center"}}>
+    <AppBar sx={{ justifyContent: "center" }}>
       <Toolbar sx={ToolbarProps}>
         <MainNavbarDesktop session={session} />
         <MainNavbarMobile session={session} />

@@ -1,6 +1,6 @@
 "use client";
 
-import { Dashboard, Home, Storefront } from "@mui/icons-material";
+import { AddCircleOutline, Home, Storefront } from "@mui/icons-material";
 import {
   AppBar,
   Box,
@@ -29,20 +29,22 @@ const listItems = [
     icon: <Home sx={{ fontSize: 20 }} />,
   },
   {
-    text: "Panel",
+    text: "Agregar",
     pathname: "/admin/add-product",
-    icon: <Dashboard sx={{ fontSize: 20 }} />,
+    icon: <AddCircleOutline sx={{ fontSize: 20 }} />,
   },
   {
     text: "Cotizaciones",
     pathname: "/admin/quotes",
     icon: <Storefront sx={{ fontSize: 20 }} />,
+    isDynamic: true,
   },
 ];
 
 const getPageTitle = (pathname) => {
   if (pathname === "/admin/add-product") return "Productos";
   if (pathname === "/admin/quotes") return "Todas las cotizaciones";
+  if (pathname.startsWith("/admin/quotes/")) return "Detalles de la cotización";
   return;
 };
 
@@ -84,14 +86,16 @@ export const AdminLayout = ({ children }) => {
                 <ListItemButton
                   sx={(theme) => ({
                     color:
-                      pathname === item.pathname
+                      pathname === item.pathname ||
+                      (item.isDynamic && pathname.startsWith(item.pathname))
                         ? "#FFF"
                         : theme.palette.primary.main,
                     borderRadius: 2,
                     alignItems: "flex-start",
                     gap: 1,
                     backgroundColor:
-                      pathname === item.pathname
+                      pathname === item.pathname ||
+                      (item.isDynamic && pathname.startsWith(item.pathname))
                         ? theme.palette.primary.hover
                         : "transparent",
                     "&:hover": {
@@ -124,7 +128,7 @@ export const AdminLayout = ({ children }) => {
     >
       <Box component="nav" sx={{ display: { xs: "block", sm: "none" } }}>
         <AppBar>
-          <Toolbar sx={{ paddingRight: "8px"}}>
+          <Toolbar sx={{ paddingRight: "8px" }}>
             <AdminNavbarMobile />
           </Toolbar>
         </AppBar>

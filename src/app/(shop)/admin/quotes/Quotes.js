@@ -1,6 +1,7 @@
 "use client";
 
-import { Box, Button, Stack, styled } from "@mui/material";
+import { Visibility } from "@mui/icons-material";
+import { Box, Button, IconButton, Stack, styled } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -97,6 +98,20 @@ export const Quotes = () => {
   const { data } = useSession();
 
   const columns = [
+    {
+      field: "actions",
+      headerName: "Detalle",
+      width: 85,
+      renderCell: (params) => (
+        <Stack>
+          <Link href={`/admin/quotes/${params.row.id}`} passHref>
+            <IconButton>
+              <Visibility />
+            </IconButton>
+          </Link>
+        </Stack>
+      ),
+    },
     { field: "id", headerName: "ID", width: 85 },
     {
       field: "fullname",
@@ -141,18 +156,6 @@ export const Quotes = () => {
         }
         return formatDateDayAbrev(val);
       },
-    },
-    {
-      field: "actions",
-      headerName: "",
-      width: 120,
-      renderCell: (params) => (
-        <Stack>
-          <Link href={`/admin/quotes/${params.row.id}`} passHref>
-            <Button sx={{ width: 100, height: 35 }}>Ver más</Button>
-          </Link>
-        </Stack>
-      ),
     },
   ];
 
