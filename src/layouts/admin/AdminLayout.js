@@ -1,6 +1,6 @@
 "use client";
 
-import { Dashboard, Home, Storefront } from "@mui/icons-material";
+import { AddCircleOutline, Home, Storefront } from "@mui/icons-material";
 import {
   AppBar,
   Box,
@@ -18,7 +18,7 @@ import { useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 import useResponsive from "../../hooks/use-responsive";
-import AdminNavbarMobile from "../../navbars/admin/AdminNavbarMobile"
+import AdminNavbarMobile from "../../navbars/admin/AdminNavbarMobile";
 
 const drawerWidth = 200;
 
@@ -29,20 +29,22 @@ const listItems = [
     icon: <Home sx={{ fontSize: 20 }} />,
   },
   {
-    text: "Panel",
+    text: "Agregar",
     pathname: "/admin/add-product",
-    icon: <Dashboard sx={{ fontSize: 20 }} />,
+    icon: <AddCircleOutline sx={{ fontSize: 20 }} />,
   },
   {
     text: "Cotizaciones",
     pathname: "/admin/quotes",
     icon: <Storefront sx={{ fontSize: 20 }} />,
+    isDynamic: true,
   },
 ];
 
 const getPageTitle = (pathname) => {
   if (pathname === "/admin/add-product") return "Productos";
   if (pathname === "/admin/quotes") return "Todas las cotizaciones";
+  if (pathname.startsWith("/admin/quotes/")) return "Detalles de la cotización";
   return;
 };
 
@@ -84,14 +86,16 @@ export const AdminLayout = ({ children }) => {
                 <ListItemButton
                   sx={(theme) => ({
                     color:
-                      pathname === item.pathname
+                      pathname === item.pathname ||
+                      (item.isDynamic && pathname.startsWith(item.pathname))
                         ? "#FFF"
                         : theme.palette.primary.main,
                     borderRadius: 2,
                     alignItems: "flex-start",
                     gap: 1,
                     backgroundColor:
-                      pathname === item.pathname
+                      pathname === item.pathname ||
+                      (item.isDynamic && pathname.startsWith(item.pathname))
                         ? theme.palette.primary.hover
                         : "transparent",
                     "&:hover": {
@@ -124,7 +128,7 @@ export const AdminLayout = ({ children }) => {
     >
       <Box component="nav" sx={{ display: { xs: "block", sm: "none" } }}>
         <AppBar>
-          <Toolbar>
+          <Toolbar sx={{ paddingRight: "8px" }}>
             <AdminNavbarMobile />
           </Toolbar>
         </AppBar>
@@ -151,7 +155,12 @@ export const AdminLayout = ({ children }) => {
           {drawer}
         </Drawer>
 
-        <Grid sx={{ marginTop: { xs: "46px", sm: "0"}}}>
+        <Grid
+          sx={{ marginTop: { xs: "58px", sm: "0" } }}
+          display="flex"
+          flexDirection="column"
+          gap={2}
+        >
           <Grid item xs={12}>
             <Box display="flex" alignItems="center" gap={1.5}>
               <Typography variant="h1">{getPageTitle(pathname)}</Typography>

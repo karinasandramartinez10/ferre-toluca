@@ -250,9 +250,9 @@ const AddProduct = ({ user }) => {
 
       <Grid item xs={12} textAlign="end">
         <LoadingButton
-          // disabled={!isValid}
           loading={loading}
           onClick={handleSubmit(onSubmit)}
+          variant="contained"
         >
           Añadir Productos
         </LoadingButton>

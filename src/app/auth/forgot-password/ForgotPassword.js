@@ -62,6 +62,7 @@ const ForgotPassword = () => {
                   disabled={loading || !isValid}
                   type="submit"
                   fullWidth
+                  variant="contained"
                   // href="/auth/login"
                 >
                   Restablecer contraseña

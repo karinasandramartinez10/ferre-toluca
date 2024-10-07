@@ -52,6 +52,7 @@ const Login = () => {
                   disabled={!isValid}
                   type="submit"
                   fullWidth
+                  variant="contained"
                   // href="/auth/login"
                 >
                   Iniciar sesión

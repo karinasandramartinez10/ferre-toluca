@@ -76,7 +76,7 @@ const BrandProductsPage = () => {
 
   return (
     <Grid container>
-      <Typography component="h1" variant="h1">
+      <Typography component="h1" variant="h1" mb={2}>
         Productos para {toCapitalizeFirstLetter(name)}
       </Typography>
 
