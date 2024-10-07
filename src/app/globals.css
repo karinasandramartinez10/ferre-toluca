@@ -21,13 +21,13 @@ a:-webkit-any-link {
 .main-layout {
   margin: 16px auto;
   max-width: 1280px;
-  padding-left: 24px;
-  padding-right: 24px;
+  padding-left: 28px;
+  padding-right: 28px;
 }
 
-@media (max-width: 1300px) {
+@media (max-width: 460px) {
   .main-layout {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: 32px;
+    padding-right: 32px;
   }
 }

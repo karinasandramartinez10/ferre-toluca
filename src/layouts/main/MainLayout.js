@@ -1,3 +1,4 @@
+import { Footer } from "../../components/Footer";
 import NavigationMenu from "../../components/NavigationMenu/NavigationMenu";
 import { MainNavbar } from "../../navbars/main/MainNavbar";
 
@@ -16,7 +17,7 @@ export const MainLayout = ({
         <NavigationMenu categories={categories} />
       </section>
       <main className="main-layout">{children}</main>
-      <footer></footer>
+      <Footer />
     </section>
   );
 };
