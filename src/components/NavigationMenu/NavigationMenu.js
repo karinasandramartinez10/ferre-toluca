@@ -35,7 +35,7 @@ export default function NavigationMenu({ categories }) {
   const mainCategories = categories.slice(0, 4);
 
   return (
-    <Box component="section" sx={{ paddingTop: { xs: "80px", sm: "105px" } }}>
+    <Box component="section" sx={{ paddingTop: { xs: "60px", sm: "80px" } }}>
       <Box
         sx={{
           display: "flex",
