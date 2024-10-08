@@ -57,9 +57,8 @@ const MainNavbarDesktop = ({ session }) => {
         </Link>
       </Box>
       <Box display="flex" alignItems="center" gap={2}>
-        {/* Ícono de usuario con Popover */}
         <IconButton onClick={handlePopoverOpen}>
-          <Person sx={{ fontSize: 30 }} /> {/* Ícono de persona */}
+          <Person sx={{ fontSize: 30 }} />
         </IconButton>
         <Popover
           open={open}

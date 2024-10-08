@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import { getCategories } from "../../actions/categories";
 import { MainLayout } from "../../layouts/main/MainLayout";
 
