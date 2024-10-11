@@ -94,7 +94,10 @@ const DropdownAllCategories = ({
                 },
               }}
             >
-              <Link href={category.path} passHref>
+              <Link
+                href={`/categories/${category.path}?id=${category.id}`}
+                passHref
+              >
                 <Box display="flex" alignItems="center" gap={1}>
                   {getCategoryIcon(category.path)}
                   {isTrimmed ? (

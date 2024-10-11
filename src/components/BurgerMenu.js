@@ -72,7 +72,7 @@ export const BurgerMenu = ({ toggleDrawer, sections, showLogout, src }) => {
 
   return (
     <Box sx={{ p: 2, height: 1 }}>
-      <Box display="flex" flexDirection="column" gap={1}>
+      <Box display="flex" flexDirection="column">
         <Box display="flex" justifyContent="space-between" height="48px">
           <NextLink href="/" passHref legacyBehavior>
             <Link display="flex" alignItems="center">

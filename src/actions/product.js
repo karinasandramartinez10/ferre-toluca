@@ -22,8 +22,8 @@ export const getProductById = async (id) => {
     );
 
     const response = await res.json();
-    return response
+    return response;
   } catch (error) {
-    console.log('e',error)
+    console.log("e", error);
   }
 };

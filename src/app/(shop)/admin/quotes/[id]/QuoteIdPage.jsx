@@ -1,31 +1,11 @@
 "use client";
 
-import {
-  CalendarToday,
-  Check,
-  Email,
-  Message,
-  Person,
-  Phone,
-} from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardMedia,
-  Grid,
-  Stack,
-  Typography,
-} from "@mui/material";
-import Image from "next/image";
+import { Box, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fetchQuoteById } from "../../../../../api/quote";
 import { ErrorUI } from "../../../../../components/Error";
 import { Loading } from "../../../../../components/Loading";
-import { formatDateDayAbrev } from "../../../../../utils/date";
-import ProductCard from "./ProductCard";
+import QuoteProductCard from "./QuoteProductCard";
 import QuoteDetails from "./QuoteDetails";
 
 export const QuoteId = ({ quoteId }) => {
@@ -109,8 +89,8 @@ export const QuoteId = ({ quoteId }) => {
           gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
         }}
       >
-        {quote.Products.map((product) => (
-          <ProductCard key={product.id} product={product} />
+        {quote?.Products?.map((product) => (
+          <QuoteProductCard key={product.id} product={product} />
         ))}
       </Box>
     </Box>

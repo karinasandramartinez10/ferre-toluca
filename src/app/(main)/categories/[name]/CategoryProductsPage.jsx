@@ -5,12 +5,15 @@ import { Box, Button, Grid, Typography } from "@mui/material";
 import { useParams, useSearchParams } from "next/navigation";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
-import { getProductsByBrand } from "../../../../api/products";
-import { toCapitalizeFirstLetter } from "../../../../utils/cases";
-import { ProductCard } from "../../../../components/ProductCard";
 import NoProductsUI from "../../../../components/NoProducts";
+import {
+  toCapitalizeFirstLetter,
+  transformCategoryPath,
+} from "../../../../utils/cases";
+import { getProductsByCategory } from "../../../../api/products";
+import { ProductCard } from "../../../../components/ProductCard";
 
-const BrandProductsPage = () => {
+const CategoryProductsPage = () => {
   const [products, setProducts] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [error, setError] = useState(false);
@@ -20,14 +23,17 @@ const BrandProductsPage = () => {
 
   const { name } = useParams();
   const searchParams = useSearchParams();
-  const brandId = searchParams.get("id");
+  const categoryId = searchParams.get("id");
+
+  const decodedName = decodeURIComponent(name);
+  const formattedName = transformCategoryPath(decodedName);
 
   useEffect(() => {
     const fetchProducts = async (page = 1) => {
       setLoading(true);
       try {
-        const { products, totalPages } = await getProductsByBrand(
-          brandId,
+        const { products, totalPages } = await getProductsByCategory(
+          categoryId,
           page,
           size
         );
@@ -41,10 +47,10 @@ const BrandProductsPage = () => {
       }
     };
 
-    if (name && brandId) {
+    if (name && categoryId) {
       fetchProducts(currentPage);
     }
-  }, [name, brandId, currentPage]);
+  }, [name, categoryId, currentPage]);
 
   const handlePageChange = (direction) => {
     if (direction === "prev" && currentPage > 1) {
@@ -60,7 +66,8 @@ const BrandProductsPage = () => {
 
   if (error) return <ErrorUI main />;
 
-  if (products.length === 0) return <NoProductsUI config={{ type: 'marca', types: 'marcas'}} />;
+  if (products.length === 0)
+    return <NoProductsUI config={{ type: "categoría", types: "categorías" }} />;
 
   const productList = products.map((product, index) => (
     <Grid item xs={12} sm={4} md={4} key={index}>
@@ -71,7 +78,7 @@ const BrandProductsPage = () => {
   return (
     <Grid container>
       <Typography component="h1" variant="h1" mb={2}>
-        Productos para {toCapitalizeFirstLetter(name)}
+        {toCapitalizeFirstLetter(formattedName)}
       </Typography>
 
       <Grid
@@ -116,4 +123,4 @@ const BrandProductsPage = () => {
   );
 };
 
-export default BrandProductsPage;
+export default CategoryProductsPage;

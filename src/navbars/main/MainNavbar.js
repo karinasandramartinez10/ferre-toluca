@@ -2,7 +2,6 @@
 
 import {
   AppBar,
-  Avatar,
   Box,
   Button,
   Drawer,
@@ -77,11 +76,7 @@ const MainNavbarDesktop = ({ session }) => {
             {isAuthenticated ? (
               <>
                 {isAdmin && (
-                  <Button
-                    href="/admin/add-product"
-                    fullWidth
-                    sx={{ mb: 1 }}
-                  >
+                  <Button href="/admin/add-product" fullWidth sx={{ mb: 1 }}>
                     Ir al panel
                   </Button>
                 )}
@@ -120,7 +115,7 @@ const MainNavbarDesktop = ({ session }) => {
   );
 };
 
-const MainNavbarMobile = ({ session }) => {
+const MainNavbarMobile = ({ session, categories }) => {
   const [openNavbar, setOpenNavbar] = useState(false);
   const isAuthenticated = !!session?.user;
   const isAdmin = session?.user?.role === "admin";
@@ -177,7 +172,7 @@ const MainNavbarMobile = ({ session }) => {
   );
 };
 
-export const MainNavbar = ({ AppBarProps, ToolbarProps }) => {
+export const MainNavbar = ({ ToolbarProps }) => {
   const { data: session } = useSession();
 
   return (

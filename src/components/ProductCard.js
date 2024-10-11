@@ -52,7 +52,7 @@ export const ProductCard = ({ product }) => {
             </Typography>
           </Box>
 
-          <Typography gutterBottom variant="h6" component="div">
+          <Typography gutterBottom variant="h6" component="div" color="secondary">
             {product?.name}
           </Typography>
 

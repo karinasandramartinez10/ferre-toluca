@@ -162,7 +162,7 @@ export const AdminLayout = ({ children }) => {
           gap={2}
         >
           <Grid item xs={12}>
-            <Box display="flex" alignItems="center" gap={1.5}>
+            <Stack>
               <Typography variant="h1">{getPageTitle(pathname)}</Typography>
               <Typography
                 sx={{ color: "#838383", fontWeight: 500 }}
@@ -170,7 +170,7 @@ export const AdminLayout = ({ children }) => {
               >
                 {getPageSubtitle(pathname)}
               </Typography>
-            </Box>
+            </Stack>
           </Grid>
           <Grid item xs={12}>
             {children}

@@ -1,5 +1,6 @@
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
+import Link from "next/link";
 import { useState } from "react";
 import Slider from "react-slick";
 import { ProductCard } from "../../components/ProductCard";
@@ -80,7 +81,6 @@ const Products = ({ products }) => {
   const handleBeforeChange = () => setDragging(true);
   const handleAfterChange = () => setDragging(false);
 
-
   return (
     <Grid item xs={12} mt={2}>
       <Typography component="h1" variant="h1">
@@ -93,6 +93,11 @@ const Products = ({ products }) => {
           </Box>
         ))}
       </Slider>
+      <Box display="flex" justifyContent="center" pt={5}>
+        <Button LinkComponent={Link} href="/all-products">
+          Ver todos los productos
+        </Button>
+      </Box>
     </Grid>
   );
 };
