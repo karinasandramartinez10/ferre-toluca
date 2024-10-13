@@ -55,9 +55,9 @@ const MainNavbarDesktop = ({ session }) => {
           <Image src={"/pexels-tools.jpg"} alt="logo" width="80" height="30" />
         </Link>
       </Box>
-      <Box display="flex" alignItems="center" gap={2}>
-        <IconButton onClick={handlePopoverOpen}>
-          <Person sx={{ fontSize: 30 }} />
+      <Box display="flex" alignItems="center" gap={1}>
+        <IconButton color="grey.main" onClick={handlePopoverOpen}>
+          <Person />
         </IconButton>
         <Popover
           open={open}
@@ -115,7 +115,7 @@ const MainNavbarDesktop = ({ session }) => {
   );
 };
 
-const MainNavbarMobile = ({ session, categories }) => {
+const MainNavbarMobile = ({ session }) => {
   const [openNavbar, setOpenNavbar] = useState(false);
   const isAuthenticated = !!session?.user;
   const isAdmin = session?.user?.role === "admin";

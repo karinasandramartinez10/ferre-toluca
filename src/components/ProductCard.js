@@ -52,7 +52,7 @@ export const ProductCard = ({ product }) => {
             </Typography>
           </Box>
 
-          <Typography gutterBottom variant="h6" component="div" color="secondary">
+          <Typography gutterBottom variant="h6" component="div" color="#13161b">
             {product?.name}
           </Typography>
 
@@ -69,7 +69,7 @@ export const ProductCard = ({ product }) => {
           fullWidth
           onClick={handleAddToOrder}
         >
-          Añadir a la cotización
+          Añadir a la orden
         </Button>
       </CardActions>
     </Card>

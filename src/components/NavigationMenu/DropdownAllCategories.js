@@ -23,7 +23,7 @@ const DropdownAllCategories = ({
 }) => {
   return (
     <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
-      <Box display="flex" sx={{ background: "#f67003" }}>
+      <Box display="flex" sx={(theme) => ({ background: theme.palette.secondary.hover })}>
         <Box
           display="flex"
           alignItems="center"
@@ -33,21 +33,21 @@ const DropdownAllCategories = ({
           <MenuIcon sx={{ color: "#FFF" }} />
           <Button
             disableRipple
-            sx={{
+            sx={(theme) => ({
               height: "46px",
               color: "white",
               textTransform: "none",
               paddingX: 2,
-              backgroundColor: "#f67003",
+              backgroundColor: theme.palette.secondary.hover,
               borderRadius: 0,
               fontSize: "14px",
               fontWeight: 700,
               "&:hover": {
-                backgroundColor: "#f67003",
+                backgroundColor: theme.palette.secondary.hover,
               },
               display: "flex",
               justifyContent: "space-between",
-            }}
+            })}
             endIcon={
               open ? (
                 <ExpandLessIcon sx={{ fontSize: "26px !important" }} />
@@ -85,14 +85,14 @@ const DropdownAllCategories = ({
             <MenuItem
               key={category.name}
               onClick={onClose}
-              sx={{
+              sx={(theme) => ({
                 "&:hover .category-text": {
-                  color: "#ea281a",
+                  color: theme.palette.secondary.hover,
                 },
                 "&:hover .MuiSvgIcon-root": {
-                  color: "#ea281a",
+                  color: theme.palette.secondary.hover,
                 },
-              }}
+              })}
             >
               <Link
                 href={`/categories/${category.path}?id=${category.id}`}
@@ -105,7 +105,7 @@ const DropdownAllCategories = ({
                       <Typography
                         className="category-text"
                         sx={{
-                          color: "secondary.main",
+                          color: "black",
                           textDecoration: "none",
                           fontSize: "14px",
                         }}
@@ -117,7 +117,7 @@ const DropdownAllCategories = ({
                     <Typography
                       className="category-text"
                       sx={{
-                        color: "secondary.main",
+                        color: "black",
                         textDecoration: "none",
                         fontSize: "14px",
                       }}

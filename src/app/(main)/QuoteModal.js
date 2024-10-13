@@ -90,18 +90,18 @@ export const QuoteModal = ({ open, onClose, product }) => {
       aria-describedby="quote-message"
     >
       <Box
-        sx={{
+        sx={(theme) => ({
           position: "absolute",
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
           bgcolor: "background.paper",
-          border: "1px solid #f67003",
+          // border: `1px solid #f67003`,
           borderRadius: "8px",
           boxShadow: 24,
           p: 4,
           width: !fullScreen ? "500px" : "100%",
-        }}
+        })}
       >
         <Stack gap={2}>
           <Box

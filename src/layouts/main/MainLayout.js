@@ -21,6 +21,7 @@ export const MainLayout = ({
         <MainNavbar
           AppBarProps={AppBarProps}
           ToolbarProps={ToolbarProps}
+          categories={categories}
         />
       </Box>
       <Box component="section">

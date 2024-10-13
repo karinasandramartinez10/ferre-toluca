@@ -10,7 +10,7 @@ export const PhotoPreview = ({ photo, isLoading, onRemove, onSubmit }) => {
       display="flex"
       justifyContent="space-between"
       width="100%"
-      bgcolor="primary.light"
+      bgcolor="primary.light" // naranja
       borderRadius={2}
       padding={2}
     >

@@ -35,7 +35,7 @@ export default function NavigationMenu({ categories }) {
   const mainCategories = categories.slice(0, 4);
 
   return (
-    <Box component="section" sx={{ paddingTop: { xs: "60px", sm: "80px" } }}>
+    <Box component="section" sx={{ paddingTop: { xs: "60px", sm: "66px" } }}>
       <Box
         sx={{
           display: "flex",
@@ -44,9 +44,7 @@ export default function NavigationMenu({ categories }) {
           justifyContent: "space-between",
         }}
       >
-        {/* Mobile */}
         <HamburguerIcon onToggle={toggleDrawer} />
-
         {/* Desktop */}
         <DropdownAllCategories
           anchorEl={anchorEl}
