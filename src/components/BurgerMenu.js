@@ -48,7 +48,7 @@ const BurgerMenuItem = ({ icon, text, href, onClose }) => {
 
 const BurgerMenuSection = ({ title, items, onClose }) => {
   return (
-    <List sx={{ display: "flex", flexDirection: "column", gap: 1}}>
+    <List sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       <ListItemText
         sx={{
           paddingLeft: 2,
@@ -71,12 +71,12 @@ export const BurgerMenu = ({ toggleDrawer, sections, showLogout, src }) => {
   const logoutButton = <Button onClick={() => logout()}>Cerrar sesión</Button>;
 
   return (
-    <Box sx={{ p: 2, height: 1 }}>
+    <Box sx={{ pt: 1, px: 2, pb: 2, height: 1 }}>
       <Box display="flex" flexDirection="column">
         <Box display="flex" justifyContent="space-between" height="48px">
           <NextLink href="/" passHref legacyBehavior>
             <Link display="flex" alignItems="center">
-              <Image src={src} alt="logo" width="80" height="45" />
+              <Image src={src} alt="logo" width="80" height="65" />
             </Link>
           </NextLink>
           <IconButton

@@ -20,9 +20,10 @@ import {
   userSectionsMobile,
 } from "./list-items";
 import { BurgerMenu } from "../../components/BurgerMenu";
-import { Menu, Person } from "@mui/icons-material";
+import { Menu, Person, SearchOutlined } from "@mui/icons-material";
 import { logout } from "../../actions/logout";
 import CartIcon from "../../components/CartIcon";
+import Search from "../../components/Search";
 
 const MainNavbarDesktop = ({ session }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -52,8 +53,16 @@ const MainNavbarDesktop = ({ session }) => {
     >
       <Box sx={{ display: { xs: "none", md: "block" } }}>
         <Link href="/">
-          <Image src={"/pexels-tools.jpg"} alt="logo" width="80" height="30" />
+          <Image
+            src={"/images/texcoco_logo2.svg"}
+            alt="ferreteria texcoco"
+            width="120"
+            height="90"
+          />
         </Link>
+      </Box>
+      <Box sx={{ display: { xs: "none", md: "block" } }}>
+        <Search />
       </Box>
       <Box display="flex" alignItems="center" gap={1}>
         <IconButton color="grey.main" onClick={handlePopoverOpen}>
@@ -149,20 +158,31 @@ const MainNavbarMobile = ({ session }) => {
       sx={{ display: { xs: "flex", md: "none" } }}
     >
       <Link href="/">
-        <Image src="/pexels-tools.jpg" alt="murket" width="90" height="30" />
+        <Image
+          src={"/images/texcoco_logo2.svg"}
+          alt="ferreteria texcoco"
+          width="90"
+          height="60"
+        />
       </Link>
-      <IconButton
-        size="large"
-        edge="start"
-        aria-label="menu"
-        onClick={toggleDrawer(true)}
-        color="primary"
-      >
-        <Menu />
-      </IconButton>
+
+      <Box display="flex" alignItems="center" gap={1}>
+        <Search />
+        <CartIcon />
+        <IconButton
+          size="large"
+          edge="start"
+          aria-label="menu"
+          onClick={toggleDrawer(true)}
+          color="primary"
+        >
+          <Menu />
+        </IconButton>
+      </Box>
+
       <Drawer anchor="top" open={openNavbar} onClose={toggleDrawer(false)}>
         <BurgerMenu
-          src="/pexels-tools.jpg"
+          src={"/images/texcoco_logo2.svg"}
           toggleDrawer={toggleDrawer}
           sections={showSections()}
           showLogout={isAuthenticated}

@@ -50,3 +50,17 @@ export const getProductsByCategory = async (id, page = 1, size = 10) => {
     );
   }
 };
+
+export const getProductsByQuery = async (query) => {
+  console.log(typeof query)
+  try {
+    const data = await api.get("/product/search", {
+      params: { q: query, size: 10, page: 1 },
+    });
+    return data.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch products by query"
+    );
+  }
+};

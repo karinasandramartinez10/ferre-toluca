@@ -43,7 +43,7 @@ const CartIcon = () => {
   return (
     <Box>
       <IconButton aria-label="cart" onClick={handleClick}>
-        <Badge badgeContent={totalItems} color="secondary"> {/* #13161b */}
+        <Badge badgeContent={totalItems} color="secondary">
           <ShoppingCartIcon />
         </Badge>
       </IconButton>

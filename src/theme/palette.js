@@ -14,7 +14,9 @@ export const palette = {
     },
     grey: {
       main: "#8B8C8C",
-      text: "#9d9d9d",
+      light: "#ebebeb",
+      hover: "#f1f1ea",
+      text: "#919191",
     },
     /*     secondary: {
       main: "#13161b",
