@@ -1,8 +1,5 @@
-import { getProducts } from "../../../actions/product";
-import AllProducts from "./AllProducts";
+import AllProductsPage from "./AllProductsPage";
 
 export default async function Page() {
-  const products = await getProducts();
-
-  return <AllProducts products={products} />;
+  return <AllProductsPage />
 }
