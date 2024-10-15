@@ -8,6 +8,7 @@ import { Loading } from "../../../components/Loading";
 import { getProductsByQuery } from "../../../api/products";
 import { ProductCard } from "../../../components/ProductCard";
 import NoProductsUI from "../../../components/NoProducts";
+import Pagination from "../../../components/Pagination";
 
 const SearchProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -82,34 +83,12 @@ const SearchProductsPage = () => {
         {productList}
       </Grid>
 
-      {totalPages > 0 && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            mt: 5,
-            alignItems: "baseline",
-            width: "100%",
-          }}
-        >
-          <Button
-            variant="contained"
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange("prev")}
-          >
-            Página anterior
-          </Button>
-          <Typography sx={{ mx: 2 }}>
-            Página {currentPage} de {totalPages}
-          </Typography>
-          <Button
-            variant="contained"
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange("next")}
-          >
-            Página siguiente
-          </Button>
-        </Box>
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       )}
     </Grid>
   );

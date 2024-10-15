@@ -23,18 +23,18 @@ export const ProductCard = ({ product }) => {
   return (
     <Card
       sx={{
-        maxWidth: { xs: "100%", md: 345 },
+        maxWidth: { xs: "100%", md: 330 },
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        minHeight: 400,
+        minHeight: 350,
       }}
     >
       <Link href={`/product/${product.id}`} passHref>
         <CardMedia
           component="img"
           image={product.Files && product.Files[0]?.path}
-          sx={{ height: 180, objectFit: "contain" }}
+          sx={{ height: 150, objectFit: "contain" }}
           alt={product.name}
         />
 
@@ -52,7 +52,7 @@ export const ProductCard = ({ product }) => {
             </Typography>
           </Box>
 
-          <Typography gutterBottom variant="h6" component="div" color="#13161b">
+          <Typography gutterBottom variant="subtitle1" component="div" color="#13161b">
             {product?.name}
           </Typography>
 

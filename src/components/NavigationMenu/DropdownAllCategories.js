@@ -88,7 +88,7 @@ export default function DropdownAllCategories({ categories, onClose }) {
           />
         }
         renderValue={(selected) => {
-          if (selected.length === 0) {
+          if (!selected || selected.length === 0) {
             return <span>Categorías</span>; // Texto por defecto
           }
           return selected;
@@ -101,6 +101,12 @@ export default function DropdownAllCategories({ categories, onClose }) {
               key={category.name}
               onClick={onClose}
               sx={(theme) => ({
+                "&.Mui-selected": {
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    backgroundColor: theme.palette.grey.hover, // Mantén el mismo color al hacer hover
+                  },
+                },
                 "&:hover .category-text": {
                   color: theme.palette.secondary.hover,
                 },
@@ -114,8 +120,6 @@ export default function DropdownAllCategories({ categories, onClose }) {
                 passHref
               >
                 <Box display="flex" alignItems="center" gap={2}>
-                  {" "}
-                  {/* Aumentar espacio entre icono y texto */}
                   {getCategoryIcon(category.path)}
                   {isTrimmed ? (
                     <Tooltip title={category.name} enterDelay={1000}>

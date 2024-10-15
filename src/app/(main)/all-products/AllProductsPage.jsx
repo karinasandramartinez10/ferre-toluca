@@ -6,6 +6,7 @@ import { ProductCard } from "../../../components/ProductCard";
 import { Loading } from "../../../components/Loading";
 import { ErrorUI } from "../../../components/Error";
 import { fetchProducts } from "../../../api/products";
+import Pagination from "../../../components/Pagination";
 
 const AllProductsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,32 +76,11 @@ const AllProductsPage = () => {
         {productList}
       </Grid>
       {totalPages > 1 && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            mt: 5,
-            alignItems: "baseline",
-          }}
-        >
-          <Button
-            variant="contained"
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange("prev")}
-          >
-            Página anterior
-          </Button>
-          <Typography sx={{ mx: 2 }}>
-            Página {currentPage} de {totalPages}
-          </Typography>
-          <Button
-            variant="contained"
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange("next")}
-          >
-            Página siguiente
-          </Button>
-        </Box>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       )}
     </Grid>
   );
