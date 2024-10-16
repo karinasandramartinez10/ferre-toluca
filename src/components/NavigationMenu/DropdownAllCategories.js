@@ -50,7 +50,14 @@ export default function DropdownAllCategories({ categories, onClose }) {
   };
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", maxWidth: 350 }}>
+    <Box
+      width="100%"
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        maxWidth: { xs: "100%", md: "350px"},
+      }}
+    >
       <CustomSelect
         value={selectedCategory}
         onChange={handleChange}
@@ -79,7 +86,7 @@ export default function DropdownAllCategories({ categories, onClose }) {
         input={
           <InputBase
             sx={(theme) => ({
-              paddingY: "2px",
+              paddingY: "4px",
               paddingLeft: 2,
               fontSize: "15px",
               color: theme.palette.grey.text,
@@ -104,7 +111,7 @@ export default function DropdownAllCategories({ categories, onClose }) {
                 "&.Mui-selected": {
                   backgroundColor: "transparent",
                   "&:hover": {
-                    backgroundColor: theme.palette.grey.hover, // Mantén el mismo color al hacer hover
+                    backgroundColor: theme.palette.grey.hover,
                   },
                 },
                 "&:hover .category-text": {

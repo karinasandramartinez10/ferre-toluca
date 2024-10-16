@@ -31,7 +31,7 @@ export default function NavigationMenu({ categories }) {
     setDrawerOpen(open);
   };
 
-  const mainCategories = categories.slice(0, 4);
+  const mainCategories = categories.slice(0,3)
 
   return (
     <Box
@@ -45,8 +45,8 @@ export default function NavigationMenu({ categories }) {
         sx={{
           display: "flex",
           alignItems: "center",
-          // backgroundColor: "primary.main",
           justifyContent: "space-between",
+          gap: 2,
         }}
       >
         {/* Desktop */}
@@ -59,7 +59,7 @@ export default function NavigationMenu({ categories }) {
         />
 
         {/* Desktop Links */}
-        {/* <NavigationLinks mainCategories={mainCategories} /> */}
+        <NavigationLinks mainCategories={mainCategories} />
 
         {/* Mobile */}
         <DrawerMenu

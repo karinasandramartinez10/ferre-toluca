@@ -19,7 +19,7 @@ export const SearchInput = ({
   <InputBase
     value={searchQuery}
     onChange={handleSearchChange}
-    placeholder="buscar..."
+    placeholder="Buscar..."
     sx={{
       borderRadius: "40px",
       backgroundColor: "#f1f1f1",
