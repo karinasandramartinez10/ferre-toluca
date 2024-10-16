@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Grid, Typography } from "@mui/material";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
 import { getProductsByBrand } from "../../../../api/products";
@@ -47,6 +47,12 @@ const BrandProductsPage = () => {
     }
   }, [name, brandId, currentPage]);
 
+  const router = useRouter();
+
+  const handleProductClick = (id) => {
+    router.push(`/product/${id}`);
+  };
+
   const handlePageChange = (direction) => {
     if (direction === "prev" && currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -66,7 +72,11 @@ const BrandProductsPage = () => {
 
   const productList = products.map((product, index) => (
     <Grid item xs={12} sm={4} md={4} key={index}>
-      <ProductCard key={product.id} product={product} />
+      <ProductCard
+        key={product.id}
+        product={product}
+        onViewMore={handleProductClick}
+      />
     </Grid>
   ));
 

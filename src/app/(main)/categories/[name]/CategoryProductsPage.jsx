@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Button, Grid, Typography } from "@mui/material";
-import { useParams, useSearchParams } from "next/navigation";
+import { Grid, Typography } from "@mui/material";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
 import NoProductsUI from "../../../../components/NoProducts";
@@ -28,6 +28,12 @@ const CategoryProductsPage = () => {
 
   const decodedName = decodeURIComponent(name);
   const formattedName = transformCategoryPath(decodedName);
+
+  const router = useRouter();
+
+  const handleProductClick = (id) => {
+    router.push(`/product/${id}`);
+  };
 
   useEffect(() => {
     const fetchProducts = async (page = 1) => {
@@ -72,7 +78,11 @@ const CategoryProductsPage = () => {
 
   const productList = products.map((product, index) => (
     <Grid item xs={12} sm={4} md={4} key={index}>
-      <ProductCard key={product.id} product={product} />
+      <ProductCard
+        key={product.id}
+        product={product}
+        onViewMore={handleProductClick}
+      />
     </Grid>
   ));
 

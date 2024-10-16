@@ -1,12 +1,13 @@
 "use client";
 
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { ProductCard } from "../../../components/ProductCard";
 import { Loading } from "../../../components/Loading";
 import { ErrorUI } from "../../../components/Error";
 import { fetchProducts } from "../../../api/products";
 import Pagination from "../../../components/Pagination";
+import { useRouter } from "next/navigation";
 
 const AllProductsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,6 +42,12 @@ const AllProductsPage = () => {
     }
   };
 
+  const router = useRouter();
+
+  const handleProductClick = (id) => {
+    router.push(`/product/${id}`);
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -58,7 +65,11 @@ const AllProductsPage = () => {
 
   const productList = products.map((product, index) => (
     <Grid item xs={12} sm={4} md={4} key={index}>
-      <ProductCard key={product.id} product={product} />
+      <ProductCard
+        key={product.id}
+        product={product}
+        onViewMore={handleProductClick}
+      />
     </Grid>
   ));
 

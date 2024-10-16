@@ -24,20 +24,29 @@ export const MainLayout = ({
           categories={categories}
         />
       </Box>
-      <Box component="section">
-        <NavigationMenu categories={categories} />
-      </Box>
       <Box
-        component="main"
+        component="section"
         sx={{
-          flexGrow: 1,
+          maxWidth: "1440px",
+          margin: "0 auto",
           width: "100%",
-          maxWidth: "100%",
+          flexGrow: 1
         }}
-        className="main-layout"
       >
-        {children}
+        <NavigationMenu categories={categories} />
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            width: "100%",
+            maxWidth: "100%",
+          }}
+          className="main-layout"
+        >
+          {children}
+        </Box>
       </Box>
+
       <Box component="footer">
         <Footer />
       </Box>

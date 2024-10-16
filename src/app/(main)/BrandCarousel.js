@@ -1,5 +1,5 @@
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Slider from "react-slick";
@@ -10,7 +10,7 @@ const NextArrow = (props) => {
   return (
     <ArrowForwardIos
       className={className}
-      style={{ ...style, display: "block", color: "black" }}
+      style={{ ...style, display: "block", color: "#FFF" }}
       onClick={onClick}
     />
   );
@@ -21,7 +21,7 @@ const PrevArrow = (props) => {
   return (
     <ArrowBackIos
       className={className}
-      style={{ ...style, display: "block", color: "black" }}
+      style={{ ...style, display: "block", color: "#FFF" }}
       onClick={onClick}
     />
   );
@@ -96,32 +96,54 @@ const BrandCarousel = ({ brands }) => {
   };
 
   return (
-    <Grid
-      item
-      xs={12}
-      sx={(theme) => ({
-        paddingBottom: theme.spacing(2),
-        paddingTop: {
-          md: "8px !important",
-        },
-      })}
+    <Box
+      sx={{
+        backgroundColor: "#AE2424",
+        width: "100vw",
+        position: "relative",
+        left: "calc(-50vw + 50%)",
+      }}
     >
-      <Typography component="h1" variant="h1">
-        Marcas
-      </Typography>
-      <Slider {...settings(handleBeforeChange, handleAfterChange)}>
-        {brands.map((brand, index) => (
-          <Box key={index} mt={1} mb={2} pr={2}>
-            <BannerCard
-              height="120px"
-              src={`/images/${brand.codeName}.png`}
-              onClick={() => handleBrandClick(brand.codeName, brand.id)}
-              alt={brand.name}
-            />
-          </Box>
-        ))}
-      </Slider>
-    </Grid>
+      <Box
+        sx={{
+          maxWidth: "1440px",
+          margin: "0 auto",
+          paddingX: "40px",
+          paddingTop: {
+            md: "16px !important",
+          },
+          paddingBottom: {
+            md: "32px !important",
+          },
+          ".slick-dots li button:before": {
+            color: "#FFF",
+          },
+          ".slick-dots li.slick-active button:before": {
+            color: "#FFF",
+          },
+        }}
+      >
+        <Typography
+          component="h1"
+          variant="h1"
+          sx={{ color: "#FFF", marginBottom: "16px" }}
+        >
+          Marcas
+        </Typography>
+        <Slider {...settings(handleBeforeChange, handleAfterChange)}>
+          {brands.map((brand, index) => (
+            <Box key={index} mt={1} mb={2} pr={2}>
+              <BannerCard
+                height="120px"
+                src={`/images/${brand.codeName}.png`}
+                onClick={() => handleBrandClick(brand.codeName, brand.id)}
+                alt={brand.name}
+              />
+            </Box>
+          ))}
+        </Slider>
+      </Box>
+    </Box>
   );
 };
 
