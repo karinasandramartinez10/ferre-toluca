@@ -57,7 +57,7 @@ const CategoryProductsPage = () => {
     if (name && categoryId) {
       fetchProducts(currentPage);
     }
-  }, [name, categoryId, currentPage]);
+  }, [name, categoryId, currentPage, size]);
 
   const handlePageChange = (direction) => {
     if (direction === "prev" && currentPage > 1) {

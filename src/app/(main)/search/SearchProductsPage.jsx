@@ -49,7 +49,7 @@ const SearchProductsPage = () => {
     if (query) {
       fetchProducts(currentPage);
     }
-  }, [query, currentPage]);
+  }, [query, currentPage, size]);
 
   const handlePageChange = (direction) => {
     if (direction === "prev" && currentPage > 1) {
@@ -81,7 +81,7 @@ const SearchProductsPage = () => {
   return (
     <Grid container>
       <Typography component="h1" variant="h1" mb={2}>
-        Resultados para "{query}"
+        Resultados para {query}
       </Typography>
 
       <Grid

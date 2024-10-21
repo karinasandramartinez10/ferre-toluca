@@ -98,7 +98,7 @@ const DeliveryTimes = () => {
           Estado del pedido
         </Typography>
         <Typography variant="body2">
-          Puedes verificar el estado de tu pedido en la sección "Mis Órdenes" de
+          Puedes verificar el estado de tu pedido en la sección Mis Órdenes de
           tu cuenta. Allí encontrarás información actualizada sobre el
           procesamiento y envío de tu pedido.
         </Typography>

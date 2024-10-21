@@ -45,7 +45,7 @@ const BrandProductsPage = () => {
     if (name && brandId) {
       fetchProducts(currentPage);
     }
-  }, [name, brandId, currentPage]);
+  }, [name, brandId, currentPage, size]);
 
   const router = useRouter();
 

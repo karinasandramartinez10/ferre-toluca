@@ -32,7 +32,7 @@ const AllProductsPage = () => {
     };
 
     fetchData();
-  }, [currentPage]);
+  }, [currentPage, size]);
 
   const handlePageChange = (direction) => {
     if (direction === "prev" && currentPage > 1) {
