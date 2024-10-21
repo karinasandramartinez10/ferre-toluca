@@ -19,8 +19,16 @@ export const publicRoutes = [
 ];
 
 /**
+ * An array of routes that are used for admin
+ */
+export const adminRoutes = [
+  /^\/admin\/add-product/,
+  /^\/admin\/quotes\/.*/,
+  "/admin/quotes"
+];
+
+/**
  * An array of routes that are used for authentication
- * These routes will redirect logged in users to /settings
  */
 export const authRoutes = [
   "/auth/login",

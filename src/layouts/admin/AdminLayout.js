@@ -68,11 +68,13 @@ export const AdminLayout = ({ children }) => {
     () => (
       <List sx={{ paddingX: 2, borderRadius: 1, paddingTop: 0 }}>
         <Box width="100%" padding={2} position="relative" height="100px">
-          <Image
-            src={"/images/texcoco_logo2.svg"}
-            alt="ferreteria texcoco"
-            fill
-          />
+          <NextLink href="/">
+            <Image
+              src={"/images/texcoco_logo2.svg"}
+              alt="ferreteria texcoco"
+              fill
+            />
+          </NextLink>
         </Box>
         <Stack gap={1}>
           {listItems.map((item) => (

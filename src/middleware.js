@@ -1,22 +1,34 @@
+import { getToken } from "next-auth/jwt";
 import NextAuth from "next-auth";
 import authConfig from "./auth.config";
 import {
+  adminRoutes,
   apiAuthPrefix,
   authRoutes,
   DEFAULT_LOGIN_REDIRECT,
   publicRoutes,
 } from "./routes";
 
+const secret = process.env.NEXTAUTH_SECRET
+
 const { auth } = NextAuth(authConfig);
 
-export default auth((req) => {
+export default auth(async (req) => {
   const { nextUrl } = req;
+
+  const token = await getToken({ req, secret });
   const isLoggedIn = !!req.auth;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   const isPublicRoute = publicRoutes.some((route) =>
+    typeof route === "string"
+      ? nextUrl.pathname === route
+      : route.test(nextUrl.pathname)
+  );
+
+  const isAdminRoute = adminRoutes.some((route) =>
     typeof route === "string"
       ? nextUrl.pathname === route
       : route.test(nextUrl.pathname)
@@ -31,6 +43,15 @@ export default auth((req) => {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
     return null;
+  }
+
+  if (isAdminRoute) {
+    if (isLoggedIn) {
+      if (token.data.role !== "admin"){
+        return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+      }
+      return null;
+    }
   }
 
   if (!isLoggedIn && !isPublicRoute) {
