@@ -107,6 +107,7 @@ const CartIcon = () => {
                     >
                       <IconButton
                         size="small"
+                        color="grey.main"
                         onClick={() =>
                           handleQuantityChange(product.id, quantity - 1)
                         }
@@ -129,6 +130,7 @@ const CartIcon = () => {
                       />
                       <IconButton
                         size="small"
+                        color="grey.main"
                         onClick={() =>
                           handleQuantityChange(product.id, quantity + 1)
                         }
@@ -136,7 +138,7 @@ const CartIcon = () => {
                         <AddIcon />
                       </IconButton>
                       <IconButton
-                        color="secondary"
+                        color="primary"
                         onClick={() => removeFromOrder(product.id)}
                       >
                         <DeleteIcon />

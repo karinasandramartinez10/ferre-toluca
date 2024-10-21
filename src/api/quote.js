@@ -46,3 +46,19 @@ export const fetchQuoteById = async (quoteId, token) => {
     );
   }
 };
+
+export const updateQuote = async (id, body, token) => {
+  try {
+    const resp = await api.patch(`/quote/${id}`, body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return resp
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.response.data.message);
+  }
+};

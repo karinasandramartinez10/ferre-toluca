@@ -2,7 +2,6 @@
 
 import {
   AppBar,
-  Avatar,
   Box,
   Button,
   Drawer,
@@ -21,9 +20,10 @@ import {
   userSectionsMobile,
 } from "./list-items";
 import { BurgerMenu } from "../../components/BurgerMenu";
-import { Menu, Person } from "@mui/icons-material";
+import { Menu, Person, SearchOutlined } from "@mui/icons-material";
 import { logout } from "../../actions/logout";
 import CartIcon from "../../components/CartIcon";
+import Search from "../../components/Search";
 
 const MainNavbarDesktop = ({ session }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -53,12 +53,20 @@ const MainNavbarDesktop = ({ session }) => {
     >
       <Box sx={{ display: { xs: "none", md: "block" } }}>
         <Link href="/">
-          <Image src={"/pexels-tools.jpg"} alt="logo" width="80" height="30" />
+          <Image
+            src={"/images/texcoco_logo2.svg"}
+            alt="ferreteria texcoco"
+            width="120"
+            height="90"
+          />
         </Link>
       </Box>
-      <Box display="flex" alignItems="center" gap={2}>
-        <IconButton onClick={handlePopoverOpen}>
-          <Person sx={{ fontSize: 30 }} />
+      <Box sx={{ display: { xs: "none", md: "block" } }}>
+        <Search />
+      </Box>
+      <Box display="flex" alignItems="center" gap={1}>
+        <IconButton color="grey.main" onClick={handlePopoverOpen}>
+          <Person />
         </IconButton>
         <Popover
           open={open}
@@ -77,11 +85,7 @@ const MainNavbarDesktop = ({ session }) => {
             {isAuthenticated ? (
               <>
                 {isAdmin && (
-                  <Button
-                    href="/admin/add-product"
-                    fullWidth
-                    sx={{ mb: 1 }}
-                  >
+                  <Button href="/admin/add-product" fullWidth sx={{ mb: 1 }}>
                     Ir al panel
                   </Button>
                 )}
@@ -154,20 +158,31 @@ const MainNavbarMobile = ({ session }) => {
       sx={{ display: { xs: "flex", md: "none" } }}
     >
       <Link href="/">
-        <Image src="/pexels-tools.jpg" alt="murket" width="90" height="30" />
+        <Image
+          src={"/images/texcoco_logo2.svg"}
+          alt="ferreteria texcoco"
+          width="90"
+          height="60"
+        />
       </Link>
-      <IconButton
-        size="large"
-        edge="start"
-        aria-label="menu"
-        onClick={toggleDrawer(true)}
-        color="primary"
-      >
-        <Menu />
-      </IconButton>
+
+      <Box display="flex" alignItems="center" gap={1}>
+        <Search />
+        <CartIcon />
+        <IconButton
+          size="large"
+          edge="start"
+          aria-label="menu"
+          onClick={toggleDrawer(true)}
+          color="primary"
+        >
+          <Menu />
+        </IconButton>
+      </Box>
+
       <Drawer anchor="top" open={openNavbar} onClose={toggleDrawer(false)}>
         <BurgerMenu
-          src="/pexels-tools.jpg"
+          src={"/images/texcoco_logo2.svg"}
           toggleDrawer={toggleDrawer}
           sections={showSections()}
           showLogout={isAuthenticated}
@@ -177,7 +192,7 @@ const MainNavbarMobile = ({ session }) => {
   );
 };
 
-export const MainNavbar = ({ AppBarProps, ToolbarProps }) => {
+export const MainNavbar = ({ ToolbarProps }) => {
   const { data: session } = useSession();
 
   return (

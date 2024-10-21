@@ -1,82 +1,105 @@
 import {
   Box,
-  Button,
-  Menu,
+  Select,
   MenuItem,
+  InputBase,
   Tooltip,
   Typography,
+  IconButton,
 } from "@mui/material";
-import {
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
-} from "@mui/icons-material";
-import Link from "next/link";
-import { Menu as MenuIcon } from "@mui/icons-material";
+import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
+import { styled } from "@mui/system";
+import { useState } from "react";
 import { getCategoryIcon, trimCategoryName } from "../../helpers/categories";
+import Link from "next/link";
 
-const DropdownAllCategories = ({
-  anchorEl,
-  categories = [],
-  open,
-  onOpen,
-  onClose,
-}) => {
+const CustomSelect = styled(Select)(({ theme }) => ({
+  borderRadius: "40px",
+  backgroundColor: theme.palette.grey.light,
+  paddingLeft: "16px",
+  paddingRight: "10px",
+  color: theme.palette.text.secondary,
+  display: "flex",
+  alignItems: "center",
+  minWidth: "250px",
+  "& .MuiSelect-icon": {
+    display: "none",
+  },
+  "&:hover": {
+    backgroundColor: theme.palette.grey.hover,
+  },
+  boxShadow: "none",
+  border: "none",
+  transition: "background-color 0.2s ease",
+}));
+
+export default function DropdownAllCategories({ categories, onClose }) {
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const handleChange = (event) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
-    <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
-      <Box display="flex" sx={{ background: "#f67003" }}>
-        <Box
-          display="flex"
-          alignItems="center"
-          sx={{ paddingX: "8px", cursor: "pointer" }}
-          onClick={onOpen}
-        >
-          <MenuIcon sx={{ color: "#FFF" }} />
-          <Button
-            disableRipple
-            sx={{
-              height: "46px",
-              color: "white",
-              textTransform: "none",
-              paddingX: 2,
-              backgroundColor: "#f67003",
-              borderRadius: 0,
-              fontSize: "14px",
-              fontWeight: 700,
+    <Box
+      width="100%"
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        maxWidth: { xs: "100%", md: "350px" },
+      }}
+    >
+      <CustomSelect
+        value={selectedCategory}
+        onChange={handleChange}
+        displayEmpty
+        open={open}
+        onClose={handleClose}
+        onOpen={handleOpen}
+        IconComponent={() => (
+          <IconButton
+            sx={(theme) => ({
+              backgroundColor: open ? theme.palette.grey.light : "#FFF",
+              borderRadius: "50%",
+              border: "1px solid ##fcfcfc",
+              padding: "2px",
+              boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
               "&:hover": {
-                backgroundColor: "#f67003",
+                backgroundColor: theme.palette.grey.hover,
               },
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-            endIcon={
-              open ? (
-                <ExpandLessIcon sx={{ fontSize: "26px !important" }} />
-              ) : (
-                <ExpandMoreIcon sx={{ fontSize: "26px !important" }} />
-              )
-            }
+              color: "#13161b",
+            })}
+            onClick={handleOpen}
           >
-            Todas las categorías
-          </Button>
-        </Box>
-      </Box>
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={onClose}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        PaperProps={{
-          sx: {
-            width: anchorEl ? anchorEl.clientWidth : undefined,
-            left: "0 !important",
-          },
+            <ExpandMoreIcon />
+          </IconButton>
+        )}
+        input={
+          <InputBase
+            sx={(theme) => ({
+              paddingY: "4px",
+              paddingLeft: 2,
+              fontSize: "15px",
+              color: theme.palette.grey.text,
+              fontWeight: 500,
+              width: { xs: "100%", md: "auto" },
+            })}
+          />
+        }
+        renderValue={(selected) => {
+          if (!selected || selected.length === 0) {
+            return <span>Categorías</span>;
+          }
+          return selected;
         }}
       >
         {categories.map((category) => {
@@ -85,24 +108,33 @@ const DropdownAllCategories = ({
             <MenuItem
               key={category.name}
               onClick={onClose}
-              sx={{
+              sx={(theme) => ({
+                "&.Mui-selected": {
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    backgroundColor: theme.palette.grey.hover,
+                  },
+                },
                 "&:hover .category-text": {
-                  color: "#ea281a",
+                  color: theme.palette.secondary.hover,
                 },
                 "&:hover .MuiSvgIcon-root": {
-                  color: "#ea281a",
+                  color: theme.palette.secondary.hover,
                 },
-              }}
+              })}
             >
-              <Link href={category.path} passHref>
-                <Box display="flex" alignItems="center" gap={1}>
+              <Link
+                href={`/categories/${category.path}?id=${category.id}`}
+                passHref
+              >
+                <Box display="flex" alignItems="center" gap={2}>
                   {getCategoryIcon(category.path)}
                   {isTrimmed ? (
                     <Tooltip title={category.name} enterDelay={1000}>
                       <Typography
                         className="category-text"
                         sx={{
-                          color: "secondary.main",
+                          color: "black",
                           textDecoration: "none",
                           fontSize: "14px",
                         }}
@@ -114,7 +146,7 @@ const DropdownAllCategories = ({
                     <Typography
                       className="category-text"
                       sx={{
-                        color: "secondary.main",
+                        color: "black",
                         textDecoration: "none",
                         fontSize: "14px",
                       }}
@@ -127,9 +159,7 @@ const DropdownAllCategories = ({
             </MenuItem>
           );
         })}
-      </Menu>
+      </CustomSelect>
     </Box>
   );
-};
-
-export default DropdownAllCategories;
+}

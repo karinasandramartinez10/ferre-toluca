@@ -90,7 +90,7 @@ export const components = {
           backgroundColor: palette.palette.white.background,
           height: 60,
           [theme.breakpoints.up("sm")]: {
-            height: 80,
+            height: 66,
           },
         },
       },

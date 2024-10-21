@@ -1,5 +1,7 @@
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Slider from "react-slick";
 import { ProductCard } from "../../components/ProductCard";
@@ -80,6 +82,11 @@ const Products = ({ products }) => {
   const handleBeforeChange = () => setDragging(true);
   const handleAfterChange = () => setDragging(false);
 
+  const router = useRouter();
+
+  const handleProductClick = (id) => {
+    router.push(`/product/${id}`);
+  };
 
   return (
     <Grid item xs={12} mt={2}>
@@ -89,10 +96,19 @@ const Products = ({ products }) => {
       <Slider {...settings(handleBeforeChange, handleAfterChange)}>
         {products.map((product, index) => (
           <Box key={index} mt={1} mb={2} pr={2}>
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              onViewMore={handleProductClick}
+            />
           </Box>
         ))}
       </Slider>
+      <Box display="flex" justifyContent="center" pt={5}>
+        <Button LinkComponent={Link} href="/all-products">
+          Ver todos los productos
+        </Button>
+      </Box>
     </Grid>
   );
 };

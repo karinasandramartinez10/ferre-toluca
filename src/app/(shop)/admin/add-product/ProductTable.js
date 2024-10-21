@@ -89,6 +89,7 @@ export const ProductTable = ({
             getActions: ({ id }) => {
               return [
                 <GridActionsCellItem
+                  key={`delete-${id}`}
                   icon={<Delete />}
                   label="Delete"
                   onClick={handleDeleteClick(id)}

@@ -84,7 +84,7 @@ function CustomNoRowsOverlay() {
 }
 
 const calculateTotalQuantity = (products) => {
-  return products.reduce(
+  return products?.reduce(
     (acc, product) => acc + (product?.QuoteProduct?.quantity || 0),
     0
   );
@@ -173,7 +173,7 @@ export const Quotes = () => {
     };
 
     fetchData();
-  }, []);
+  }, [data.user.access_token]);
 
   if (loading) {
     return <Loading />;

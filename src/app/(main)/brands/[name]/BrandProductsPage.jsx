@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Button, Grid, Typography } from "@mui/material";
-import { useParams, useSearchParams } from "next/navigation";
+import { Grid, Typography } from "@mui/material";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
 import { getProductsByBrand } from "../../../../api/products";
 import { toCapitalizeFirstLetter } from "../../../../utils/cases";
 import { ProductCard } from "../../../../components/ProductCard";
+import NoProductsUI from "../../../../components/NoProducts";
+import Pagination from "../../../../components/Pagination";
 
 const BrandProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -43,7 +45,13 @@ const BrandProductsPage = () => {
     if (name && brandId) {
       fetchProducts(currentPage);
     }
-  }, [name, brandId, currentPage]);
+  }, [name, brandId, currentPage, size]);
+
+  const router = useRouter();
+
+  const handleProductClick = (id) => {
+    router.push(`/product/${id}`);
+  };
 
   const handlePageChange = (direction) => {
     if (direction === "prev" && currentPage > 1) {
@@ -60,17 +68,15 @@ const BrandProductsPage = () => {
   if (error) return <ErrorUI main />;
 
   if (products.length === 0)
-    return (
-      <Grid>
-        <Typography textAlign="center" variant="h2">
-          No hay productos para esta marca
-        </Typography>
-      </Grid>
-    );
+    return <NoProductsUI config={{ type: "marca", types: "marcas" }} />;
 
   const productList = products.map((product, index) => (
     <Grid item xs={12} sm={4} md={4} key={index}>
-      <ProductCard key={product.id} product={product} />
+      <ProductCard
+        key={product.id}
+        product={product}
+        onViewMore={handleProductClick}
+      />
     </Grid>
   ));
 
@@ -89,34 +95,12 @@ const BrandProductsPage = () => {
         {productList}
       </Grid>
 
-      {totalPages > 0 && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            mt: 5,
-            alignItems: "baseline",
-            width: "100%",
-          }}
-        >
-          <Button
-            variant="contained"
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange("prev")}
-          >
-            Página anterior
-          </Button>
-          <Typography sx={{ mx: 2 }}>
-            Página {currentPage} de {totalPages}
-          </Typography>
-          <Button
-            variant="contained"
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange("next")}
-          >
-            Página siguiente
-          </Button>
-        </Box>
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       )}
     </Grid>
   );

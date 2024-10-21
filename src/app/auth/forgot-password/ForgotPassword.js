@@ -4,7 +4,6 @@ import { LoadingButton } from "@mui/lab";
 import { Grid } from "@mui/material";
 import Image from "next/image";
 import { useSnackbar } from "notistack";
-import { useState } from "react";
 import { forgotPassword } from "../../../api/auth";
 import useResponsive from "../../../hooks/use-responsive";
 import { ForgotPasswordContainer } from "./ForgotPasswordContainer";

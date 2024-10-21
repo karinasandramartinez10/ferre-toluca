@@ -2,7 +2,6 @@
 
 import { Box } from "@mui/material";
 import { useState } from "react";
-import HamburguerIcon from "./HamburguerIcon";
 import DropdownAllCategories from "./DropdownAllCategories";
 import NavigationLinks from "./NavigationLinks";
 import DrawerMenu from "./Drawer";
@@ -32,21 +31,24 @@ export default function NavigationMenu({ categories }) {
     setDrawerOpen(open);
   };
 
-  const mainCategories = categories.slice(0, 4);
+  const mainCategories = categories.slice(0,3)
 
   return (
-    <Box component="section" sx={{ paddingTop: { xs: "60px", sm: "80px" } }}>
+    <Box
+      component="section"
+      sx={{
+        paddingTop: { xs: "60px", sm: "66px" },
+        paddingX: 2,
+      }}
+    >
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
-          backgroundColor: "primary.main",
           justifyContent: "space-between",
+          gap: 2,
         }}
       >
-        {/* Mobile */}
-        <HamburguerIcon onToggle={toggleDrawer} />
-
         {/* Desktop */}
         <DropdownAllCategories
           anchorEl={anchorEl}

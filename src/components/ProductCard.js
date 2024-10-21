@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Box } from "@mui/material";
+import { Button, Box, Tooltip } from "@mui/material";
 import {
   Card,
   CardActions,
@@ -12,7 +12,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useOrder } from "../hooks/order/useOrder";
 
-export const ProductCard = ({ product }) => {
+export const ProductCard = ({ product, onViewMore }) => {
   const [quantity] = useState(1);
   const { addToOrder } = useOrder();
 
@@ -23,18 +23,20 @@ export const ProductCard = ({ product }) => {
   return (
     <Card
       sx={{
-        maxWidth: { xs: "100%", md: 345 },
+        maxWidth: { xs: "100%", md: 330 },
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        minHeight: 400,
+        minHeight: 350,
+        borderRadius: "12px",
+        padding: "8px",
       }}
     >
       <Link href={`/product/${product.id}`} passHref>
         <CardMedia
           component="img"
           image={product.Files && product.Files[0]?.path}
-          sx={{ height: 180, objectFit: "contain" }}
+          sx={{ height: 150, objectFit: "contain" }}
           alt={product.name}
         />
 
@@ -51,25 +53,58 @@ export const ProductCard = ({ product }) => {
               {product.code}
             </Typography>
           </Box>
-
-          <Typography gutterBottom variant="h6" component="div">
-            {product?.name}
-          </Typography>
-
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            {product?.description}
-          </Typography>
+          <Tooltip title={product?.name}>
+            <Typography
+              gutterBottom
+              variant="subtitle1"
+              component="div"
+              color="#13161b"
+              sx={{
+                WebkitLineClamp: 1,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                display: "-webkit-box",
+              }}
+            >
+              {product?.name}
+            </Typography>
+          </Tooltip>
+          <Tooltip title={product?.name}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                mb: 1,
+                cursor: 'pointer',
+              }}
+            >
+              {product?.description}
+            </Typography>
+          </Tooltip>
         </CardContent>
       </Link>
 
-      <CardActions sx={{ justifyContent: "center" }}>
+      <CardActions sx={{ justifyContent: "space-between", flexDirection: "row" }}>
+        <Button
+          variant="outlined"
+          fullWidth
+          onClick={() => onViewMore(product.id)}
+        >
+          Ver más
+        </Button>
         <Button
           variant="contained"
           color="primary"
           fullWidth
           onClick={handleAddToOrder}
         >
-          Añadir a la cotización
+          Agregar a la orden
         </Button>
       </CardActions>
     </Card>

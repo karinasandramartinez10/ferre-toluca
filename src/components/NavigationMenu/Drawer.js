@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { Close as CloseIcon } from "@mui/icons-material";
-import { Box, Drawer, IconButton, List, ListItem, ListItemText, Typography } from "@mui/material";
+import {
+  Box,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from "@mui/material";
 
 const DrawerMenu = ({ drawerOpen, onToggle, categories = [] }) => {
   return (
@@ -37,7 +45,10 @@ const DrawerMenu = ({ drawerOpen, onToggle, categories = [] }) => {
         <List>
           {categories.map((category) => (
             <ListItem button key={category.name}>
-              <Link href={category.path} passHref>
+              <Link
+                href={`/categories/${category.path}?id=${category.id}`}
+                passHref
+              >
                 <ListItemText primary={category.name} sx={{ color: "black" }} />
               </Link>
             </ListItem>

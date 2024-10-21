@@ -194,7 +194,7 @@ const CheckoutPage = () => {
           </Box>
 
           <IconButton
-            color="secondary"
+            color="primary" //#13161b
             onClick={() => removeFromOrder(product.id)}
           >
             <DeleteIcon />
@@ -208,8 +208,6 @@ const CheckoutPage = () => {
             <Typography variant="h6">
               Total de productos: {totalItems}
             </Typography>
-            {/* Si tuvieras un precio total, lo mostrarías aquí */}
-            {/* <Typography variant="h6">Precio Total: ${totalPrice}</Typography> */}
           </Box>
 
           <Box mt={2}>
@@ -246,9 +244,16 @@ const CheckoutPage = () => {
             />
 
             <Box
-              sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mt: 4,
+                flexDirection: { xs: "column", md: "row" },
+              }}
+              gap={1}
             >
-              <Button variant="outlined" color="secondary" onClick={clearOrder}>
+              {/* #13161b */}
+              <Button variant="outlined" color="primary" onClick={clearOrder}>
                 Vaciar Carrito
               </Button>
 
@@ -257,7 +262,6 @@ const CheckoutPage = () => {
                 loading={loading}
                 variant="contained"
                 onClick={handleSubmit(handleCheckout)}
-                // fullWidth
               >
                 Solicitar cotización
               </LoadingButton>

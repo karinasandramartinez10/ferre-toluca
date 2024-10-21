@@ -13,6 +13,7 @@ export const {
     newUser: "/auth/signup",
     error: "/auth/error",
   },
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async session({ token, session, account }) {
       session.user = token.data;
@@ -20,7 +21,10 @@ export const {
     },
     async jwt({ token, user }) {
       if (user) {
-        token.data = user;
+        token.data = {
+          ...user,
+          role: user.role
+        }
       }
       return token;
     },

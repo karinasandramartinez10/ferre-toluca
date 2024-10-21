@@ -20,12 +20,12 @@ export const Footer = () => {
             Ferreteria texcoco
           </Typography>
           <Typography>
-            <Link href="#" color="inherit" underline="hover">
+            <Link href="/delivery-time" color="inherit" underline="hover">
               Tiempos de entrega
             </Link>
           </Typography>
           <Typography>
-            <Link href="#" color="inherit" underline="hover">
+            <Link href="/faq" color="inherit" underline="hover">
               Preguntas frecuentes
             </Link>
           </Typography>
@@ -36,12 +36,12 @@ export const Footer = () => {
             Legales
           </Typography>
           <Typography>
-            <Link href="#" color="inherit" underline="hover">
+            <Link href="/privacy-statement" color="inherit" underline="hover">
               Aviso de Privacidad
             </Link>
           </Typography>
           <Typography>
-            <Link href="#" color="inherit" underline="hover">
+            <Link href="/terms-conditions" color="inherit" underline="hover">
               Términos y Condiciones
             </Link>
           </Typography>

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
 
-const ProductCard = ({ product }) => (
+const QuoteProductCard = ({ product }) => (
   <Card variant="outlined" key={product.id} sx={{ mb: 2 }}>
     <CardMedia
       component="img"
@@ -20,4 +20,4 @@ const ProductCard = ({ product }) => (
   </Card>
 );
 
-export default ProductCard;
+export default QuoteProductCard;

@@ -15,18 +15,25 @@ const ProductPage = ({ product }) => {
 
   return (
     <Box width="100%">
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={5}>
           <Image
             src={product.Files[0]?.path || "/fallback-image.jpg"}
             alt={product.name}
             width={500}
             height={500}
-            style={{ objectFit: "contain", width: "100%", height: "auto" }}
+            style={{
+              objectFit: "contain",
+              width: "100%",
+              height: "auto",
+              borderRadius: "12px",
+            }}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Typography variant="h4" gutterBottom>{product.name}</Typography>
+        <Grid item xs={12} md={7}>
+          <Typography variant="h4" gutterBottom>
+            {product.name}
+          </Typography>
           <Typography variant="body2" color="textSecondary" gutterBottom>
             {product?.brand?.name} - {product?.code}
           </Typography>
@@ -45,7 +52,9 @@ const ProductPage = ({ product }) => {
 
       {/* Descripción completa */}
       <Box mt={4}>
-        <Typography variant="h5" gutterBottom>Descripción</Typography>
+        <Typography variant="h5" gutterBottom>
+          Descripción
+        </Typography>
         <Box sx={{ borderBottom: "2px solid #e53935", width: "80px", mb: 2 }} />
         <Typography variant="body1">{product.description}</Typography>
       </Box>
@@ -53,8 +62,12 @@ const ProductPage = ({ product }) => {
       {/* Características */}
       {product.specifications && (
         <Box mt={4}>
-          <Typography variant="h5" gutterBottom>Características</Typography>
-          <Box sx={{ borderBottom: "2px solid #e53935", width: "80px", mb: 2 }} />
+          <Typography variant="h5" gutterBottom>
+            Características
+          </Typography>
+          <Box
+            sx={{ borderBottom: "2px solid #e53935", width: "80px", mb: 2 }}
+          />
           <Typography variant="body1">{product.specifications}</Typography>
         </Box>
       )}

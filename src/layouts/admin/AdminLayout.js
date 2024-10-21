@@ -54,7 +54,7 @@ const getPageSubtitle = (pathname) => {
 };
 
 export const AdminLayout = ({ children }) => {
-  const [isClosing, setIsClosing] = useState(false);
+  const [_, setIsClosing] = useState(false);
 
   const isMobile = useResponsive("down", "sm");
 
@@ -66,18 +66,15 @@ export const AdminLayout = ({ children }) => {
 
   const drawer = useMemo(
     () => (
-      <List sx={{ padding: 2, borderRadius: 1 }}>
-        <Box width="100%" padding={2}>
-          <Image
-            src={"/pexels-tools.jpg"} //TODO: change for company logo
-            alt="Picture of the author"
-            width={140}
-            height={50}
-            quality={100}
-            style={{
-              objectFit: "cover",
-            }}
-          />
+      <List sx={{ paddingX: 2, borderRadius: 1, paddingTop: 0 }}>
+        <Box width="100%" padding={2} position="relative" height="100px">
+          <NextLink href="/">
+            <Image
+              src={"/images/texcoco_logo2.svg"}
+              alt="ferreteria texcoco"
+              fill
+            />
+          </NextLink>
         </Box>
         <Stack gap={1}>
           {listItems.map((item) => (
@@ -123,7 +120,7 @@ export const AdminLayout = ({ children }) => {
       component="section"
       sx={{
         margin: "0 auto",
-        maxWidth: "1280px",
+        maxWidth: "1440px",
       }}
     >
       <Box component="nav" sx={{ display: { xs: "block", sm: "none" } }}>
@@ -162,7 +159,7 @@ export const AdminLayout = ({ children }) => {
           gap={2}
         >
           <Grid item xs={12}>
-            <Box display="flex" alignItems="center" gap={1.5}>
+            <Stack>
               <Typography variant="h1">{getPageTitle(pathname)}</Typography>
               <Typography
                 sx={{ color: "#838383", fontWeight: 500 }}
@@ -170,7 +167,7 @@ export const AdminLayout = ({ children }) => {
               >
                 {getPageSubtitle(pathname)}
               </Typography>
-            </Box>
+            </Stack>
           </Grid>
           <Grid item xs={12}>
             {children}

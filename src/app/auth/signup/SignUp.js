@@ -434,7 +434,7 @@ const SignUp = () => {
                                 <Typography variant="body3">
                                   Acepto los{" "}
                                   <NextLink
-                                    href="/terms"
+                                    href="/service-terms"
                                     target="_blank"
                                     passHref
                                     legacyBehavior
