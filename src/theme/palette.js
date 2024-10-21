@@ -33,8 +33,10 @@ export const palette = {
       main: "#FEC400"
     },
 
+    */
     green: {
-      main: "#248924"
-    }  */
+      main: "#248924",
+      hover: "#1f7920"
+    }  
   },
 };

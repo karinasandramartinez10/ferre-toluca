@@ -55,7 +55,7 @@ export default function DropdownAllCategories({ categories, onClose }) {
       sx={{
         display: "flex",
         alignItems: "center",
-        maxWidth: { xs: "100%", md: "350px"},
+        maxWidth: { xs: "100%", md: "350px" },
       }}
     >
       <CustomSelect
@@ -91,12 +91,13 @@ export default function DropdownAllCategories({ categories, onClose }) {
               fontSize: "15px",
               color: theme.palette.grey.text,
               fontWeight: 500,
+              width: { xs: "100%", md: "auto" },
             })}
           />
         }
         renderValue={(selected) => {
           if (!selected || selected.length === 0) {
-            return <span>Categorías</span>; // Texto por defecto
+            return <span>Categorías</span>;
           }
           return selected;
         }}

@@ -6,23 +6,22 @@ import { useState } from "react";
 import { BurgerMenu } from "../../components/BurgerMenu";
 
 export const adminSections = [
-    {
-      title: "Administrador",
-      items: [
-        {
-          icon: <Dashboard />,
-          text: "Panel",
-          href: `/admin/add-product`,
-        },
-        {
-            icon: <Storefront />,
-            text: "Cotizaciones",
-            href: `/admin/quotes`,
-          },
-      ],
-    },
-  ];
-  
+  {
+    title: "Administrador",
+    items: [
+      {
+        icon: <Dashboard />,
+        text: "Panel",
+        href: `/admin/add-product`,
+      },
+      {
+        icon: <Storefront />,
+        text: "Cotizaciones",
+        href: `/admin/quotes`,
+      },
+    ],
+  },
+];
 
 const AdminNavbarMobile = () => {
   const [openNavbar, setOpenNavbar] = useState(false);
@@ -47,10 +46,10 @@ const AdminNavbarMobile = () => {
     >
       <NextLink href="/">
         <Image
-          src={"/pexels-tools.jpg"} //TODO: change for company logo
-          alt="ferreteria"
+          src={"/images/texcoco_logo2.svg"}
+          alt="ferreteria texcoco"
           width="90"
-          height="30"
+          height="60"
         />
       </NextLink>
       <IconButton
@@ -64,7 +63,7 @@ const AdminNavbarMobile = () => {
       </IconButton>
       <Drawer anchor="top" open={openNavbar} onClose={toggleDrawer(false)}>
         <BurgerMenu
-          src={"/pexels-tools.jpg"} //TODO: change for company logo
+          src={"/images/texcoco_logo2.svg"}
           toggleDrawer={toggleDrawer}
           sections={adminSections}
         />

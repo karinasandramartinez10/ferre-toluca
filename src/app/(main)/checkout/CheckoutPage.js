@@ -244,10 +244,16 @@ const CheckoutPage = () => {
             />
 
             <Box
-              sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mt: 4,
+                flexDirection: { xs: "column", md: "row" },
+              }}
+              gap={1}
             >
               {/* #13161b */}
-              <Button variant="outlined" color="primary"  onClick={clearOrder}>
+              <Button variant="outlined" color="primary" onClick={clearOrder}>
                 Vaciar Carrito
               </Button>
 
@@ -256,7 +262,6 @@ const CheckoutPage = () => {
                 loading={loading}
                 variant="contained"
                 onClick={handleSubmit(handleCheckout)}
-                // fullWidth
               >
                 Solicitar cotización
               </LoadingButton>
