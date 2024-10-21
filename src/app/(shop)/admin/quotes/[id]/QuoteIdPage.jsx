@@ -38,7 +38,7 @@ export const QuoteId = ({ quoteId }) => {
 
       fetchData();
     }
-  }, [quoteId]);
+  }, [quoteId, data.user.access_token]);
 
   if (loading) {
     return <Loading />;

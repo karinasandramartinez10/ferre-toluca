@@ -173,7 +173,7 @@ export const Quotes = () => {
     };
 
     fetchData();
-  }, []);
+  }, [data.user.access_token]);
 
   if (loading) {
     return <Loading />;
