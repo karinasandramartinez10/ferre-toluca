@@ -1,15 +1,14 @@
 "use server";
 
 export async function getBrands() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/brands`,
-    { cache: "force-cache" }
-  );
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/brands`,
+    );
 
-  if (!res.ok) {
+    const response = await res.json();
+    return response.data;
+  } catch (error) {
     throw new Error("Failed to fetch categories");
   }
-
-  const response  = await res.json();
-  return response.data
 }
