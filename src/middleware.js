@@ -5,11 +5,13 @@ import {
   adminRoutes,
   apiAuthPrefix,
   authRoutes,
+  DEFAULT_ADMIN_LOGIN_REDIRECT,
   DEFAULT_LOGIN_REDIRECT,
   publicRoutes,
+  superAdminRoutes,
 } from "./routes";
 
-const secret = process.env.NEXTAUTH_SECRET
+const secret = process.env.NEXTAUTH_SECRET;
 
 const { auth } = NextAuth(authConfig);
 
@@ -34,6 +36,12 @@ export default auth(async (req) => {
       : route.test(nextUrl.pathname)
   );
 
+  const isSuperAdminRoute = superAdminRoutes.some((route) =>
+    typeof route === "string"
+      ? nextUrl.pathname === route
+      : route.test(nextUrl.pathname)
+  );
+
   if (isApiAuthRoute) {
     return null;
   }
@@ -46,12 +54,17 @@ export default auth(async (req) => {
   }
 
   if (isAdminRoute) {
-    if (isLoggedIn) {
-      if (token.data.role !== "admin"){
-        return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
-      }
-      return null;
+    if (isLoggedIn && ["admin", "superadmin"].includes(token?.data?.role)) {
+      return null; // Permitir acceso
     }
+    return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+  }
+
+  if (isSuperAdminRoute) {
+    if (isLoggedIn && token?.data?.role === "superadmin") {
+      return null; // Permitir acceso
+    }
+    return Response.redirect(new URL(DEFAULT_ADMIN_LOGIN_REDIRECT, nextUrl));
   }
 
   if (!isLoggedIn && !isPublicRoute) {
