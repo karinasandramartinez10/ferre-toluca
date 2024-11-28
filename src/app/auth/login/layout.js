@@ -1,8 +1,11 @@
 import { Box } from "@mui/material";
 
 export const metadata = {
-  title: "Login",
-  description: "Login",
+  title: "Iniciar sesión",
+  description: "Iniciar sesión",
+  icons: {
+    icon: "/iso_texcoco.svg",
+  },
 };
 
 const Layout = ({ children }) => {
