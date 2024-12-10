@@ -1,6 +1,11 @@
 "use client";
 
-import { AddCircleOutline, Home, Storefront } from "@mui/icons-material";
+import {
+  AddBusiness,
+  AddCircleOutline,
+  Home,
+  Storefront,
+} from "@mui/icons-material";
 import {
   AppBar,
   Box,
@@ -27,17 +32,26 @@ const listItems = [
     text: "Inicio",
     pathname: "/",
     icon: <Home sx={{ fontSize: 20 }} />,
-  },
-  {
-    text: "Agregar",
-    pathname: "/admin/add-product",
-    icon: <AddCircleOutline sx={{ fontSize: 20 }} />,
+    visibleFor: ["admin", "superadmin"],
   },
   {
     text: "Cotizaciones",
     pathname: "/admin/quotes",
     icon: <Storefront sx={{ fontSize: 20 }} />,
     isDynamic: true,
+    visibleFor: ["admin", "superadmin"],
+  },
+  {
+    text: "Producto",
+    pathname: "/admin/add-product",
+    icon: <AddCircleOutline sx={{ fontSize: 20 }} />,
+    visibleFor: ["superadmin"],
+  },
+  {
+    text: "Marcas",
+    pathname: "/admin/brands",
+    icon: <AddBusiness sx={{ fontSize: 20 }} />,
+    visibleFor: ["superadmin"],
   },
 ];
 
@@ -53,7 +67,7 @@ const getPageSubtitle = (pathname) => {
   return;
 };
 
-export const AdminLayout = ({ children }) => {
+export const AdminLayout = ({ children, role }) => {
   const [_, setIsClosing] = useState(false);
 
   const isMobile = useResponsive("down", "sm");
@@ -77,38 +91,40 @@ export const AdminLayout = ({ children }) => {
           </NextLink>
         </Box>
         <Stack gap={1}>
-          {listItems.map((item) => (
-            <NextLink key={item.text} href={item.pathname}>
-              <ListItem disablePadding>
-                <ListItemButton
-                  sx={(theme) => ({
-                    color:
-                      pathname === item.pathname ||
-                      (item.isDynamic && pathname.startsWith(item.pathname))
-                        ? "#FFF"
-                        : theme.palette.primary.main,
-                    borderRadius: 2,
-                    alignItems: "flex-start",
-                    gap: 1,
-                    backgroundColor:
-                      pathname === item.pathname ||
-                      (item.isDynamic && pathname.startsWith(item.pathname))
-                        ? theme.palette.primary.hover
-                        : "transparent",
-                    "&:hover": {
-                      color: "#FFF",
-                      backgroundColor: theme.palette.primary.hover,
-                      transition: "background-color 0.3s ease",
-                    },
-                  })}
-                  onClick={() => handleDrawerClose()}
-                >
-                  {item.icon}
-                  {item.text}
-                </ListItemButton>
-              </ListItem>
-            </NextLink>
-          ))}
+          {listItems
+            .filter((item) => item.visibleFor.includes(role))
+            .map((item) => (
+              <NextLink key={item.text} href={item.pathname}>
+                <ListItem disablePadding>
+                  <ListItemButton
+                    sx={(theme) => ({
+                      color:
+                        pathname === item.pathname ||
+                        (item.isDynamic && pathname.startsWith(item.pathname))
+                          ? "#FFF"
+                          : theme.palette.primary.main,
+                      borderRadius: 2,
+                      alignItems: "flex-start",
+                      gap: 1,
+                      backgroundColor:
+                        pathname === item.pathname ||
+                        (item.isDynamic && pathname.startsWith(item.pathname))
+                          ? theme.palette.primary.hover
+                          : "transparent",
+                      "&:hover": {
+                        color: "#FFF",
+                        backgroundColor: theme.palette.primary.hover,
+                        transition: "background-color 0.3s ease",
+                      },
+                    })}
+                    onClick={() => handleDrawerClose()}
+                  >
+                    {item.icon}
+                    {item.text}
+                  </ListItemButton>
+                </ListItem>
+              </NextLink>
+            ))}
         </Stack>
       </List>
     ),
@@ -126,7 +142,7 @@ export const AdminLayout = ({ children }) => {
       <Box component="nav" sx={{ display: { xs: "block", sm: "none" } }}>
         <AppBar>
           <Toolbar sx={{ paddingRight: "8px" }}>
-            <AdminNavbarMobile />
+            <AdminNavbarMobile role={role} />
           </Toolbar>
         </AppBar>
       </Box>

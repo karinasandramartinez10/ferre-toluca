@@ -11,7 +11,6 @@ export const Dropzone = ({
   preview,
   setValue,
   onRemove,
-  register,
   photo,
   setPhoto,
 }) => {
@@ -54,6 +53,9 @@ export const Dropzone = ({
   return (
     <>
       <Box
+        {...getRootProps({
+          className: "dropzone",
+        })}
         display="flex"
         justifyContent="center"
         alignItems="center"
@@ -62,6 +64,7 @@ export const Dropzone = ({
           borderRadius: "12px",
           width: "100%",
           height: "auto",
+          position: "relative",
           ":hover": {
             cursor: "pointer",
             borderColor: theme.palette.primary.hover,
@@ -70,15 +73,26 @@ export const Dropzone = ({
         })}
         component="section"
       >
+        {/* Input invisible pero funcional */}
+        <input
+          {...getInputProps()}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            opacity: 0, // Hace que sea invisible pero clickeable
+            cursor: "pointer",
+          }}
+        />
         <Stack
           alignItems="center"
           gap={1}
           width="100%"
           padding={{ xs: 4, md: 8 }}
           sx={{ background: "white" }}
-          {...getRootProps({ className: "dropzone" })}
         >
-          <input {...getInputProps()} {...register("image")} />
           <Box>
             <Image
               src="/photos-filled-svgrepo-com.svg"

@@ -3,16 +3,21 @@ import { Box, Stack, Typography } from "@mui/material";
 import Image from "next/image";
 import { filesize } from "filesize";
 
-export const PhotoPreview = ({ photo, isLoading, onRemove, onSubmit }) => {
+export const PhotoPreview = ({ photo, onRemove }) => {
+  const sizeText = photo?.size
+    ? filesize(photo.size, { standard: "jedec" })
+    : "";
 
   return (
     <Box
       display="flex"
       justifyContent="space-between"
       width="100%"
-      bgcolor="primary.light" // naranja
       borderRadius={2}
       padding={2}
+      sx={(theme) => ({
+        border: `1px solid ${theme.palette.primary.light}`
+      })}
     >
       <Box display="flex" gap={2}>
         <Box
@@ -32,15 +37,16 @@ export const PhotoPreview = ({ photo, isLoading, onRemove, onSubmit }) => {
             <Image
               src={photo.preview}
               fill
-              alt={photo.name}
+              alt={photo.name || 'image'}
               sizes="100vw"
               style={{
                 objectFit: "contain",
                 borderRadius: 3,
               }}
-              // Revoke data uri after image is loaded
               onLoad={() => {
-                URL.revokeObjectURL(photo.preview);
+                if (photo.preview.startsWith("blob:")) {
+                  URL.revokeObjectURL(photo.preview);
+                }
               }}
             />
           </Box>
@@ -50,7 +56,7 @@ export const PhotoPreview = ({ photo, isLoading, onRemove, onSubmit }) => {
             {photo.name}
           </Typography>
           <Typography variant="body2" fontWeight={400}>
-            {filesize(photo.size, { standard: "jedec" })}
+            {sizeText}
           </Typography>
         </Stack>
       </Box>

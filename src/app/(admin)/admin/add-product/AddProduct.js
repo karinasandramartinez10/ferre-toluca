@@ -12,7 +12,6 @@ import { useSnackbar } from "notistack";
 import { v4 as uuidv4 } from "uuid";
 import { toCapitalizeFirstLetter } from "../../../../utils/cases";
 import { postProduct } from "../../../../api/admin";
-import { getBrands } from "../../../../api/brand";
 import { getCategories } from "../../../../api/category";
 import { getSubcategories } from "../../../../api/subcategories";
 import { validateRows } from "./helpers";
@@ -238,7 +237,6 @@ const AddProduct = ({ user }) => {
       />
 
       <Dropzone
-        unregister={unregister}
         register={register}
         preview
         setValue={setValue}

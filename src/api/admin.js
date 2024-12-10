@@ -1,8 +1,8 @@
 import { api } from "../config";
 
-export const postProduct = async (body, token) => {
+export const postProduct = async (formData, token) => {
   try {
-    const resp = await api.post("/product", body, {
+    const resp = await api.post("/product", formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",

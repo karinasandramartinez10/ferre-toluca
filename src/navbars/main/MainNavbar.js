@@ -20,7 +20,7 @@ import {
   userSectionsMobile,
 } from "./list-items";
 import { BurgerMenu } from "../../components/BurgerMenu";
-import { Menu, Person, SearchOutlined } from "@mui/icons-material";
+import { Menu, Person } from "@mui/icons-material";
 import { logout } from "../../actions/logout";
 import CartIcon from "../../components/CartIcon";
 import Search from "../../components/Search";
@@ -28,7 +28,8 @@ import Search from "../../components/Search";
 const MainNavbarDesktop = ({ session }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const isAuthenticated = !!session?.user;
-  const isAdmin = session?.user?.role === "admin";
+  const isAdmin =
+    session?.user?.role === "admin" || session?.user?.role === "superadmin";
 
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -108,7 +109,7 @@ const MainNavbarDesktop = ({ session }) => {
                 </Button>
                 <Button
                   variant="outlined"
-                  href="/auth/register"
+                  href="/auth/signup"
                   fullWidth
                   sx={{ mt: 1 }}
                 >
