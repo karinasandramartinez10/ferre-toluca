@@ -1,8 +1,8 @@
-import { Dashboard, Menu, Storefront } from "@mui/icons-material";
+import { AddCircleOutline, Home, Menu, Storefront } from "@mui/icons-material";
 import { Box, Drawer, IconButton } from "@mui/material";
 import Image from "next/image";
 import NextLink from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { BurgerMenu } from "../../components/BurgerMenu";
 
 export const adminSections = [
@@ -10,7 +10,12 @@ export const adminSections = [
     title: "Administrador",
     items: [
       {
-        icon: <Dashboard />,
+        text: "Inicio",
+        href: "/",
+        icon: <Home />,
+      },
+      {
+        icon: <AddCircleOutline />,
         text: "Panel",
         href: `/admin/add-product`,
       },
@@ -23,8 +28,20 @@ export const adminSections = [
   },
 ];
 
-const AdminNavbarMobile = () => {
+const AdminNavbarMobile = ({ role }) => {
   const [openNavbar, setOpenNavbar] = useState(false);
+
+  const filteredSections = useMemo(() => {
+    return adminSections.map((section) => ({
+      ...section,
+      items: section.items.filter((item) => {
+        if (item.href === "/admin/add-product" && role !== "superadmin") {
+          return false;
+        }
+        return true;
+      }),
+    }));
+  }, [role]);
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -65,7 +82,7 @@ const AdminNavbarMobile = () => {
         <BurgerMenu
           src={"/images/texcoco_logo2.svg"}
           toggleDrawer={toggleDrawer}
-          sections={adminSections}
+          sections={filteredSections}
         />
       </Drawer>
     </Box>

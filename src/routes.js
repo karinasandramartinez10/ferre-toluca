@@ -31,6 +31,7 @@ export const superAdminRoutes = [
   /^\/admin\/add-product/,
   /^\/admin\/quotes\/.*/,
   "/admin/quotes",
+  "/admin/brands",
 ];
 
 /**
