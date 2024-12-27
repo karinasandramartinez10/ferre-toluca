@@ -9,6 +9,7 @@ import {
   DEFAULT_LOGIN_REDIRECT,
   publicRoutes,
   superAdminRoutes,
+  userRoutes,
 } from "./routes";
 
 const secret = process.env.NEXTAUTH_SECRET;
@@ -25,6 +26,12 @@ export default auth(async (req) => {
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   const isPublicRoute = publicRoutes.some((route) =>
+    typeof route === "string"
+      ? nextUrl.pathname === route
+      : route.test(nextUrl.pathname)
+  );
+
+  const isUserRoute = userRoutes.some((route) =>
     typeof route === "string"
       ? nextUrl.pathname === route
       : route.test(nextUrl.pathname)
@@ -51,6 +58,13 @@ export default auth(async (req) => {
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
     return null;
+  }
+
+  if (isUserRoute) {
+    if (isLoggedIn && token?.data?.role === "user") {
+      return null; // Permitir acceso
+    }
+    return Response.redirect(new URL(DEFAULT_ADMIN_LOGIN_REDIRECT, nextUrl));
   }
 
   if (isAdminRoute) {
