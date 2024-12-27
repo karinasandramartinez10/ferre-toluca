@@ -8,6 +8,7 @@ import { ErrorUI } from "../../../components/Error";
 import { fetchProducts } from "../../../api/products";
 import Pagination from "../../../components/Pagination";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const AllProductsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,6 +17,10 @@ const AllProductsPage = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const { data: session } = useSession();
+
+  const isAdmin = session?.user.role !== 'user';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,26 +69,24 @@ const AllProductsPage = () => {
     );
 
   const productList = products.map((product, index) => (
-    <Grid item xs={12} sm={4} md={4} key={index}>
+    <Grid item xs={12} sm={8} md={4} lg={3} key={index}>
       <ProductCard
         key={product.id}
         product={product}
         onViewMore={handleProductClick}
+        showBtns={!isAdmin}
       />
     </Grid>
   ));
 
   return (
     <Grid container>
-      <Typography component="h1" variant="h1" mb={2}>
-        Todos los productos
-      </Typography>
-      <Grid
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-        sx={{ minHeight: "500px" }}
-      >
+      <Grid item xs={12}>
+        <Typography component="h1" variant="h1" mb={2}>
+          Todos los productos
+        </Typography>
+      </Grid>
+      <Grid container spacing={{ xs: 2, md: 2 }} sx={{ minHeight: "500px" }}>
         {productList}
       </Grid>
       {totalPages > 1 && (

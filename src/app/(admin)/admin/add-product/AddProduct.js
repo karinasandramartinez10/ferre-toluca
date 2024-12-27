@@ -18,6 +18,7 @@ import { validateRows } from "./helpers";
 import { ProductTable } from "./ProductTable";
 import AddProductFields from "./AddProductFields";
 import { getProductTypes } from "../../../../api/productTypes";
+import { getBrands } from "../../../../api/admin/brands";
 
 const defaultFormValues = {
   brandId: "",
