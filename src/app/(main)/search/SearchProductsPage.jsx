@@ -73,6 +73,8 @@ const SearchProductsPage = () => {
       <ProductCard
         key={product.id}
         product={product}
+        src={product.Files[0]?.path}
+        alt={product.name}
         onViewMore={handleProductClick}
       />
     </Grid>

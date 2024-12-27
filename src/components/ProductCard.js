@@ -12,7 +12,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useOrder } from "../hooks/order/useOrder";
 
-export const ProductCard = ({ product, onViewMore }) => {
+export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
   const [quantity] = useState(1);
   const { addToOrder } = useOrder();
 
@@ -81,7 +81,7 @@ export const ProductCard = ({ product, onViewMore }) => {
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 mb: 1,
-                cursor: 'pointer',
+                cursor: "pointer",
               }}
             >
               {product?.description}
@@ -89,24 +89,27 @@ export const ProductCard = ({ product, onViewMore }) => {
           </Tooltip>
         </CardContent>
       </Link>
-
-      <CardActions sx={{ justifyContent: "space-between", flexDirection: "row" }}>
-        <Button
-          variant="outlined"
-          fullWidth
-          onClick={() => onViewMore(product.id)}
+      {showBtns && (
+        <CardActions
+          sx={{ justifyContent: "space-between", flexDirection: "row" }}
         >
-          Ver más
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={handleAddToOrder}
-        >
-          Agregar a la orden
-        </Button>
-      </CardActions>
+          <Button
+            variant="outlined"
+            fullWidth
+            onClick={() => onViewMore(product.id)}
+          >
+            Ver más
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={handleAddToOrder}
+          >
+            Agregar a la orden
+          </Button>
+        </CardActions>
+      )}
     </Card>
   );
 };

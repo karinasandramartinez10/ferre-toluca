@@ -1,4 +1,4 @@
-import { Dashboard, LoginOutlined, Person } from "@mui/icons-material";
+import { Dashboard, Favorite, LoginOutlined, Person } from "@mui/icons-material";
 
 export const noAuthSectionsMobile = [
   {
@@ -32,7 +32,12 @@ export const adminSectionsMobile = [
 
 export const userSectionsMobile = [
   {
-    title: "",
-    items: [],
+    items: [
+      {
+        icon: <Favorite />,
+        text: "Favoritos",
+        href: `/favorites`,
+      },
+    ],
   },
 ];
