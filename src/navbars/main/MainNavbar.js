@@ -22,7 +22,7 @@ import {
 import { BurgerMenu } from "../../components/BurgerMenu";
 import { Menu, Person } from "@mui/icons-material";
 import { logout } from "../../actions/logout";
-import CartIcon from "../../components/CartIcon";
+import Cart from "../../components/Cart";
 import Search from "../../components/Search";
 
 const MainNavbarDesktop = ({ session }) => {
@@ -90,6 +90,11 @@ const MainNavbarDesktop = ({ session }) => {
                     Ir al panel
                   </Button>
                 )}
+                {!isAdmin && (
+                  <Button href="/favorites" fullWidth sx={{ mb: 1 }}>
+                    Lista de favoritos
+                  </Button>
+                )}
                 <Button
                   onClick={Logout}
                   color="error"
@@ -119,7 +124,7 @@ const MainNavbarDesktop = ({ session }) => {
             )}
           </Box>
         </Popover>
-        <CartIcon />
+        {!isAdmin && <Cart />}
       </Box>
     </Box>
   );
@@ -128,7 +133,8 @@ const MainNavbarDesktop = ({ session }) => {
 const MainNavbarMobile = ({ session }) => {
   const [openNavbar, setOpenNavbar] = useState(false);
   const isAuthenticated = !!session?.user;
-  const isAdmin = session?.user?.role === "admin";
+  const isAdmin =
+    session?.user?.role === "admin" || session?.user?.role === "superadmin";
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -169,7 +175,7 @@ const MainNavbarMobile = ({ session }) => {
 
       <Box display="flex" alignItems="center" gap={1}>
         <Search />
-        <CartIcon />
+        {!isAdmin && <Cart />}
         <IconButton
           size="large"
           edge="start"
