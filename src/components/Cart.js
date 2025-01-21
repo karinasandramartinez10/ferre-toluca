@@ -19,7 +19,7 @@ import {
 import { useOrder } from "../hooks/order/useOrder";
 import Link from "next/link";
 
-const CartIcon = () => {
+const Cart = () => {
   const { orderItems, removeFromOrder, updateQuantity, totalItems } =
     useOrder();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -166,4 +166,4 @@ const CartIcon = () => {
   );
 };
 
-export default CartIcon;
+export default Cart;

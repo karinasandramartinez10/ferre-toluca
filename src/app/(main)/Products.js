@@ -76,8 +76,10 @@ const settings = (handleBeforeChange, handleAfterChange) => ({
   ],
 });
 
-const Products = ({ products }) => {
+const Products = ({ session, products }) => {
   const [_, setDragging] = useState(false);
+
+  const isAdmin = session?.user.role !== "user";
 
   const handleBeforeChange = () => setDragging(true);
   const handleAfterChange = () => setDragging(false);
@@ -100,6 +102,7 @@ const Products = ({ products }) => {
               key={product.id}
               product={product}
               onViewMore={handleProductClick}
+              showBtns={!isAdmin}
             />
           </Box>
         ))}

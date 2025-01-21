@@ -1,17 +1,60 @@
 "use client";
 
-import { Button, Grid, Typography, Box } from "@mui/material";
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import { Button, Grid, Typography, Box, IconButton } from "@mui/material";
 import Image from "next/image";
+import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useOrder } from "../../../../hooks/order/useOrder";
+import { useFavorites } from "../../../../hooks/favorites/useFavorites";
+import ConfirmDeleteFavorite from "./ConfirmDeleteFavorite";
 
-const ProductPage = ({ product }) => {
+const ProductPage = ({ product, role }) => {
   const [quantity] = useState(1);
+  const [openDialog, setOpenDialog] = useState(false);
+
   const { addToOrder } = useOrder();
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const showNotification = (message, variant) => {
+    enqueueSnackbar(message, { variant });
+  };
 
   const handleAddToOrder = () => {
     addToOrder(product, quantity);
   };
+
+  const handleToggleFavorite = async () => {
+    if (isFavorite(product.id)) {
+      setOpenDialog(true);
+      return;
+    }
+
+    try {
+      await toggleFavorite(product);
+      showNotification("Producto añadido a favoritos", "success");
+    } catch (error) {
+      showNotification("Error al actualizar favoritos", "error");
+    }
+  };
+
+  const handleConfirmRemoveFavorite = async () => {
+    try {
+      await toggleFavorite(product);
+      showNotification("Producto eliminado de favoritos", "success");
+    } catch (error) {
+      showNotification("Error al actualizar favoritos", "error");
+    } finally {
+      setOpenDialog(false);
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const showUserBtns = role === "user";
 
   return (
     <Box width="100%">
@@ -39,18 +82,40 @@ const ProductPage = ({ product }) => {
           </Typography>
           <Typography variant="h6">Descripción</Typography>
           <Typography paragraph>{product.description}</Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mt: 3 }}
-            onClick={handleAddToOrder}
-          >
-            Añadir a la orden
-          </Button>
+          {showUserBtns && (
+            <Box display="flex" gap={1} alignItems="center">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddToOrder}
+              >
+                Añadir a la orden
+              </Button>
+              <IconButton
+                onClick={handleToggleFavorite}
+                color={isFavorite(product.id) ? "error" : "default"}
+                sx={{
+                  border: "1px solid #ccc",
+                  borderRadius: "8px",
+                  padding: "8px",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 0, 0, 0.1)",
+                  },
+                }}
+              >
+                {isFavorite(product.id) ? <Favorite /> : <FavoriteBorder />}
+              </IconButton>
+            </Box>
+          )}
         </Grid>
       </Grid>
 
-      {/* Descripción completa */}
+      <ConfirmDeleteFavorite
+        open={openDialog}
+        onClose={handleCloseDialog}
+        onConfirm={handleConfirmRemoveFavorite}
+      />
+
       <Box mt={4}>
         <Typography variant="h5" gutterBottom>
           Descripción
@@ -59,7 +124,6 @@ const ProductPage = ({ product }) => {
         <Typography variant="body1">{product.description}</Typography>
       </Box>
 
-      {/* Características */}
       {product.specifications && (
         <Box mt={4}>
           <Typography variant="h5" gutterBottom>

@@ -8,28 +8,18 @@ import {
   IconButton,
   Popover,
   Toolbar,
-  Typography,
 } from "@mui/material";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  adminSectionsMobile,
-  noAuthSectionsMobile,
-  userSectionsMobile,
-} from "./list-items";
 import { BurgerMenu } from "../../components/BurgerMenu";
 import { Menu, Person } from "@mui/icons-material";
 import { logout } from "../../actions/logout";
 import Cart from "../../components/Cart";
-import Search from "../../components/Search";
+import { userSectionsMobile } from "../main/list-items";
 
-const MainNavbarDesktop = ({ session }) => {
+const UserNavbarDesktop = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const isAuthenticated = !!session?.user;
-  const isAdmin =
-    session?.user?.role === "admin" || session?.user?.role === "superadmin";
 
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -62,9 +52,7 @@ const MainNavbarDesktop = ({ session }) => {
           />
         </Link>
       </Box>
-      <Box sx={{ display: { xs: "none", md: "block" } }}>
-        <Search />
-      </Box>
+      <Box sx={{ display: { xs: "none", md: "block" } }}></Box>
       <Box display="flex" alignItems="center" gap={1}>
         <IconButton color="grey.main" onClick={handlePopoverOpen}>
           <Person />
@@ -83,58 +71,26 @@ const MainNavbarDesktop = ({ session }) => {
           }}
         >
           <Box sx={{ p: 2 }}>
-            {isAuthenticated ? (
-              <>
-                {isAdmin && (
-                  <Button href="/admin/add-product" fullWidth sx={{ mb: 1 }}>
-                    Ir al panel
-                  </Button>
-                )}
-                {!isAdmin && (
-                  <Button href="/favorites" fullWidth sx={{ mb: 1 }}>
-                    Lista de favoritos
-                  </Button>
-                )}
-                <Button
-                  onClick={Logout}
-                  color="error"
-                  fullWidth
-                  variant="outlined"
-                >
-                  Cerrar sesión
-                </Button>
-              </>
-            ) : (
-              <>
-                <Typography fontWeight={700} variant="body1" sx={{ mb: 1 }}>
-                  Accede o crea una cuenta
-                </Typography>
-                <Button variant="contained" href="/auth/login" fullWidth>
-                  Iniciar sesión
-                </Button>
-                <Button
-                  variant="outlined"
-                  href="/auth/signup"
-                  fullWidth
-                  sx={{ mt: 1 }}
-                >
-                  Crear una cuenta
-                </Button>
-              </>
-            )}
+            <>
+              <Button
+                onClick={Logout}
+                color="error"
+                fullWidth
+                variant="outlined"
+              >
+                Cerrar sesión
+              </Button>
+            </>
           </Box>
         </Popover>
-        {!isAdmin && <Cart />}
+        <Cart />
       </Box>
     </Box>
   );
 };
 
-const MainNavbarMobile = ({ session }) => {
+const UserNavbarMobile = () => {
   const [openNavbar, setOpenNavbar] = useState(false);
-  const isAuthenticated = !!session?.user;
-  const isAdmin =
-    session?.user?.role === "admin" || session?.user?.role === "superadmin";
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -145,16 +101,6 @@ const MainNavbarMobile = ({ session }) => {
     }
 
     setOpenNavbar(open);
-  };
-
-  const showSections = () => {
-    if (!isAuthenticated) return noAuthSectionsMobile;
-
-    if (isAdmin) {
-      return adminSectionsMobile;
-    } else {
-      return userSectionsMobile;
-    }
   };
 
   return (
@@ -174,8 +120,7 @@ const MainNavbarMobile = ({ session }) => {
       </Link>
 
       <Box display="flex" alignItems="center" gap={1}>
-        <Search />
-        {!isAdmin && <Cart />}
+        <Cart />
         <IconButton
           size="large"
           edge="start"
@@ -191,22 +136,20 @@ const MainNavbarMobile = ({ session }) => {
         <BurgerMenu
           src={"/images/texcoco_logo2.svg"}
           toggleDrawer={toggleDrawer}
-          sections={showSections()}
-          showLogout={isAuthenticated}
+          sections={userSectionsMobile}
+          showLogout
         />
       </Drawer>
     </Box>
   );
 };
 
-export const MainNavbar = ({ ToolbarProps }) => {
-  const { data: session } = useSession();
-
+export const UserNavbar = () => {
   return (
     <AppBar sx={{ justifyContent: "center" }}>
-      <Toolbar sx={ToolbarProps}>
-        <MainNavbarDesktop session={session} />
-        <MainNavbarMobile session={session} />
+      <Toolbar>
+        <UserNavbarDesktop />
+        <UserNavbarMobile />
       </Toolbar>
     </AppBar>
   );
