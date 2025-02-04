@@ -7,6 +7,7 @@ import {
   Drawer,
   IconButton,
   Popover,
+  Stack,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -82,7 +83,7 @@ const MainNavbarDesktop = ({ session }) => {
             horizontal: "center",
           }}
         >
-          <Box sx={{ p: 2 }}>
+          <Stack sx={{ p: 2 }}>
             {isAuthenticated ? (
               <>
                 {isAdmin && (
@@ -91,9 +92,14 @@ const MainNavbarDesktop = ({ session }) => {
                   </Button>
                 )}
                 {!isAdmin && (
-                  <Button href="/favorites" fullWidth sx={{ mb: 1 }}>
-                    Lista de favoritos
-                  </Button>
+                  <>
+                    <Button href="/favorites" sx={{ mb: 1 }}>
+                      Lista de favoritos
+                    </Button>
+                    <Button href="/history" sx={{ mb: 1 }}>
+                      Historial de órdenes
+                    </Button>
+                  </>
                 )}
                 <Button
                   onClick={Logout}
@@ -122,7 +128,7 @@ const MainNavbarDesktop = ({ session }) => {
                 </Button>
               </>
             )}
-          </Box>
+          </Stack>
         </Popover>
         {!isAdmin && <Cart />}
       </Box>

@@ -20,7 +20,7 @@ export const OrderProvider = ({ children }) => {
       if (localData && localData.length > 0) {
         dispatch({ type: OrderTypes.loadFromLocalStorage, payload: localData });
       }
-      setLoading(false); 
+      setLoading(false);
     }
   }, []);
 
@@ -66,18 +66,8 @@ export const OrderProvider = ({ children }) => {
   );
 
   if (loading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );  }
+    return;
+  }
 
   return (
     <OrderContext.Provider

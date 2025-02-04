@@ -1,4 +1,4 @@
-import { Dashboard, Favorite, LoginOutlined, Person } from "@mui/icons-material";
+import { Dashboard, Favorite, LoginOutlined, Person, Receipt } from "@mui/icons-material";
 
 export const noAuthSectionsMobile = [
   {
@@ -37,6 +37,11 @@ export const userSectionsMobile = [
         icon: <Favorite />,
         text: "Favoritos",
         href: `/favorites`,
+      },
+      {
+        icon: <Receipt />,
+        text: "Historial de órdenes",
+        href: `/history`,
       },
     ],
   },
