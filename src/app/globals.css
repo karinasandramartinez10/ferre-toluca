@@ -31,13 +31,32 @@ a:-webkit-any-link {
     padding-left: 32px;
     padding-right: 32px;
   }
+
+  .user-layout {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+@media (min-width: 461px) and (max-width: 1440px) {
+  .user-layout {
+    flex: 1;
+    max-width: 1280px;
+    padding-left: 32px;
+    padding-right: 32px;
+    padding-top: 60px;
+  }
+}
+
+@media (min-width: 1441px) {
+  .user-layout {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 .user-layout {
   flex: 1;
-  margin: 16px auto;
   max-width: 1280px;
-  padding-left: 28px;
-  padding-right: 28px;
   padding-top: 60px;
 }

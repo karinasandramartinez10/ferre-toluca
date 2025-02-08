@@ -1,4 +1,5 @@
 import { api } from "../config";
+import { api as privateApi } from "../config/private";
 
 export const createQuote = async (body, token) => {
   try {
@@ -56,9 +57,17 @@ export const updateQuote = async (id, body, token) => {
       },
     });
 
-    return resp
+    return resp;
   } catch (error) {
     console.log(error);
+    throw new Error(error.response.data.message);
+  }
+};
+
+export const fetchOrderHistory = async (page = 1, size = 5) => {
+  try {
+    return await privateApi.get(`/quote/history?page=${page}&size=${size}`);
+  } catch (error) {
     throw new Error(error.response.data.message);
   }
 };

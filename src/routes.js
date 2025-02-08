@@ -38,7 +38,8 @@ export const superAdminRoutes = [
  * An array of routes that are used for user
  */
 export const userRoutes = [
-  "/favorites"
+  "/favorites",
+  '/history'
 ]
 
 /**
