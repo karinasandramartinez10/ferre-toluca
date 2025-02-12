@@ -1,4 +1,11 @@
-import { AddCircleOutline, Home, Menu, Storefront } from "@mui/icons-material";
+import {
+  AddBusiness,
+  AddCircleOutline,
+  Category,
+  Home,
+  Menu,
+  Storefront,
+} from "@mui/icons-material";
 import { Box, Drawer, IconButton } from "@mui/material";
 import Image from "next/image";
 import NextLink from "next/link";
@@ -13,16 +20,31 @@ export const adminSections = [
         text: "Inicio",
         href: "/",
         icon: <Home />,
-      },
-      {
-        icon: <AddCircleOutline />,
-        text: "Panel",
-        href: `/admin/add-product`,
+        visibleFor: ["admin", "superadmin"],
       },
       {
         icon: <Storefront />,
         text: "Cotizaciones",
         href: `/admin/quotes`,
+        visibleFor: ["admin"],
+      },
+      {
+        icon: <AddCircleOutline />,
+        text: "Panel",
+        href: `/admin/add-product`,
+        visibleFor: ["superadmin"],
+      },
+      {
+        icon: <AddBusiness />,
+        text: "Marcas",
+        href: "/admin/brands",
+        visibleFor: ["superadmin"],
+      },
+      {
+        text: "Categorías",
+        href: "/admin/categories",
+        icon: <Category />,
+        visibleFor: ["superadmin"],
       },
     ],
   },
@@ -34,12 +56,9 @@ const AdminNavbarMobile = ({ role }) => {
   const filteredSections = useMemo(() => {
     return adminSections.map((section) => ({
       ...section,
-      items: section.items.filter((item) => {
-        if (item.href === "/admin/add-product" && role !== "superadmin") {
-          return false;
-        }
-        return true;
-      }),
+      items: section.items.filter(
+        (item) => !item.visibleFor || item.visibleFor.includes(role)
+      ),
     }));
   }, [role]);
 

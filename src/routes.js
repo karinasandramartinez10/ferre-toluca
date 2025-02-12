@@ -22,8 +22,6 @@ export const publicRoutes = [
  * An array of routes that are used for admin
  */
 export const adminRoutes = [
-  // /^\/admin\/add-product/,
-  // /^\/admin\/quotes\/.*/,
   "/admin/quotes",
 ];
 
@@ -32,6 +30,7 @@ export const superAdminRoutes = [
   /^\/admin\/quotes\/.*/,
   "/admin/quotes",
   "/admin/brands",
+  "/admin/categories",
 ];
 
 /**

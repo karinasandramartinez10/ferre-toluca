@@ -12,7 +12,7 @@ import BrandModal from "./BrandModal";
 import BrandsTable from "./BrandsTable";
 import { useSnackbar } from "notistack";
 import { toCamelCase, toCapitalizeFirstLetter } from "../../../../utils/cases";
-import DeleteConfirmationDialog from "./DeleteConfirmationDialog";
+import DeleteConfirmationDialog from "../../../../components/DeleteConfirmationDialog";
 
 const Brands = ({ user }) => {
   const [rows, setRows] = useState([]);
