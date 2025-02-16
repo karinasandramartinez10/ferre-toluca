@@ -11,7 +11,9 @@ export const MainPage = ({
   return (
     <>
       <BrandCarousel brands={brands} />
-      <Products products={products} session={session} />
+      {session.user.role === "user" && (
+        <Products products={products} session={session} />
+      )}
     </>
   );
 };
