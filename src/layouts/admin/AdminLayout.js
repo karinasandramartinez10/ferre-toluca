@@ -5,6 +5,7 @@ import {
   AddCircleOutline,
   Home,
   Storefront,
+  Category
 } from "@mui/icons-material";
 import {
   AppBar,
@@ -51,6 +52,12 @@ const listItems = [
     text: "Marcas",
     pathname: "/admin/brands",
     icon: <AddBusiness sx={{ fontSize: 20 }} />,
+    visibleFor: ["superadmin"],
+  },
+  {
+    text: "Categorías",
+    pathname: "/admin/categories",
+    icon: <Category sx={{ fontSize: 20 }} />,
     visibleFor: ["superadmin"],
   },
 ];
