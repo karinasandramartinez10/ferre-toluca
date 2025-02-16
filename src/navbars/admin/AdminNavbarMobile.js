@@ -52,6 +52,12 @@ export const adminSections = [
         icon: <Category />,
         visibleFor: ["superadmin"],
       },
+      {
+        text: "Tipos de producto",
+        href: "/admin/product-type",
+        icon: <Category sx={{ fontSize: 20 }} />,
+        visibleFor: ["superadmin"],
+      },
     ],
   },
 ];
