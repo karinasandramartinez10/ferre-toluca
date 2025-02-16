@@ -60,6 +60,12 @@ const listItems = [
     icon: <Category sx={{ fontSize: 20 }} />,
     visibleFor: ["superadmin"],
   },
+  {
+    text: "Subcategorías",
+    pathname: "/admin/subcategories",
+    icon: <Category sx={{ fontSize: 20 }} />,
+    visibleFor: ["superadmin"],
+  },
 ];
 
 const getPageTitle = (pathname) => {

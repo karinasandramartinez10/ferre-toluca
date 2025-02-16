@@ -46,6 +46,12 @@ export const adminSections = [
         icon: <Category />,
         visibleFor: ["superadmin"],
       },
+      {
+        text: "Subcategorías",
+        href: "/admin/subcategories",
+        icon: <Category />,
+        visibleFor: ["superadmin"],
+      },
     ],
   },
 ];

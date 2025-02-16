@@ -6,18 +6,15 @@ import {
   createBrand,
   getBrands,
   updateBrand,
-  deleteBrand,
 } from "../../../../api/admin/brands";
 import BrandModal from "./BrandModal";
 import BrandsTable from "./BrandsTable";
 import { useSnackbar } from "notistack";
 import { toCamelCase, toCapitalizeFirstLetter } from "../../../../utils/cases";
-import DeleteConfirmationDialog from "../../../../components/DeleteConfirmationDialog";
 
 const Brands = ({ user }) => {
   const [rows, setRows] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
   const [mode, setMode] = useState("create");
@@ -124,36 +121,6 @@ const Brands = ({ user }) => {
     }
   };
 
-  const handleDeleteBrand = async () => {
-    try {
-      setLoading(true);
-      await deleteBrand(selectedBrand.id, user.access_token);
-      setRows((prevRows) =>
-        prevRows.filter((row) => row.id !== selectedBrand.id)
-      );
-      enqueueSnackbar("Marca eliminada exitósamente", {
-        variant: "success",
-        autoHideDuration: 5000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "right",
-        },
-      });
-      setLoading(false);
-      setIsDialogOpen(false);
-    } catch (error) {
-      setLoading(false);
-      enqueueSnackbar("Hubo un error al eliminar la marca", {
-        variant: "error",
-        autoHideDuration: 5000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "right",
-        },
-      });
-    }
-  };
-
   const openEditModal = (brand) => {
     setSelectedBrand(brand);
     setMode("edit");
@@ -164,11 +131,6 @@ const Brands = ({ user }) => {
     setSelectedBrand(null);
     setMode("create");
     setIsModalOpen(true);
-  };
-
-  const openDeleteDialog = (brand) => {
-    setSelectedBrand(brand);
-    setIsDialogOpen(true);
   };
 
   return (
@@ -194,7 +156,6 @@ const Brands = ({ user }) => {
       <BrandsTable
         rows={rows}
         onEditClick={openEditModal}
-        onDeleteClick={openDeleteDialog}
       />
       <BrandModal
         open={isModalOpen}
@@ -203,14 +164,6 @@ const Brands = ({ user }) => {
         mode={mode}
         selectedBrand={selectedBrand}
         loading={loading}
-      />
-      <DeleteConfirmationDialog
-        open={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        onConfirm={handleDeleteBrand}
-        loading={loading}
-        title="Eliminar Marca"
-        description={`¿Estás seguro de que quieres eliminar la marca "${selectedBrand?.name}"? Esta acción no se puede deshacer.`}
       />
     </Grid>
   );

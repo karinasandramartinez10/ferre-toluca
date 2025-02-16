@@ -1,10 +1,9 @@
-import { Delete, Edit } from "@mui/icons-material";
+import { Edit } from "@mui/icons-material";
 import { Box } from "@mui/material";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import Image from "next/image";
 
-const BrandsTable = ({ rows, onEditClick, onDeleteClick }) => {
-
+const BrandsTable = ({ rows, onEditClick }) => {
   return (
     <Box
       sx={{
@@ -50,13 +49,6 @@ const BrandsTable = ({ rows, onEditClick, onDeleteClick }) => {
                   icon={<Edit />}
                   label="Edit"
                   onClick={() => onEditClick(row)}
-                  color="inherit"
-                />,
-                <GridActionsCellItem
-                  key={`delete-${row.id}`}
-                  icon={<Delete />}
-                  label="Delete"
-                  onClick={() => onDeleteClick(row)}
                   color="inherit"
                 />,
               ];
