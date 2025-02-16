@@ -28,42 +28,43 @@ const PrevArrow = (props) => {
   );
 };
 
-const settings = (handleBeforeChange, handleAfterChange) => ({
+const settings = (handleBeforeChange, handleAfterChange, productCount) => ({
   dots: true,
   speed: 500,
-  slidesToShow: 4,
-  slidesToScroll: 4,
-  nextArrow: <NextArrow />,
-  prevArrow: <PrevArrow />,
+  slidesToShow: productCount < 4 ? productCount : 4, // Si hay menos de 4, solo muestra esa cantidad
+  slidesToScroll: productCount < 4 ? productCount : 4, // Ajusta cuántos productos avanza por cada slide
+  infinite: productCount >= 4,
+  nextArrow: productCount >= 4 ? <NextArrow /> : null, // Oculta flechas si hay menos de 4
+  prevArrow: productCount >= 4 ? <PrevArrow /> : null,
   beforeChange: handleBeforeChange,
   afterChange: handleAfterChange,
   responsive: [
     {
       breakpoint: 1280,
       settings: {
-        slidesToShow: 4,
-        slidesToScroll: 4,
+        slidesToShow: productCount < 4 ? productCount : 4,
+        slidesToScroll: productCount < 4 ? productCount : 4,
       },
     },
     {
       breakpoint: 1024,
       settings: {
-        slidesToShow: 4,
-        slidesToScroll: 4,
+        slidesToShow: productCount < 4 ? productCount : 4,
+        slidesToScroll: productCount < 4 ? productCount : 4,
       },
     },
     {
       breakpoint: 768,
       settings: {
-        slidesToShow: 3,
-        slidesToScroll: 3,
+        slidesToShow: productCount < 3 ? productCount : 3,
+        slidesToScroll: productCount < 3 ? productCount : 3,
       },
     },
     {
       breakpoint: 600,
       settings: {
-        slidesToShow: 2,
-        slidesToScroll: 2,
+        slidesToShow: productCount < 2 ? productCount : 2,
+        slidesToScroll: productCount < 2 ? productCount : 2,
       },
     },
     {
@@ -76,10 +77,8 @@ const settings = (handleBeforeChange, handleAfterChange) => ({
   ],
 });
 
-const Products = ({ session, products }) => {
+const Products = ({ products }) => {
   const [_, setDragging] = useState(false);
-
-  const isAdmin = session?.user.role !== "user";
 
   const handleBeforeChange = () => setDragging(true);
   const handleAfterChange = () => setDragging(false);
@@ -95,14 +94,15 @@ const Products = ({ session, products }) => {
       <Typography component="h1" variant="h1">
         Productos
       </Typography>
-      <Slider {...settings(handleBeforeChange, handleAfterChange)}>
-        {products.map((product, index) => (
-          <Box key={index} mt={1} mb={2} pr={2}>
+      <Slider
+        {...settings(handleBeforeChange, handleAfterChange, products.length)}
+      >
+        {products.map((product, i) => (
+          <Box key={`${product.id} - ${i}`} mt={1} mb={2} pr={2}>
             <ProductCard
               key={product.id}
               product={product}
               onViewMore={handleProductClick}
-              showBtns={!isAdmin}
             />
           </Box>
         ))}

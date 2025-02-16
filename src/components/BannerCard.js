@@ -14,9 +14,6 @@ export const BannerCard = ({ height, src, onClick, alt = "brand-card" }) => {
         backgroundColor: "#fff",
         overflow: "hidden",
         cursor: "pointer",
-        "&:hover .brand-image": {
-          filter: "grayscale(0%) brightness(100%)",
-        },
       }}
     >
       <CardMedia
@@ -29,7 +26,6 @@ export const BannerCard = ({ height, src, onClick, alt = "brand-card" }) => {
           objectFit: "contain",
           height: "100%",
           width: "100%",
-          filter: "grayscale(100%) brightness(80%)",
           transition: "filter 0.2s ease-in-out",
         }}
       />
