@@ -5,18 +5,15 @@ import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import {
   createCategory,
-  deleteCategory,
   getCategories,
   updateCategory,
 } from "../../../../api/category";
 import ActionModal from "../../../../components/ActionModal";
-import DeleteConfirmationDialog from "../../../../components/DeleteConfirmationDialog";
-import CategoriesTable from "./CategoriesTable";
+import CategoriesTable from "../../../../components/CrudAdminTable";
 
 const Categories = () => {
   const [rows, setRows] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [mode, setMode] = useState("create");
@@ -106,36 +103,6 @@ const Categories = () => {
     }
   };
 
-  const handleDeleteCategory = async () => {
-    try {
-      setLoading(true);
-      await deleteCategory(selectedCategory.id);
-      setRows((prevRows) =>
-        prevRows.filter((row) => row.id !== selectedCategory.id)
-      );
-      enqueueSnackbar("Categoría eliminada exitósamente", {
-        variant: "success",
-        autoHideDuration: 5000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "right",
-        },
-      });
-      setLoading(false);
-      setIsDialogOpen(false);
-    } catch (error) {
-      setLoading(false);
-      enqueueSnackbar("Hubo un error al eliminar la categoría", {
-        variant: "error",
-        autoHideDuration: 5000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "right",
-        },
-      });
-    }
-  };
-
   const openEditModal = (category) => {
     setSelectedCategory(category);
     setMode("edit");
@@ -146,11 +113,6 @@ const Categories = () => {
     setSelectedCategory(null);
     setMode("create");
     setIsModalOpen(true);
-  };
-
-  const openDeleteDialog = (category) => {
-    setSelectedCategory(category);
-    setIsDialogOpen(true);
   };
 
   return (
@@ -175,24 +137,17 @@ const Categories = () => {
       </Grid>
       <CategoriesTable
         rows={rows}
+        columns={[{ field: "name", headerName: "Nombre", flex: 1 }]}
         onEditClick={openEditModal}
-        onDeleteClick={openDeleteDialog}
       />
       <ActionModal
+        title="Categoría"
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={mode === "create" ? handleAddCategory : handleEditCategory}
         mode={mode}
         selected={selectedCategory}
         loading={loading}
-      />
-      <DeleteConfirmationDialog
-        open={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        onConfirm={handleDeleteCategory}
-        loading={loading}
-        title="Eliminar Categoría"
-        description={`¿Estás seguro de que quieres eliminar la categoría "${selectedCategory?.name}"? Esta acción no se puede deshacer.`}
       />
     </Grid>
   );

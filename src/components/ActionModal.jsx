@@ -7,7 +7,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  MenuItem,
+  Select,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -23,12 +27,16 @@ const defaultValues = {
 };
 
 const ActionModal = ({
+  title = "",
+  optionTitle = "",
   open,
   onClose,
   onSubmit,
   loading,
   mode = "create",
   selected,
+  options = [],
+  option,
 }) => {
   const {
     control,
@@ -45,6 +53,7 @@ const ActionModal = ({
   useEffect(() => {
     if (mode === "edit" && selected) {
       setValue("name", selected.name);
+      setValue(option, selected.category?.id || "");
     }
   }, [mode, selected, setValue]);
 
@@ -65,7 +74,7 @@ const ActionModal = ({
   return (
     <Dialog open={open} onClose={handleCloseModal} fullWidth maxWidth="md">
       <DialogTitle sx={{ fontWeight: 600 }}>
-        {mode === "create" ? "Agregar Categoría" : "Editar Categoría"}
+        {mode === "create" ? `Agregar ${title}` : `Editar ${title}`}
       </DialogTitle>
       <DialogContent>
         <Box display="flex" flexDirection="column" gap={2} mt={1}>
@@ -83,6 +92,31 @@ const ActionModal = ({
               />
             )}
           />
+          {options.length > 0 && (
+            <>
+              <Typography fontWeight={600}>{optionTitle}</Typography>
+              <Controller
+                control={control}
+                name={option}
+                render={({ field }) => (
+                  <FormControl sx={{ minWidth: 120 }} size="small">
+                    <Select
+                      {...field}
+                      value={field.value || ""}
+                      fullWidth
+                      sx={{ background: "#FFF" }}
+                    >
+                      {options.map((option) => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
+              />
+            </>
+          )}
           {loading && <UploadingMessage />}
         </Box>
       </DialogContent>
