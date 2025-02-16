@@ -147,7 +147,7 @@ const Brands = ({ user }) => {
               sx={{ color: "#838383", fontWeight: 500 }}
               variant="body"
             >
-              Agrega, edita o elimina tus proveedores
+              Agrega o edita tus proveedores
             </Typography>
             <Button onClick={openAddModal}>Agregar</Button>
           </Box>

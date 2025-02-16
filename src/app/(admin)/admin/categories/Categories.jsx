@@ -129,7 +129,7 @@ const Categories = () => {
               sx={{ color: "#838383", fontWeight: 500 }}
               variant="body"
             >
-              Agrega, edita o elimina categorías
+              Agrega o edita categorías
             </Typography>
             <Button onClick={openAddModal}>Agregar</Button>
           </Box>
