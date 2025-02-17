@@ -20,6 +20,7 @@ export default auth(async (req) => {
   const { nextUrl } = req;
 
   const token = await getToken({ req, secret });
+
   const isLoggedIn = !!req.auth;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
@@ -96,6 +97,7 @@ export default auth(async (req) => {
 
   return null;
 });
+
 
 export const config = {
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
