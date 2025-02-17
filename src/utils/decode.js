@@ -1,8 +1,8 @@
-import jwt from "jsonwebtoken";
+import { decodeJwt } from "jose";
 
 export function decodeToken(accessToken) {
   try {
-    return jwt.decode(accessToken);
+    return decodeJwt(accessToken);
   } catch (error) {
     console.error("Error decoding token:", error);
     return null;
