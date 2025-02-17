@@ -135,7 +135,7 @@ const BrandCarousel = ({ brands }) => {
             <Box key={index} mt={1} mb={2} pr={2}>
               <BannerCard
                 height="120px"
-                src={`/images/${brand.codeName}.png`}
+                src={brand?.File.path}
                 onClick={() => handleBrandClick(brand.codeName, brand.id)}
                 alt={brand.name}
               />

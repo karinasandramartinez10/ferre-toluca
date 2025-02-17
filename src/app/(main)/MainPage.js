@@ -8,7 +8,6 @@ export const MainPage = ({
   products = [],
   session,
 }) => {
-  console.log(session)
   return (
     <>
       <BrandCarousel brands={brands} />
