@@ -1,7 +1,4 @@
-import { getToken } from "next-auth/jwt";
-import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
-import authConfig from "./auth.config";
 import {
   adminRoutes,
   apiAuthPrefix,
@@ -12,20 +9,20 @@ import {
   superAdminRoutes,
   userRoutes,
 } from "./routes";
+import { auth } from "./auth";
 
-const secret = process.env.NEXTAUTH_SECRET;
-const { auth } = NextAuth(authConfig);
-
-export default auth(async (req) => {
+export default async function middleware(req) {
   const { nextUrl } = req;
-  const token = await getToken({ req, secret });
+
+  const session = await auth();
+  const userRole = session?.user?.role;
 
   console.log("Middleware Debug:");
   console.log("Pathname:", nextUrl.pathname);
-  console.log("Token:", token);
-  console.log("Token Role:", token?.data?.role);
+  console.log("Session:", session);
+  console.log("User Role:", userRole);
 
-  const isLoggedIn = !!req.auth;
+  const isLoggedIn = !!session;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
@@ -50,12 +47,10 @@ export default auth(async (req) => {
       : route.test(nextUrl.pathname)
   );
 
-  // Permitir acceso a rutas de API de autenticación
   if (isApiAuthRoute) {
     return NextResponse.next();
   }
 
-  // Redirigir si ya está autenticado en rutas de autenticación
   if (isAuthRoute) {
     if (isLoggedIn) {
       console.log(
@@ -67,9 +62,8 @@ export default auth(async (req) => {
     return NextResponse.next();
   }
 
-  // Manejo de rutas protegidas por rol
   if (isUserRoute) {
-    if (isLoggedIn && token?.data?.role === "user") {
+    if (isLoggedIn && userRole === "user") {
       return NextResponse.next(); // Permitir acceso
     }
     console.log(
@@ -82,7 +76,7 @@ export default auth(async (req) => {
   }
 
   if (isAdminRoute) {
-    if (isLoggedIn && ["admin", "superadmin"].includes(token?.data?.role)) {
+    if (isLoggedIn && ["admin", "superadmin"].includes(userRole)) {
       return NextResponse.next(); // Permitir acceso
     }
     console.log(
@@ -93,7 +87,7 @@ export default auth(async (req) => {
   }
 
   if (isSuperAdminRoute) {
-    if (isLoggedIn && token?.data?.role === "superadmin") {
+    if (isLoggedIn && userRole === "superadmin") {
       return NextResponse.next(); // Permitir acceso
     }
     console.log(
@@ -105,7 +99,6 @@ export default auth(async (req) => {
     );
   }
 
-  // Redirigir a login si no está autenticado y no es una ruta pública
   if (!isLoggedIn && !isPublicRoute) {
     let callbackUrl = nextUrl.pathname;
     if (nextUrl.search) {
@@ -122,10 +115,9 @@ export default auth(async (req) => {
     );
   }
 
-  // Permitir acceso a rutas públicas y cuando no hay redirección
   console.log("Middleware: Permitiendo acceso.");
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
