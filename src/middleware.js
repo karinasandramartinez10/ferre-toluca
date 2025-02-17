@@ -17,11 +17,6 @@ export default async function middleware(req) {
   const session = await auth();
   const userRole = session?.user?.role;
 
-  console.log("Middleware Debug:");
-  console.log("Pathname:", nextUrl.pathname);
-  console.log("Session:", session);
-  console.log("User Role:", userRole);
-
   const isLoggedIn = !!session;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
@@ -53,10 +48,6 @@ export default async function middleware(req) {
 
   if (isAuthRoute) {
     if (isLoggedIn) {
-      console.log(
-        "Middleware: Usuario autenticado, redirigiendo a:",
-        DEFAULT_LOGIN_REDIRECT
-      );
       return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
     return NextResponse.next();
@@ -66,10 +57,6 @@ export default async function middleware(req) {
     if (isLoggedIn && userRole === "user") {
       return NextResponse.next(); // Permitir acceso
     }
-    console.log(
-      "Middleware: Usuario no autorizado, redirigiendo a:",
-      DEFAULT_ADMIN_LOGIN_REDIRECT
-    );
     return NextResponse.redirect(
       new URL(DEFAULT_ADMIN_LOGIN_REDIRECT, nextUrl)
     );
@@ -79,10 +66,6 @@ export default async function middleware(req) {
     if (isLoggedIn && ["admin", "superadmin"].includes(userRole)) {
       return NextResponse.next(); // Permitir acceso
     }
-    console.log(
-      "Middleware: Admin no autorizado, redirigiendo a:",
-      DEFAULT_LOGIN_REDIRECT
-    );
     return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
   }
 
@@ -90,10 +73,6 @@ export default async function middleware(req) {
     if (isLoggedIn && userRole === "superadmin") {
       return NextResponse.next(); // Permitir acceso
     }
-    console.log(
-      "Middleware: Superadmin no autorizado, redirigiendo a:",
-      DEFAULT_ADMIN_LOGIN_REDIRECT
-    );
     return NextResponse.redirect(
       new URL(DEFAULT_ADMIN_LOGIN_REDIRECT, nextUrl)
     );
@@ -104,18 +83,12 @@ export default async function middleware(req) {
     if (nextUrl.search) {
       callbackUrl += nextUrl.search;
     }
-
     const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-    console.log(
-      "Middleware: No autenticado, redirigiendo a login con callbackUrl:",
-      encodedCallbackUrl
-    );
     return NextResponse.redirect(
       new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
     );
   }
 
-  console.log("Middleware: Permitiendo acceso.");
   return NextResponse.next();
 }
 
