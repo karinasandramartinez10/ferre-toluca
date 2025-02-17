@@ -146,7 +146,7 @@ const Subcategories = () => {
               sx={{ color: "#838383", fontWeight: 500 }}
               variant="body"
             >
-              Agrega, edita o elimina subcategorías
+              Agrega o edita subcategorías
             </Typography>
             <Button onClick={openAddModal}>Agregar</Button>
           </Box>
