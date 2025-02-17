@@ -6,12 +6,13 @@ import Products from "./Products";
 export const MainPage = ({
   brands = [],
   products = [],
-  session = { session },
+  session,
 }) => {
+  console.log(session)
   return (
     <>
       <BrandCarousel brands={brands} />
-      {session.user.role === "user" && (
+      {session?.user.role === "user" && (
         <Products products={products} session={session} />
       )}
     </>
