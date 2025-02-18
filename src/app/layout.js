@@ -14,22 +14,22 @@ export const metadata = {
   title: "Ferretería Texcoco",
   description: "Ferretería Texcoco",
   icons: {
-    icon: '/iso_texcoco.svg'
-  }
+    icon: "/iso_texcoco.svg",
+  },
 };
 
 export default async function RootLayout({ children }) {
   const session = await auth();
 
   return (
-    <SessionProvider session={session}>
-      <html lang="en">
-        <body className={inter.className}>
-          <AppRouterCacheProvider>
-            <Providers>{children}</Providers>
-          </AppRouterCacheProvider>
-        </body>
-      </html>
-    </SessionProvider>
+    <html lang="en">
+      <body className={inter.className}>
+        <AppRouterCacheProvider>
+          <Providers>
+            <SessionProvider session={session}>{children}</SessionProvider>
+          </Providers>
+        </AppRouterCacheProvider>
+      </body>
+    </html>
   );
 }
