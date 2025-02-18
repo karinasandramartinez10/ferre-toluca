@@ -1,13 +1,13 @@
 "use client";
 
 import { Box, IconButton, TextField, Typography } from "@mui/material";
-import { useOrder } from "../../../hooks/order/useOrder";
 import Image from "next/image";
 import {
   Add as AddIcon,
   Remove as RemoveIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
+import { useOrder } from "../../../hooks/order/useOrder";
 
 const CheckoutNewPage = ({ session }) => {
   console.log("✅ CheckoutNewPage se está renderizando");
@@ -51,7 +51,7 @@ const CheckoutNewPage = ({ session }) => {
           gap={2}
         >
           <Image
-            src={product.Files && product.Files[0]?.path}
+            src={product.Files?.[0]?.path ?? "/images/placeholder.png"}
             alt={product.name}
             width={80}
             height={80}
