@@ -8,13 +8,14 @@ import {
 } from "./OrderActions";
 import { initialOrderState, orderReducer } from "./OrderReducer";
 import { OrderTypes } from "./OrderTypes";
-import { Box, CircularProgress } from "@mui/material";
 
 export const OrderProvider = ({ children }) => {
   const [state, dispatch] = useReducer(orderReducer, initialOrderState);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("✅ OrderProvider se ha montado en la app."); 
+
     if (typeof window !== "undefined") {
       const localData = loadOrderFromLocalStorage();
       if (localData && localData.length > 0) {

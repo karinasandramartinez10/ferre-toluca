@@ -10,6 +10,7 @@ export const saveOrderToLocalStorage = (orderItems) => {
 
 
 export const loadOrderFromLocalStorage = () => {
+  if (typeof window === "undefined") return []; 
   const savedItems = localStorage.getItem("orderItems");
   return savedItems ? JSON.parse(savedItems) : [];
 };
