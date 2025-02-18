@@ -16,7 +16,6 @@ import {
 } from "@mui/icons-material";
 import { useOrder } from "../../../hooks/order/useOrder";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 import { signIn } from "next-auth/react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -33,7 +32,6 @@ const QuoteSchema = yup.object().shape({
 
 const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
 
   const isAuthenticated = !!session?.user;
 
