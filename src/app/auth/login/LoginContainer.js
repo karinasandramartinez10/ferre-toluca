@@ -1,3 +1,5 @@
+"use client"
+
 import { Box, Divider, Link, Stack, Typography } from "@mui/material";
 import NextLink from "next/link";
 
