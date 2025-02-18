@@ -4,6 +4,7 @@ console.log("CheckoutPage: Cargando en producción...");
 
 console.log("Importando MUI Components...");
 import { Box, Typography, Button, TextField, IconButton } from "@mui/material";
+import dynamic from "next/dynamic";
 
 console.log("Importando MUI Icons...");
 import {
@@ -38,8 +39,10 @@ console.log("Importando useState...");
 import { useState } from "react";
 
 console.log("Importando Login Components...");
-import { LoginContainer } from "../../auth/login/LoginContainer";
-import { LoginForm } from "../../auth/login/LoginForm";
+// Importar dinámicamente LoginContainer y LoginForm
+const LoginContainer = dynamic(() => import("../../auth/login/LoginContainer"), { ssr: false });
+const LoginForm = dynamic(() => import("../../auth/login/LoginForm"), { ssr: false });
+
 
 const QuoteSchema = yup.object().shape({
   message: yup.string().required("El mensaje es requerido"),
