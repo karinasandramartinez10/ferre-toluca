@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react";
 import { useDebounce } from "../hooks/use-debounce";
 import { getProductsByQuery } from "../api/products";
