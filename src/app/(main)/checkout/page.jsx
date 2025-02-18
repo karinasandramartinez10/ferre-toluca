@@ -1,9 +1,6 @@
-"use client"
+"use client";
+import CheckoutPage from "./CheckoutPage";
 
-import dynamic from "next/dynamic";
-
-const CheckoutPage = dynamic(() => import("./CheckoutPage"), { ssr: false });
-
-export default async function Page() {
+export default function Page() {
   return <CheckoutPage />;
 }
