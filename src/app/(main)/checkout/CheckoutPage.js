@@ -27,8 +27,6 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
 
-  console.log("CheckoutPage - Session Data:", session);
-
   const isAuthenticated = !!session?.user;
 
   const {

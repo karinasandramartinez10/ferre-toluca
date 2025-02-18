@@ -1,5 +1,5 @@
 "use client";
-
+import dynamic from "next/dynamic";
 import {
   AppBar,
   Box,
@@ -24,7 +24,8 @@ import { BurgerMenu } from "../../components/BurgerMenu";
 import { Menu, Person } from "@mui/icons-material";
 import { logout } from "../../actions/logout";
 import Cart from "../../components/Cart";
-import Search from "../../components/Search";
+
+const Search = dynamic(() => import("../../components/Search"), { ssr: false });
 
 const MainNavbarDesktop = ({ session }) => {
   const [anchorEl, setAnchorEl] = useState(null);
