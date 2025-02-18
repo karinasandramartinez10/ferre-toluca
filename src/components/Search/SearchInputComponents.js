@@ -80,7 +80,7 @@ export const SearchList = ({ products, handleProductClick }) => (
           }}
         >
           <Image
-            src={product.Files && product.Files[0]?.path}
+            src={product.Files?.[0]?.path ?? "/images/placeholder.png"}
             alt={product.name}
             width={50}
             height={50}
