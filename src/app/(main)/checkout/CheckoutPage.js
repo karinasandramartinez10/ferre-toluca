@@ -1,48 +1,25 @@
 "use client";
 
-console.log("CheckoutPage: Cargando en producción...");
-
-console.log("Importando MUI Components...");
 import { Box, Typography, Button, TextField, IconButton } from "@mui/material";
-import dynamic from "next/dynamic";
 
-console.log("Importando MUI Icons...");
 import {
   Add as AddIcon,
   Remove as RemoveIcon,
   Delete as DeleteIcon,
 } from "@mui/icons-material";
-
-console.log("Importando Hooks...");
 import { useOrder } from "../../../hooks/order/useOrder";
-
-console.log("Importando Next.js Components...");
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { signIn } from "next-auth/react";
-
-console.log("Importando Validaciones...");
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
-
-console.log("Importando Notificaciones...");
 import { useSnackbar } from "notistack";
-
-console.log("Importando API Calls...");
 import { createQuote } from "../../../api/quote";
-
-console.log("Importando LoadingButton...");
 import { LoadingButton } from "@mui/lab";
-
-console.log("Importando useState...");
 import { useState } from "react";
-
-console.log("Importando Login Components...");
-// Importar dinámicamente LoginContainer y LoginForm
-const LoginContainer = dynamic(() => import("../../auth/login/LoginContainer"), { ssr: false });
-const LoginForm = dynamic(() => import("../../auth/login/LoginForm"), { ssr: false });
-
+import LoginContainer from "../../auth/login/LoginContainer";
+import LoginForm from "../../auth/login/LoginForm";
 
 const QuoteSchema = yup.object().shape({
   message: yup.string().required("El mensaje es requerido"),
@@ -122,16 +99,6 @@ const CheckoutPage = () => {
     }
   };
 
-  if (orderItems.length === 0) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h4" textAlign="center">
-          Tu carrito está vacío.
-        </Typography>
-      </Box>
-    );
-  }
-
   const onSignIn = async ({ email, password }) => {
     try {
       await signIn("credentials", {
@@ -152,6 +119,16 @@ const CheckoutPage = () => {
       return;
     }
   };
+
+  if (orderItems.length === 0) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h4" textAlign="center">
+          Tu carrito está vacío.
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box width="100%" sx={{ p: 2 }}>

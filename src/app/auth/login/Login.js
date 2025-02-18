@@ -4,9 +4,9 @@ import { Grid } from "@mui/material";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useSnackbar } from "notistack";
-import { LoginContainer } from "./LoginContainer";
-import { LoginForm } from "./LoginForm";
 import { LoadingButton } from "@mui/lab";
+import LoginContainer from "./LoginContainer";
+import LoginForm from './LoginForm'
 
 const Login = () => {
   const { enqueueSnackbar } = useSnackbar();

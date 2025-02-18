@@ -10,7 +10,7 @@ import {
 import { LoginSchema } from "../../../schemas/auth/login";
 import { runIfFn } from "../../../utils/function";
 
-export const LoginForm = ({ onSubmit, loading, error, children }) => {
+const LoginForm = ({ onSubmit, loading, error, children }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -104,3 +104,5 @@ export const LoginForm = ({ onSubmit, loading, error, children }) => {
     </Grid>
   );
 };
+
+export default LoginForm

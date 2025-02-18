@@ -1,7 +1,7 @@
 import { Box, Divider, Link, Stack, Typography } from "@mui/material";
 import NextLink from "next/link";
 
-export const LoginContainer = ({ children }) => {
+const LoginContainer = ({ children }) => {
   return (
     <Box zIndex={2} margin={3}>
       <Stack gap={1}>
@@ -61,3 +61,5 @@ export const LoginContainer = ({ children }) => {
     </Box>
   );
 };
+
+export default LoginContainer
