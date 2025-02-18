@@ -1,6 +1,13 @@
 "use client";
 
-import { Box, Typography, Button, TextField, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  TextField,
+  IconButton,
+  Stack,
+} from "@mui/material";
 
 import {
   Add as AddIcon,
@@ -18,8 +25,7 @@ import { useSnackbar } from "notistack";
 import { createQuote } from "../../../api/quote";
 import { LoadingButton } from "@mui/lab";
 import { useState } from "react";
-import LoginContainer from "../../auth/login/LoginContainer";
-import LoginForm from "../../auth/login/LoginForm";
+import NextLink from "next/link";
 
 const QuoteSchema = yup.object().shape({
   message: yup.string().required("El mensaje es requerido"),
@@ -271,24 +277,18 @@ const CheckoutPage = () => {
           </Box>
         </>
       ) : (
-        <LoginContainer>
-          <LoginForm onSubmit={onSignIn}>
-            {({ loading, isValid }) => (
-              <>
-                <LoadingButton
-                  loading={loading}
-                  disabled={!isValid}
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  // href="/auth/login"
-                >
-                  Iniciar sesión
-                </LoadingButton>
-              </>
-            )}
-          </LoginForm>
-        </LoginContainer>
+        <Stack alignItems="center">
+          <Box>
+            <Button
+              variant="contained"
+              color="primary"
+              LinkComponent={NextLink}
+              href="/auth/login"
+            >
+              Iniciar sesion
+            </Button>
+          </Box>
+        </Stack>
       )}
     </Box>
   );
