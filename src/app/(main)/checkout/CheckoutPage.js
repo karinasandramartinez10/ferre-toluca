@@ -30,7 +30,7 @@ const QuoteSchema = yup.object().shape({
   message: yup.string().required("El mensaje es requerido"),
 });
 
-const CheckoutPage = () => {
+const CheckoutPage = ({ session }) => {
   const [loading, setLoading] = useState(false);
 
   const isAuthenticated = !!session?.user;
