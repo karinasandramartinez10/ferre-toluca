@@ -17,6 +17,7 @@ import {
 import { signIn } from "next-auth/react";
 import { format } from "date-fns";
 import { useSnackbar } from "notistack";
+import { es } from "date-fns/locale";
 import { registerUser } from "../../../api/auth";
 import * as yup from "yup";
 import { differenceInYears } from "date-fns";
@@ -58,7 +59,7 @@ const SignUp = () => {
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
 
-  const router = useRouter()
+  const router = useRouter();
 
   const SignUpSchema = yup.object().shape({
     name: yup.string().required("Nombre es obligatorio"),
@@ -144,8 +145,8 @@ const SignUp = () => {
     }
 
     await signIn("credentials", { email, password, redirectTo: "/" });
-    window.location.replace('/');
-    router.replace('/')
+    window.location.replace("/");
+    router.replace("/");
   };
 
   return (
@@ -339,11 +340,15 @@ const SignUp = () => {
                       field: { onChange, value },
                       fieldState: { error },
                     }) => (
-                      <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <LocalizationProvider
+                        dateAdapter={AdapterDateFns}
+                        adapterLocale={es}
+                      >
                         <DatePicker
                           label="Fecha de nacimiento"
                           value={value}
                           onChange={onChange}
+                          format="dd/MM/yyyy"
                           // defaultValue={null}
                           sx={{
                             background: "#FFF",
