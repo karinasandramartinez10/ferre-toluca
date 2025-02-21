@@ -1,7 +1,7 @@
 "use client";
 
 import { Visibility } from "@mui/icons-material";
-import { Box, Button, IconButton, Stack, styled } from "@mui/material";
+import { Box, IconButton, Stack, styled } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -92,6 +92,12 @@ const calculateTotalQuantity = (products) => {
 
 export const Quotes = () => {
   const [quotes, setQuotes] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -112,7 +118,7 @@ export const Quotes = () => {
         </Stack>
       ),
     },
-    { field: "id", headerName: "ID", width: 85 },
+    // { field: "id", headerName: "ID", width: 85 },
     {
       field: "fullname",
       headerName: "Cliente",
@@ -163,9 +169,14 @@ export const Quotes = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const fetchedData = await fetchQuotes(data.user.access_token);
+        const { quotes, totalCount } = await fetchQuotes(
+          data.user.access_token,
+          paginationModel.page + 1, // Ajustar para backend (MUI usa base 0, backend usa base 1)
+          paginationModel.pageSize
+        );
         setLoading(false);
-        setQuotes(fetchedData);
+        setQuotes(quotes);
+        setTotalCount(totalCount || 0);
       } catch (error) {
         setLoading(false);
         setError(true);
@@ -173,7 +184,7 @@ export const Quotes = () => {
     };
 
     fetchData();
-  }, [data.user.access_token]);
+  }, [data.user.access_token, paginationModel]);
 
   if (loading) {
     return <Loading />;
@@ -186,6 +197,8 @@ export const Quotes = () => {
       <DataGrid
         rows={quotes}
         columns={columns}
+        rowCount={totalCount}
+        paginationMode="server"
         initialState={{
           pagination: {
             paginationModel: {
@@ -193,7 +206,9 @@ export const Quotes = () => {
             },
           },
         }}
-        pageSizeOptions={[10]}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        pageSizeOptions={[5, 10, 20]}
         disableRowSelectionOnClick
         sx={{
           "& .MuiDataGrid-columnHeaderTitle": {

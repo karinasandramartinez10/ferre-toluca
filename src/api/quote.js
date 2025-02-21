@@ -16,18 +16,25 @@ export const createQuote = async (body, token) => {
   }
 };
 
-export const fetchQuotes = async (token) => {
+export const fetchQuotes = async (token, page = 1, size = 10) => {
   try {
     const { data } = await api.get("/quote", {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
+      params: {
+        page,
+        size,
+      },
     });
+
+    console.log('data',data.data)
+
     return data.data;
   } catch (error) {
-    console.log(error);
-    throw new Error(error.response.data.message);
+    console.error("Error al obtener cotizaciones:", error);
+    throw new Error(error.response?.data?.message || "Error desconocido");
   }
 };
 

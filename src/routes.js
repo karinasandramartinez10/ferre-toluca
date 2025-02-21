@@ -23,6 +23,7 @@ export const publicRoutes = [
  */
 export const adminRoutes = [
   "/admin/quotes",
+  /^\/admin\/quotes\/.*/,
 ];
 
 export const superAdminRoutes = [

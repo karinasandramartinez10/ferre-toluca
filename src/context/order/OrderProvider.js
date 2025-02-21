@@ -14,10 +14,8 @@ export const OrderProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("✅ OrderProvider montado en producción");
     if (typeof window !== "undefined") {
       const localData = loadOrderFromLocalStorage();
-      console.log("🛒 Cargando orden desde localStorage:", localData);
       if (localData && localData.length > 0) {
         dispatch({ type: OrderTypes.loadFromLocalStorage, payload: localData });
       }
