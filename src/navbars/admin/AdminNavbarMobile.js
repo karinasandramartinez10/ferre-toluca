@@ -3,6 +3,7 @@ import {
   AddCircleOutline,
   Category,
   Home,
+  Inventory,
   Menu,
   Storefront,
 } from "@mui/icons-material";
@@ -29,8 +30,14 @@ export const adminSections = [
         visibleFor: ["admin"],
       },
       {
+        text: "Ver todos los productos",
+        href: "/all-products",
+        icon: <Inventory sx={{ fontSize: 20 }} />,
+        visibleFor: ["admin", "superadmin"],
+      },
+      {
         icon: <AddCircleOutline />,
-        text: "Panel",
+        text: "Agregar Productos",
         href: `/admin/add-product`,
         visibleFor: ["superadmin"],
       },

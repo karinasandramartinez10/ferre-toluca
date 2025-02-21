@@ -6,6 +6,7 @@ import {
   Home,
   Storefront,
   Category,
+  Inventory,
 } from "@mui/icons-material";
 import {
   AppBar,
@@ -43,7 +44,13 @@ const listItems = [
     visibleFor: ["admin", "superadmin"],
   },
   {
-    text: "Producto",
+    text: "Ver todos los productos",
+    pathname: "/all-products",
+    icon: <Inventory sx={{ fontSize: 20 }} />,
+    visibleFor: ["admin", "superadmin"],
+  },
+  {
+    text: "Agregar Productos",
     pathname: "/admin/add-product",
     icon: <AddCircleOutline sx={{ fontSize: 20 }} />,
     visibleFor: ["superadmin"],

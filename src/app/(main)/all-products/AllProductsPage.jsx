@@ -20,7 +20,7 @@ const AllProductsPage = () => {
 
   const { data: session } = useSession();
 
-  const isAdmin = session?.user.role !== 'user';
+  const isAdmin = session?.user?.role === "admin" || session?.user?.role === "superadmin";
 
   useEffect(() => {
     const fetchData = async () => {
