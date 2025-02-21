@@ -59,21 +59,34 @@ const ProductPage = ({ product, role }) => {
   return (
     <Box width="100%">
       <Grid container spacing={4}>
-        <Grid item xs={12} md={5}>
-          <Image
-            src={product.Files[0]?.path || "/fallback-image.jpg"}
-            alt={product.name}
-            width={500}
-            height={500}
-            style={{
-              objectFit: "contain",
+        <Grid item xs={12} md={4} lg={5}>
+          <Box
+            sx={{
               width: "100%",
-              height: "auto",
+              height: 250,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
               borderRadius: "12px",
+              overflow: "hidden",
+              maxWidth: { sm: "100%", md: 300 }, // Full en móviles, 300px en tablet/desktop
             }}
-          />
+          >
+            <Image
+              src={product.Files[0]?.path || "/fallback-image.jpg"}
+              alt={product.name}
+              width={300}
+              height={250}
+              style={{
+                objectFit: "contain",
+                borderRadius: "12px",
+                width: "100%", // Para que se adapte en móviles
+                height: "100%",
+              }}
+            />
+          </Box>
         </Grid>
-        <Grid item xs={12} md={7}>
+        <Grid item xs={12} md={8} lg={7}>
           <Typography variant="h4" gutterBottom>
             {product.name}
           </Typography>
@@ -82,15 +95,15 @@ const ProductPage = ({ product, role }) => {
           </Typography>
           <Typography variant="h6">Descripción</Typography>
           <Typography paragraph>{product.description}</Typography>
-          {showUserBtns && (
-            <Box display="flex" gap={1} alignItems="center">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleAddToOrder}
-              >
-                Añadir a la orden
-              </Button>
+          <Box display="flex" gap={1} alignItems="center">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddToOrder}
+            >
+              Añadir a la orden
+            </Button>
+            {showUserBtns && (
               <IconButton
                 onClick={handleToggleFavorite}
                 color={isFavorite(product.id) ? "error" : "default"}
@@ -105,8 +118,8 @@ const ProductPage = ({ product, role }) => {
               >
                 {isFavorite(product.id) ? <Favorite /> : <FavoriteBorder />}
               </IconButton>
-            </Box>
-          )}
+            )}
+          </Box>
         </Grid>
       </Grid>
 
