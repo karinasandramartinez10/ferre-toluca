@@ -27,35 +27,34 @@ const SearchProductsPage = () => {
     router.push(`/product/${id}`);
   };
 
-  useEffect(() => {
-    const fetchProducts = async (page = 1) => {
-      setLoading(true);
-      try {
-        const { products, totalPages } = await getProductsByQuery(
-          query,
-          page,
-          size
-        );
-        setProducts(products);
-        setTotalPages(totalPages);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        setError(true);
-        console.error("Error fetching products:", error);
-      }
-    };
+  const fetchProducts = async (page = 1) => {
+    setLoading(true);
+    try {
+      const { products, totalPages } = await getProductsByQuery(
+        query,
+        page,
+        size
+      );
+      setProducts(products);
+      setTotalPages(totalPages);
+      setLoading(false);
+    } catch (error) {
+      setError(true);
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (query) {
       fetchProducts(currentPage);
     }
-  }, [query, currentPage, size]);
+  }, [query, currentPage]);
 
-  const handlePageChange = (direction) => {
-    if (direction === "prev" && currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    } else if (direction === "next" && currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
     }
   };
 

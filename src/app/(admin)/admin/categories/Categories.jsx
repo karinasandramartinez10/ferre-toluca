@@ -10,6 +10,7 @@ import {
 } from "../../../../api/category";
 import ActionModal from "../../../../components/ActionModal";
 import CategoriesTable from "../../../../components/CrudAdminTable";
+import { categoriesColumns } from "./columns";
 
 const Categories = () => {
   const [rows, setRows] = useState([]);
@@ -137,7 +138,7 @@ const Categories = () => {
       </Grid>
       <CategoriesTable
         rows={rows}
-        columns={[{ field: "name", headerName: "Nombre", flex: 1 }]}
+        columns={categoriesColumns}
         onEditClick={openEditModal}
       />
       <ActionModal

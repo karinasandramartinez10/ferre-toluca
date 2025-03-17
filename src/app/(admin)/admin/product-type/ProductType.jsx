@@ -10,6 +10,7 @@ import {
 } from "../../../../api/productTypes";
 import ActionModal from "../../../../components/ActionModal";
 import ProductTypesTable from "../../../../components/CrudAdminTable";
+import { productTypesColumns } from "./columns";
 
 const ProductTypes = () => {
   const [rows, setRows] = useState([]);
@@ -113,7 +114,7 @@ const ProductTypes = () => {
       </Grid>
       <ProductTypesTable
         rows={rows}
-        columns={[{ field: "name", headerName: "Nombre", flex: 1 }]}
+        columns={productTypesColumns}
         onEditClick={openEditModal}
       />
       <ActionModal

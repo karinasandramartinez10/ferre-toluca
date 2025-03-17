@@ -11,6 +11,7 @@ import {
 } from "../../../../api/subcategories";
 import ActionModal from "../../../../components/ActionModal";
 import SubcategoriesTable from "../../../../components/CrudAdminTable";
+import { subcategoriesColumns } from "./columns";
 
 const Subcategories = () => {
   const [rows, setRows] = useState([]);
@@ -154,16 +155,7 @@ const Subcategories = () => {
       </Grid>
       <SubcategoriesTable
         rows={rows}
-        columns={[
-          { field: "name", headerName: "Nombre", flex: 1 },
-          {
-            field: "category",
-            headerName: "Categoría Asociada",
-            renderCell: (params) =>
-              params.row.category?.name || "Sin categoría",
-            flex: 1,
-          },
-        ]}
+        columns={subcategoriesColumns}
         onEditClick={openEditModal}
       />
       <ActionModal

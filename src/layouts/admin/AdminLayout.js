@@ -44,16 +44,16 @@ const listItems = [
     visibleFor: ["admin", "superadmin"],
   },
   {
-    text: "Ver todos los productos",
-    pathname: "/all-products",
-    icon: <Inventory sx={{ fontSize: 20 }} />,
-    visibleFor: ["admin", "superadmin"],
-  },
-  {
     text: "Agregar Productos",
     pathname: "/admin/add-product",
     icon: <AddCircleOutline sx={{ fontSize: 20 }} />,
     visibleFor: ["superadmin"],
+  },
+  {
+    text: "Ver productos",
+    pathname: "/admin/products",
+    icon: <Inventory sx={{ fontSize: 20 }} />,
+    visibleFor: ["admin", "superadmin"],
   },
   {
     text: "Marcas",

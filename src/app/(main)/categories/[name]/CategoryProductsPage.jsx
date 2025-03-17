@@ -34,36 +34,34 @@ const CategoryProductsPage = () => {
   const handleProductClick = (id) => {
     router.push(`/product/${id}`);
   };
+  const fetchProducts = async (page = 1) => {
+    setLoading(true);
+    try {
+      const { products, totalPages } = await getProductsByCategory(
+        categoryId,
+        page,
+        size
+      );
+      setProducts(products);
+      setTotalPages(totalPages);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      setError(true);
+      console.error("Error fetching products:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchProducts = async (page = 1) => {
-      setLoading(true);
-      try {
-        const { products, totalPages } = await getProductsByCategory(
-          categoryId,
-          page,
-          size
-        );
-        setProducts(products);
-        setTotalPages(totalPages);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-        setError(true);
-        console.error("Error fetching products:", error);
-      }
-    };
-
     if (name && categoryId) {
       fetchProducts(currentPage);
     }
-  }, [name, categoryId, currentPage, size]);
+  }, [name, categoryId, currentPage]);
 
-  const handlePageChange = (direction) => {
-    if (direction === "prev" && currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    } else if (direction === "next" && currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      fetchProducts(newPage);
     }
   };
 
