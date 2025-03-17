@@ -20,12 +20,13 @@ const AllProductsPage = () => {
 
   const { data: session } = useSession();
 
-  const isAdmin = session?.user?.role === "admin" || session?.user?.role === "superadmin";
+  const isAdmin =
+    session?.user?.role === "admin" || session?.user?.role === "superadmin";
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const fetchedData = await fetchProducts(currentPage, size);
+  const fetchData = async (page) => {
+    setLoading(true);
+    try {
+      const fetchedData = await fetchProducts(page, size);
       if (fetchedData.error) {
         setLoading(false);
         setError(fetchedData.error);
@@ -34,16 +35,20 @@ const AllProductsPage = () => {
       setLoading(false);
       setProducts(fetchedData.data.products);
       setTotalPages(fetchedData.data.totalPages);
-    };
+    } catch (error) {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
-  }, [currentPage, size]);
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [currentPage]);
 
-  const handlePageChange = (direction) => {
-    if (direction === "prev" && currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    } else if (direction === "next" && currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+  const handlePageChange = (newPage) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
     }
   };
 
