@@ -6,10 +6,11 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
 import { getProductsByBrand } from "../../../../api/products";
-import { toCapitalizeFirstLetter } from "../../../../utils/cases";
+import { toCapitalizeFirstLetter, toSlug } from "../../../../utils/cases";
 import { ProductCard } from "../../../../components/ProductCard";
 import NoProductsUI from "../../../../components/NoProducts";
 import Pagination from "../../../../components/Pagination";
+import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
 
 const BrandProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -22,6 +23,14 @@ const BrandProductsPage = () => {
   const { name } = useParams();
   const searchParams = useSearchParams();
   const brandId = searchParams.get("id");
+
+  const breadcrumbItems = [
+    { label: "Inicio", path: "/" },
+    {
+      label: toCapitalizeFirstLetter(name),
+      path: `/brands/${toSlug(name)}?id=${brandId}`,
+    },
+  ];
 
   const fetchProducts = async (page = 1) => {
     setLoading(true);
@@ -79,10 +88,23 @@ const BrandProductsPage = () => {
 
   return (
     <Grid container>
-      <Typography component="h1" variant="h1" mb={2}>
-        Productos para {toCapitalizeFirstLetter(name)}
-      </Typography>
-
+      <Grid item xs={12}>
+        <BreadcrumbsNavigation items={breadcrumbItems} />
+        <Typography
+          component="h1"
+          variant="h1"
+          mt={{
+            xs: 1,
+            md: 2,
+          }}
+          mb={{
+            xs: 1,
+            md: 2,
+          }}
+        >
+          Productos {toCapitalizeFirstLetter(name)}
+        </Typography>
+      </Grid>
       <Grid
         container
         spacing={{ xs: 2, md: 3 }}
