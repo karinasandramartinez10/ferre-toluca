@@ -44,6 +44,7 @@ export const Dropzone = ({
       "image/jpeg": [],
       "image/png": [],
       "image/jpg": [],
+      "image/webp": [".webp"],
     },
     multiple: false,
     onDrop: handleDrop,
