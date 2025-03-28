@@ -37,7 +37,8 @@ export const getSelectOptions = (
 };
 
 export const getProductColumns = (onEdit) => [
-  { field: "id", headerName: "ID", flex: 0.5 },
+  // { field: "id", headerName: "ID", flex: 0.5 },
+  { field: "code", headerName: "Código", flex: 0.5 },
   { field: "name", headerName: "Nombre", flex: 1 },
   {
     field: "brand",
