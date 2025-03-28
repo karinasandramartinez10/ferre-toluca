@@ -8,11 +8,13 @@ import { Loading } from "../../../../components/Loading";
 import NoProductsUI from "../../../../components/NoProducts";
 import {
   toCapitalizeFirstLetter,
+  toSlug,
   transformCategoryPath,
 } from "../../../../utils/cases";
 import { getProductsByCategory } from "../../../../api/products";
 import { ProductCard } from "../../../../components/ProductCard";
 import Pagination from "../../../../components/Pagination";
+import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
 
 const CategoryProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -28,6 +30,14 @@ const CategoryProductsPage = () => {
 
   const decodedName = decodeURIComponent(name);
   const formattedName = transformCategoryPath(decodedName);
+
+  const breadcrumbItems = [
+    { label: "Inicio", path: "/" },
+    {
+      label: toCapitalizeFirstLetter(formattedName),
+      path: `/categories/${toSlug(formattedName)}?id=${categoryId}`,
+    },
+  ];
 
   const router = useRouter();
 
@@ -86,10 +96,22 @@ const CategoryProductsPage = () => {
 
   return (
     <Grid container>
-      <Typography component="h1" variant="h1" mb={2}>
-        {toCapitalizeFirstLetter(formattedName)}
-      </Typography>
-
+      <Grid item xs={12}>
+        <BreadcrumbsNavigation items={breadcrumbItems} />
+        <Typography
+          component="h1"
+          variant="h1"
+          mt={{
+            xs: 1,
+            md: 2,
+          }}
+          mb={{
+            xs: 1,
+            md: 2,
+          }}        >
+          {toCapitalizeFirstLetter(formattedName)}
+        </Typography>
+      </Grid>
       <Grid
         container
         spacing={{ xs: 2, md: 3 }}

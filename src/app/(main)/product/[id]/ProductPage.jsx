@@ -18,6 +18,7 @@ import { useOrder } from "../../../../hooks/order/useOrder";
 import { useFavorites } from "../../../../hooks/favorites/useFavorites";
 import ConfirmDeleteFavorite from "./ConfirmDeleteFavorite";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
+import { toSlug } from "../../../../utils/cases";
 
 const ProductPage = ({ product, role }) => {
   const [quantity] = useState(1);
@@ -35,13 +36,6 @@ const ProductPage = ({ product, role }) => {
     addToOrder(product, quantity);
   };
 
-  const toSlug = (text) => {
-    return text
-      .toLowerCase() // Convertir a minúsculas
-      .replace(/\s+/g, "-") // Reemplazar espacios con guiones
-      .replace(/[^a-z0-9áéíóúüñ-]/gi, ""); // Eliminar caracteres especiales, pero conservar acentos y la "ñ"
-  };
-
   const breadcrumbItems = [
     { label: "Inicio", path: "/" },
     product.category && {
@@ -50,20 +44,20 @@ const ProductPage = ({ product, role }) => {
         product.category.id
       }`,
     },
-    product.subCategory && {
+    /*     product.subCategory && {
       label: product.subCategory.name,
       path: `/subcategories/${toSlug(product.subCategory.name)}?id=${
         product.subCategory.id
       }`,
-    },
+    }, */
     product.brand && {
       label: product.brand.name,
       path: `/brands/${toSlug(product.brand.name)}?id=${product.brand.id}`,
     },
-    product.type && {
+    /*     product.type && {
       label: product.type.name,
       path: `/types/${toSlug(product.type.name)}?id=${product.type.id}`,
-    },
+    }, */
     { label: product.name }, // Último ítem sin `path`
   ].filter(Boolean);
 
@@ -140,6 +134,25 @@ const ProductPage = ({ product, role }) => {
           <Typography variant="body2" color="textSecondary" gutterBottom>
             Código - {product?.code}
           </Typography>
+
+          <Box display="flex" width="100%" gap={2}>
+            <Stack>
+              <Typography variant="body2" fontWeight={600} >
+                Subcategoría
+              </Typography>
+              <Typography variant="body2" fontWeight={600} >
+                Tipo
+              </Typography>
+            </Stack>
+            <Stack>
+              <Typography variant="body">
+                {product?.subCategory?.name}
+              </Typography>
+              <Typography variant="body">
+                {product?.type?.name}
+              </Typography>
+            </Stack>
+          </Box>
 
           <Stack gap={2}>
             {(product.color || product.size) && (

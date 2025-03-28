@@ -32,3 +32,10 @@ export function toCamelCase(str) {
     })
     .join("");
 }
+
+export const toSlug = (text) => {
+  return text
+    .toLowerCase() // Convertir a minúsculas
+    .replace(/\s+/g, "-") // Reemplazar espacios con guiones
+    .replace(/[^a-z0-9áéíóúüñ-]/gi, ""); // Eliminar caracteres especiales, pero conservar acentos y la "ñ"
+};
