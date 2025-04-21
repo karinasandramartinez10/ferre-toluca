@@ -117,25 +117,7 @@ const Categories = () => {
   };
 
   return (
-    <Grid container width="100%" gap={2} flexDirection="row">
-      <Grid item xs={12}>
-        <Stack>
-          <Typography variant="h1">Categorías</Typography>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography
-              sx={{ color: "#838383", fontWeight: 500 }}
-              variant="body"
-            >
-              Agrega o edita categorías
-            </Typography>
-            <Button onClick={openAddModal}>Agregar</Button>
-          </Box>
-        </Stack>
-      </Grid>
+    <>
       <CategoriesTable
         rows={rows}
         columns={categoriesColumns}
@@ -150,7 +132,7 @@ const Categories = () => {
         selected={selectedCategory}
         loading={loading}
       />
-    </Grid>
+    </>
   );
 };
 

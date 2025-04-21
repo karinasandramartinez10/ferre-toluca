@@ -26,6 +26,7 @@ import { usePathname } from "next/navigation";
 import NextLink from "next/link";
 import useResponsive from "../../hooks/use-responsive";
 import AdminNavbarMobile from "../../navbars/admin/AdminNavbarMobile";
+import { getPageMetadata } from "./routes-metadata";
 
 const drawerWidth = 200;
 
@@ -74,24 +75,12 @@ const listItems = [
     visibleFor: ["superadmin"],
   },
   {
-    text: "Tipos de producto",
+    text: "Variantes de Producto",
     pathname: "/admin/product-type",
     icon: <Category sx={{ fontSize: 20 }} />,
     visibleFor: ["superadmin"],
   },
 ];
-
-const getPageTitle = (pathname) => {
-  if (pathname === "/admin/add-product") return "Productos";
-  if (pathname === "/admin/quotes") return "Todas las cotizaciones";
-  if (pathname.startsWith("/admin/quotes/")) return "Detalles de la cotización";
-  return;
-};
-
-const getPageSubtitle = (pathname) => {
-  if (pathname === "/admin/add-product") return "Agregar productos";
-  return;
-};
 
 export const AdminLayout = ({ children, role }) => {
   const [_, setIsClosing] = useState(false);
@@ -99,6 +88,8 @@ export const AdminLayout = ({ children, role }) => {
   const isMobile = useResponsive("down", "sm");
 
   const pathname = usePathname();
+
+  const { title, subtitle } = getPageMetadata(pathname);
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -195,21 +186,19 @@ export const AdminLayout = ({ children, role }) => {
         </Drawer>
 
         <Grid
-          sx={{ marginTop: { xs: "58px", sm: "0" } }}
+          sx={{ marginTop: { xs: "50px", md: "0px" } }}
           display="flex"
           flexDirection="column"
           gap={2}
         >
           <Grid item xs={12}>
-            <Stack>
-              <Typography variant="h1">{getPageTitle(pathname)}</Typography>
-              <Typography
-                sx={{ color: "#838383", fontWeight: 500 }}
-                variant="body"
-              >
-                {getPageSubtitle(pathname)}
-              </Typography>
-            </Stack>
+            <Typography variant="h1">{title}</Typography>
+            <Typography
+              sx={{ color: "#838383", fontWeight: 500 }}
+              variant="body"
+            >
+              {subtitle}
+            </Typography>
           </Grid>
           <Grid item xs={12}>
             {children}

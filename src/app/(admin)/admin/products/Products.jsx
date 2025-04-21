@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Grid, Stack, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { DataGrid } from "@mui/x-data-grid";
 import { fetchAllProducts, updateProduct } from "../../../../api/products";
@@ -82,45 +81,35 @@ const ProductsPage = () => {
   };
 
   return (
-    <Grid container width="100%" gap={2} flexDirection="row">
-      <Grid item xs={12}>
-        <Stack>
-          <Typography variant="h1">Productos</Typography>
-          <Typography sx={{ color: "#838383", fontWeight: 500 }} variant="body">
-            Gestiona los productos disponibles
-          </Typography>
-        </Stack>
-      </Grid>
-      <Box sx={{ height: 700, width: "100%" }}>
-        <DataGrid
-          rows={products}
-          columns={getProductColumns(handleOpenEdit)}
-          rowCount={totalPages}
-          paginationMode="server"
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-              },
+    <>
+      <DataGrid
+        rows={products}
+        columns={getProductColumns(handleOpenEdit)}
+        rowCount={totalPages}
+        paginationMode="server"
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 10,
             },
-          }}
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          pageSizeOptions={[10, 25, 50]}
-          disableRowSelectionOnClick
-          sx={{
-            "& .MuiDataGrid-columnHeaderTitle": {
-              fontWeight: 700,
-            },
-            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-              outline: "none !important",
-            },
-          }}
-          slots={{
-            noRowsOverlay: CustomNoRowsOverlay,
-          }}
-        />
-      </Box>
+          },
+        }}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        pageSizeOptions={[10, 25, 50]}
+        disableRowSelectionOnClick
+        sx={{
+          "& .MuiDataGrid-columnHeaderTitle": {
+            fontWeight: 700,
+          },
+          "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+            outline: "none !important",
+          },
+        }}
+        slots={{
+          noRowsOverlay: CustomNoRowsOverlay,
+        }}
+      />
       <ProductActionModal
         title="Producto"
         optionTitle="Selecciona una categoría asociada"
@@ -137,7 +126,7 @@ const ProductsPage = () => {
         subcategories={subcategories}
         types={types}
       />
-    </Grid>
+    </>
   );
 };
 
