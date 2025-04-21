@@ -10,7 +10,7 @@ export const postProduct = async (formData, token) => {
     });
     return resp;
   } catch (error) {
-    console.log(error)
+    console.log('err',error)
     throw new Error(error.response.data.message);
   }
 };
