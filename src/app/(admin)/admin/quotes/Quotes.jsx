@@ -1,6 +1,5 @@
 "use client";
 
-import { Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
