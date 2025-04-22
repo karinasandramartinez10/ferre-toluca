@@ -11,6 +11,8 @@ import { getProductTypes } from "../../../../api/productTypes";
 import { getProductColumns } from "./constants";
 import ProductActionModal from "./ProductActionModal";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
+import { getMeasures } from "../../../../api/measures";
+import { getProductModels } from "../../../../api/productModels";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -26,6 +28,9 @@ const ProductsPage = () => {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [types, setTypes] = useState([]);
+  const [measures, setMeasures] = useState([]);
+  const [productModels, setProductModels] = useState();
+
   const { enqueueSnackbar } = useSnackbar();
 
   const fetchData = async () => {
@@ -50,6 +55,8 @@ const ProductsPage = () => {
         setCategories(await getCategories());
         setSubcategories(await getSubcategories());
         setTypes(await getProductTypes());
+        setMeasures(await getMeasures());
+        setProductModels(await getProductModels());
       } catch (error) {
         console.error("Error fetching references:", error);
       }
@@ -125,6 +132,8 @@ const ProductsPage = () => {
         categories={categories}
         subcategories={subcategories}
         types={types}
+        measures={measures}
+        productModels={productModels}
       />
     </>
   );
