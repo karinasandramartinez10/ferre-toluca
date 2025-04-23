@@ -17,6 +17,7 @@ import {
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { getProductModels } from "../../../../api/productModels";
 import { Dropzone } from "../../../../components/Dropzone";
 import UploadingMessage from "../brands/UploadingMessage";
 import {
@@ -36,14 +37,14 @@ const Schema = yup.object().shape({
   subCategoryId: yup.string().required("La subcategoría es requerida"),
   specifications: yup.string(),
   color: yup.string(),
-  size: yup.string(),
+  // size: yup.string(),
 });
 
 const defaultValues = {
   name: "",
   code: "",
   color: "",
-  size: "",
+  // size: "",
   description: "",
   specifications: "",
   brandId: "",
@@ -64,22 +65,23 @@ const ProductActionModal = ({
   onSubmit,
   fetchData,
   loading,
-  mode = "create",
   selected,
   brands = [],
   categories = [],
   subcategories = [],
   types = [],
   measures = [],
-  productModels = [],
 }) => {
   const [photo, setPhoto] = useState(null);
+  const [productModels, setProductModels] = useState([]);
 
   const {
     control,
     handleSubmit,
     setValue,
+    getValues,
     reset,
+    watch,
     formState: { errors, isValid },
   } = useForm({
     resolver: yupResolver(Schema),
@@ -87,31 +89,81 @@ const ProductActionModal = ({
     defaultValues,
   });
 
-  useEffect(() => {
-    if (mode === "edit" && selected) {
-      setValue("name", selected.name);
-      setValue("code", selected.code || "");
-      setValue("color", selected.color || "");
-      setValue("size", selected.size || "");
-      setValue("description", selected.description || "");
-      setValue("specifications", selected.specifications || "");
-      setValue("brandId", selected.brand?.id || "");
-      setValue("categoryId", selected.category?.id || "");
-      setValue("subCategoryId", selected.subCategory?.id || "");
-      setValue("typeId", selected.type?.id || "");
-      setValue("measureId", selected.measure.id || "");
-      setValue("measureValue", selected.measureValue || "");
-      setValue("modelName", selected.productModel?.name || "");
-      setValue("modelId", selected.productModel?.id || "");
+  const brandId = watch("brandId");
+  const currentModelName = getValues("modelName");
+  const currentModelId = getValues("modelId");
 
-      const existingImage =
-        selected.Files?.length > 0 ? selected.Files[0].path : null;
-      setPhoto(existingImage ? { preview: existingImage } : null);
+  useEffect(() => {
+    const fetchModelsAndSetValues = async () => {
+      if (selected) {
+        const selectedBrandId = selected.brand?.id;
+        if (selectedBrandId) {
+          const models = await getProductModels(selectedBrandId);
+          setProductModels(models);
+        }
+
+        setValue("name", selected.name);
+        setValue("code", selected.code || "");
+        setValue("color", selected.color || "");
+        setValue("size", selected.size || "");
+        setValue("description", selected.description || "");
+        setValue("specifications", selected.specifications || "");
+        setValue("brandId", selected.brand?.id || "");
+        setValue("categoryId", selected.category?.id || "");
+        setValue("subCategoryId", selected.subCategory?.id || "");
+        setValue("typeId", selected.type?.id || "");
+        setValue("measureId", selected.measure?.id || "");
+        setValue("measureValue", selected.measureValue || "");
+        setValue("modelName", selected.productModel?.name || "");
+        setValue("modelId", selected.productModel?.id || "");
+
+        const existingImage =
+          selected.Files?.length > 0 ? selected.Files[0].path : null;
+        setPhoto(existingImage ? { preview: existingImage } : null);
+      }
+    };
+
+    fetchModelsAndSetValues();
+  }, [selected]);
+
+  useEffect(() => {
+    if (!brandId) return;
+
+    const fetchModelsByBrand = async () => {
+      try {
+        const models = await getProductModels(brandId);
+        setProductModels(models);
+      } catch (error) {
+        setProductModels([]);
+      }
+    };
+
+    fetchModelsByBrand();
+
+    // Limpiar si la marca cambió respecto a la seleccionada
+    if (selected?.brand?.id !== brandId) {
+      setValue("modelName", "", { shouldValidate: true, shouldDirty: true });
+      setValue("modelId", null, { shouldValidate: true, shouldDirty: true });
     }
-  }, [mode, selected, setValue]);
+  }, [brandId]);
 
   const handleFormSubmit = async (data) => {
     const formData = new FormData();
+
+    // Si no hay modelo seleccionado ni texto válido en modelName, limpiamos
+    const trimmedModelName = data.modelName?.trim();
+    const shouldRemoveModel = !data.modelId && !trimmedModelName;
+
+    if (shouldRemoveModel) {
+      formData.append("modelId", "");
+      formData.append("modelName", "");
+    } else {
+      if (data.modelId) {
+        formData.append("modelId", data.modelId);
+      } else if (trimmedModelName) {
+        formData.append("modelName", trimmedModelName);
+      }
+    }
 
     if (data.name) formData.append("name", data.name);
     if (data.code) formData.append("code", data.code);
@@ -129,12 +181,6 @@ const ProductActionModal = ({
 
     if (data.measureValue) formData.append("measureValue", data.measureValue);
     if (data.measureId) formData.append("measureId", data.measureId);
-
-    if (data.modelId) {
-      formData.append("modelId", data.modelId);
-    } else if (data.modelName) {
-      formData.append("modelName", data.modelName.trim());
-    }
 
     if (photo) {
       formData.append("image", photo);
@@ -154,11 +200,12 @@ const ProductActionModal = ({
     onClose();
   };
 
+  // const currentModelName = getValues("modelName");
+  // const currentModelId = getValues("modelId");
+
   return (
     <Dialog open={open} onClose={handleCloseModal} fullWidth maxWidth="md">
-      <DialogTitle sx={{ fontWeight: 600 }}>
-        {mode === "create" ? `Agregar ${title}` : `Editar ${title}`}
-      </DialogTitle>
+      <DialogTitle sx={{ fontWeight: 600 }}>{`Editar ${title}`}</DialogTitle>
 
       <DialogContent>
         <Box component="form" display="flex" flexDirection="column">
@@ -224,45 +271,6 @@ const ProductActionModal = ({
             />
           </Box>
 
-          {/* Modelo */}
-          <Typography sx={sectionTitleSx}>Modelo</Typography>
-          <Controller
-            name="modelName"
-            control={control}
-            render={({ field }) => (
-              <Autocomplete
-                freeSolo
-                disableClearable
-                options={productModels}
-                getOptionLabel={(option) =>
-                  typeof option === "string" ? option : option.name
-                }
-                value={
-                  productModels.find((m) => m.name === field.value) ||
-                  field.value
-                }
-                onChange={(_, newValue) => {
-                  const isCustom = typeof newValue === "string";
-                  setValue("modelName", isCustom ? newValue : newValue.name);
-                  setValue("modelId", isCustom ? null : newValue.id);
-                }}
-                onInputChange={(_, newInputValue) => {
-                  setValue("modelName", newInputValue);
-                  setValue("modelId", null);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="standard"
-                    fullWidth
-                    error={!!errors.modelName}
-                    helperText={errors.modelName?.message}
-                  />
-                )}
-              />
-            )}
-          />
-
           {/* Clasificación */}
           <Typography sx={sectionTitleSx}>Clasificación</Typography>
           <Box sx={twoColumnGrid}>
@@ -297,6 +305,68 @@ const ProductActionModal = ({
               />
             ))}
           </Box>
+
+          {/* Modelo */}
+          <Typography sx={sectionTitleSx}>Modelo</Typography>
+          <Controller
+            name="modelName"
+            control={control}
+            render={({ field }) => (
+              <Autocomplete
+                freeSolo
+                disableClearable
+                options={productModels}
+                getOptionLabel={(option) =>
+                  typeof option === "string" ? option : option.name
+                }
+                value={
+                  productModels.find((m) => m.name === field.value) ||
+                  field.value
+                }
+                onChange={(_, newValue) => {
+                  const isCustom = typeof newValue === "string";
+                  const newName = isCustom ? newValue : newValue.name;
+                  const newId = isCustom ? null : newValue.id;
+
+                  if (newName !== currentModelName) {
+                    setValue("modelName", newName, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  }
+
+                  if (newId !== currentModelId) {
+                    setValue("modelId", newId, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  }
+                }}
+                onInputChange={(_, newInputValue) => {
+                  const current = getValues("modelName");
+                  if (newInputValue !== current) {
+                    setValue("modelName", newInputValue, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                    setValue("modelId", null, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    fullWidth
+                    error={!!errors.modelName}
+                    helperText={errors.modelName?.message}
+                  />
+                )}
+              />
+            )}
+          />
 
           {/* Descripción */}
           <Typography sx={sectionTitleSx}>Descripción</Typography>
@@ -351,7 +421,7 @@ const ProductActionModal = ({
           variant="contained"
           color="primary"
         >
-          {mode === "create" ? "Agregar" : "Guardar Cambios"}
+          Guardar Cambios
         </LoadingButton>
       </DialogActions>
     </Dialog>
