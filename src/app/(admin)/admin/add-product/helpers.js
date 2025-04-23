@@ -12,3 +12,13 @@ export const validateRows = (rows) => {
   }
   return true;
 };
+
+export const isRowValid = (row) => {
+  return (
+    row.name &&
+    row.code &&
+    row.description &&
+    row.measureValue &&
+    row.measureId
+  );
+};

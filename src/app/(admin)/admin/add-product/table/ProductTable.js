@@ -4,6 +4,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { DataGrid, GridRowModes, GridToolbarContainer } from "@mui/x-data-grid";
 import { v4 as uuidv4 } from "uuid";
 import { getAddProductColumns } from "./columns";
+import { isRowValid } from "../helpers";
 
 function EditToolbar({ rows, setRows, setRowModesModel }) {
   const handleClick = () => {
@@ -33,21 +34,36 @@ function EditToolbar({ rows, setRows, setRowModesModel }) {
   };
 
   return (
-    <GridToolbarContainer>
+    <GridToolbarContainer
+      sx={{
+        backgroundColor: "primary.light",
+      }}
+    >
       <Box
-        sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
         alignItems="center"
       >
         <Button
-          startIcon={<Add />}
+          startIcon={<Add sx={{ color: "white !important" }} />}
           size="small"
           onClick={handleClick}
           color="primary"
           variant="text"
+          sx={{
+            color: "white !important",
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.22)",
+              borderRadius: 1,
+            },
+          }}
         >
           Agregar otra fila
         </Button>
-        <Typography variant="caption" color="text.secondary" sx={{ pr: 2 }}>
+        <Typography variant="caption" sx={{ pr: 2, color: "white !important" }}>
           Presiona <strong>Enter</strong> para guardar la fila actual.
         </Typography>
       </Box>
@@ -93,8 +109,17 @@ export const ProductTable = ({
         slotProps={{
           toolbar: { rows, setRows, setRowModesModel },
         }}
-        sx={{ gap: 1 }}
+        sx={{
+          gap: 1,
+          "& .row-valid": {
+            borderLeft: "4px solid #4caf50",
+            backgroundColor: "#f1fff3",
+          },
+        }}
         density="compact"
+        getRowClassName={(params) => {
+          return isRowValid(params.row) ? "row-valid" : "";
+        }}
       />
     </Box>
   );

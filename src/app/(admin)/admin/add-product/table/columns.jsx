@@ -1,5 +1,6 @@
 import { Delete } from "@mui/icons-material";
 import { GridActionsCellItem } from "@mui/x-data-grid";
+import { isRowValid } from "../helpers";
 import { AutocompleteCell } from "./AutoCompleteCell";
 import { TextFieldCellEditor } from "./TextFieldCellEditor";
 
@@ -9,6 +10,19 @@ export const getAddProductColumns = (
   productModels,
   setRows
 ) => [
+  {
+    field: "valid",
+    headerName: "",
+    width: 40,
+    sortable: false,
+    filterable: false,
+    disableColumnMenu: true,
+    renderCell: ({ row }) => {
+      return isRowValid(row) ? (
+        <span role="img" aria-label="Validado">✅</span>
+      ) : null;
+    },
+  },
   {
     field: "name",
     headerName: "Nombre",
@@ -57,7 +71,7 @@ export const getAddProductColumns = (
   {
     field: "measureValue",
     headerName: "Valor",
-    width: 100,
+    width: 90,
     editable: true,
     renderEditCell: (params) =>
       TextFieldCellEditor({
@@ -69,7 +83,7 @@ export const getAddProductColumns = (
   {
     field: "measureId",
     headerName: "Unidad",
-    width: 130,
+    width: 115,
     editable: false,
     renderCell: (params) => {
       const handleChange = (e) => {
@@ -110,7 +124,7 @@ export const getAddProductColumns = (
   {
     field: "modelName",
     headerName: "Modelo",
-    width: 180,
+    width: 160,
     editable: false,
     renderCell: (params) =>
       AutocompleteCell({ params, productModels, setRows }),
@@ -118,7 +132,7 @@ export const getAddProductColumns = (
   {
     field: "color",
     headerName: "Color",
-    width: 130,
+    width: 110,
     editable: true,
     renderEditCell: (params) =>
       TextFieldCellEditor({

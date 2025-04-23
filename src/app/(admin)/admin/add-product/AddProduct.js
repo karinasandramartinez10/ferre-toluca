@@ -78,7 +78,32 @@ const AddProduct = ({ user }) => {
     defaultValues: defaultFormValues,
   });
 
+  const brandId = watch("brandId");
+
   const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    const fetchModelsByBrand = async () => {
+      if (!brandId) return;
+      try {
+        const models = await getProductModels(brandId);
+        setProductModels(models);
+
+        // Limpia los modelos previos si cambió de marca
+        setRows((prevRows) =>
+          prevRows.map((row) => ({
+            ...row,
+            modelName: "",
+            modelId: null,
+          }))
+        );
+      } catch (err) {
+        console.error("Error fetching models by brand:", err);
+      }
+    };
+
+    fetchModelsByBrand();
+  }, [brandId]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -89,7 +114,6 @@ const AddProduct = ({ user }) => {
           subcategoriesData,
           typesData,
           measuresData,
-          productModelsData,
         ] = await Promise.all([
           getBrands(),
           getCategories(),
@@ -103,7 +127,6 @@ const AddProduct = ({ user }) => {
         setSubcategories(subcategoriesData);
         setTypes(typesData);
         setMeasures(measuresData);
-        setProductModels(productModelsData);
       } catch (error) {
         console.error("Error fetching initial data:", error);
       }
@@ -261,6 +284,7 @@ const AddProduct = ({ user }) => {
         alignItems: { xs: "center", sm: "flex-start" },
       }}
     >
+      <AddProductBanner />
       <AddProductFields
         brands={brands}
         categories={categories}
@@ -269,8 +293,6 @@ const AddProduct = ({ user }) => {
         control={control}
         hasType={hasType}
       />
-
-      <AddProductBanner />
       <ProductTable
         rows={rows}
         setRows={setRows}
