@@ -27,7 +27,7 @@ export const adminSections = [
         icon: <Storefront />,
         text: "Cotizaciones",
         href: `/admin/quotes`,
-        visibleFor: ["admin"],
+        visibleFor: ["admin", "superadmin"],
       },
       {
         icon: <AddCircleOutline />,
