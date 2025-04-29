@@ -12,6 +12,9 @@ import { getProductColumns } from "./constants";
 import ProductActionModal from "./ProductActionModal";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
 import { getMeasures } from "../../../../api/measures";
+import { localeText } from "../../../../constants/x-datagrid/localeText";
+import { CustomToolbar } from "../../../../components/DataGrid/CustomToolbar";
+import { CustomFooter } from "../../../../components/DataGrid/CustomFooter";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -38,7 +41,7 @@ const ProductsPage = () => {
       paginationModel.pageSize
     );
     setLoading(false);
-    setProducts([...products]);
+    setProducts(products);
     setTotalPages(count || 0);
   };
 
@@ -87,6 +90,7 @@ const ProductsPage = () => {
   return (
     <>
       <DataGrid
+        localeText={localeText}
         rows={products}
         columns={getProductColumns(handleOpenEdit)}
         rowCount={totalPages}
@@ -111,7 +115,14 @@ const ProductsPage = () => {
           },
         }}
         slots={{
+          toolbar: CustomToolbar,
           noRowsOverlay: CustomNoRowsOverlay,
+          footer: CustomFooter,
+        }}
+        slotProps={{
+          columnMenu: {
+            labelledby: "asd",
+          },
         }}
       />
       <ProductActionModal
