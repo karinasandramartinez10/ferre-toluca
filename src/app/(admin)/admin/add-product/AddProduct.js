@@ -122,10 +122,10 @@ const AddProduct = ({ user }) => {
           getMeasures(),
           getProductModels(),
         ]);
-        setBrands(brandsData);
-        setCategories(categoriesData);
-        setSubcategories(subcategoriesData);
-        setTypes(typesData);
+        setBrands(brandsData.brands);
+        setCategories(categoriesData.categories);
+        setSubcategories(subcategoriesData.subcategories);
+        setTypes(typesData.productTypes);
         setMeasures(measuresData);
       } catch (error) {
         console.error("Error fetching initial data:", error);

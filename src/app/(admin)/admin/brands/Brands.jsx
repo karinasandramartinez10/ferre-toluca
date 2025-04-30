@@ -1,6 +1,5 @@
 "use client";
 
-import { Box, Button, Grid, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
   createBrand,
@@ -8,12 +7,18 @@ import {
   updateBrand,
 } from "../../../../api/admin/brands";
 import BrandModal from "./BrandModal";
-import BrandsTable from "./BrandsTable";
 import { useSnackbar } from "notistack";
 import { toCamelCase, toCapitalizeFirstLetter } from "../../../../utils/cases";
+import CrudAdminTable from "../../../../components/CrudAdminTable";
+import { brandsColumns } from "./columns";
 
 const Brands = ({ user }) => {
   const [rows, setRows] = useState([]);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+  const [rowCount, setRowCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState(null);
@@ -21,18 +26,22 @@ const Brands = ({ user }) => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const brandsData = await getBrands();
-        setRows(brandsData);
-      } catch (error) {
-        console.error("Error fetching initial data:", error);
-      }
-    };
+  const fetchInitialData = async () => {
+    try {
+      const data = await getBrands({
+        page: paginationModel.page + 1,
+        size: paginationModel.pageSize,
+      });
+      setRows(data.brands);
+      setRowCount(data.count);
+    } catch (error) {
+      console.error("Error fetching initial data:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchInitialData();
-  }, []);
+  }, [paginationModel]);
 
   const handleAddBrand = async (data) => {
     if (!data.image || data.image.length === 0) {
@@ -135,7 +144,16 @@ const Brands = ({ user }) => {
 
   return (
     <>
-      <BrandsTable rows={rows} onEditClick={openEditModal} />
+      <CrudAdminTable
+        rows={rows}
+        columns={brandsColumns}
+        onEditClick={openEditModal}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        rowCount={rowCount}
+        title="marca"
+        handleClick={openAddModal}
+      />
       <BrandModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}

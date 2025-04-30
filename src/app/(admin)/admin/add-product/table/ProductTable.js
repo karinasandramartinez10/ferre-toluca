@@ -5,6 +5,7 @@ import { DataGrid, GridRowModes, GridToolbarContainer } from "@mui/x-data-grid";
 import { v4 as uuidv4 } from "uuid";
 import { getAddProductColumns } from "./columns";
 import { isRowValid } from "../helpers";
+import { localeText } from "../../../../../constants/x-datagrid/localeText";
 
 function EditToolbar({ rows, setRows, setRowModesModel }) {
   const handleClick = () => {
@@ -90,6 +91,7 @@ export const ProductTable = ({
       }}
     >
       <DataGrid
+        localeText={localeText}
         rows={rows}
         columns={getAddProductColumns(
           handleDeleteClick,
@@ -98,8 +100,6 @@ export const ProductTable = ({
           setRows
         )}
         editMode="row"
-        // pageSize={5}
-        // rowsPerPageOptions={[5]}
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}
         processRowUpdate={processRowUpdate}
@@ -120,6 +120,7 @@ export const ProductTable = ({
         getRowClassName={(params) => {
           return isRowValid(params.row) ? "row-valid" : "";
         }}
+        hideFooterPagination
       />
     </Box>
   );

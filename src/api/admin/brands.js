@@ -1,8 +1,8 @@
 import api from "../../config";
 
-export const getBrands = async () => {
+export const getBrands = async (params) => {
   try {
-    const { data } = await api.get("/brands");
+    const { data } = await api.get("/brands", { params });
     return data.data;
   } catch (error) {
     console.log(error);
