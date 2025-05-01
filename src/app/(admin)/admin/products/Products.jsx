@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Box, Grid, Stack, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { DataGrid } from "@mui/x-data-grid";
 import { fetchAllProducts, updateProduct } from "../../../../api/products";
@@ -12,6 +11,10 @@ import { getProductTypes } from "../../../../api/productTypes";
 import { getProductColumns } from "./constants";
 import ProductActionModal from "./ProductActionModal";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
+import { getMeasures } from "../../../../api/measures";
+import { localeText } from "../../../../constants/x-datagrid/localeText";
+import { CustomToolbar } from "../../../../components/DataGrid/CustomToolbar";
+import { CustomFooter } from "../../../../components/DataGrid/CustomFooter";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -27,6 +30,8 @@ const ProductsPage = () => {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [types, setTypes] = useState([]);
+  const [measures, setMeasures] = useState([]);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const fetchData = async () => {
@@ -36,7 +41,7 @@ const ProductsPage = () => {
       paginationModel.pageSize
     );
     setLoading(false);
-    setProducts([...products]);
+    setProducts(products);
     setTotalPages(count || 0);
   };
 
@@ -51,6 +56,7 @@ const ProductsPage = () => {
         setCategories(await getCategories());
         setSubcategories(await getSubcategories());
         setTypes(await getProductTypes());
+        setMeasures(await getMeasures());
       } catch (error) {
         console.error("Error fetching references:", error);
       }
@@ -82,45 +88,43 @@ const ProductsPage = () => {
   };
 
   return (
-    <Grid container width="100%" gap={2} flexDirection="row">
-      <Grid item xs={12}>
-        <Stack>
-          <Typography variant="h1">Productos</Typography>
-          <Typography sx={{ color: "#838383", fontWeight: 500 }} variant="body">
-            Gestiona los productos disponibles
-          </Typography>
-        </Stack>
-      </Grid>
-      <Box sx={{ height: 700, width: "100%" }}>
-        <DataGrid
-          rows={products}
-          columns={getProductColumns(handleOpenEdit)}
-          rowCount={totalPages}
-          paginationMode="server"
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 10,
-              },
+    <>
+      <DataGrid
+        localeText={localeText}
+        rows={products}
+        columns={getProductColumns(handleOpenEdit)}
+        rowCount={totalPages}
+        paginationMode="server"
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 10,
             },
-          }}
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          pageSizeOptions={[10, 25, 50]}
-          disableRowSelectionOnClick
-          sx={{
-            "& .MuiDataGrid-columnHeaderTitle": {
-              fontWeight: 700,
-            },
-            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-              outline: "none !important",
-            },
-          }}
-          slots={{
-            noRowsOverlay: CustomNoRowsOverlay,
-          }}
-        />
-      </Box>
+          },
+        }}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        pageSizeOptions={[10, 25, 50]}
+        disableRowSelectionOnClick
+        sx={{
+          "& .MuiDataGrid-columnHeaderTitle": {
+            fontWeight: 700,
+          },
+          "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+            outline: "none !important",
+          },
+        }}
+        slots={{
+          toolbar: CustomToolbar,
+          noRowsOverlay: CustomNoRowsOverlay,
+          footer: CustomFooter,
+        }}
+        slotProps={{
+          columnMenu: {
+            labelledby: "asd",
+          },
+        }}
+      />
       <ProductActionModal
         title="Producto"
         optionTitle="Selecciona una categoría asociada"
@@ -129,15 +133,15 @@ const ProductsPage = () => {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleEditProduct}
         fetchData={fetchData}
-        mode="edit"
         selected={editProduct}
         loading={loading}
         brands={brands}
         categories={categories}
         subcategories={subcategories}
         types={types}
+        measures={measures}
       />
-    </Grid>
+    </>
   );
 };
 

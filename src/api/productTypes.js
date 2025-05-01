@@ -1,10 +1,10 @@
 import { api } from "../config";
 import { api as privateApi } from "../config/private";
 
-export const getProductTypes = async () => {
+export const getProductTypes = async (params) => {
   try {
-    const { data } = await api.get("/product-types");
-    return data;
+    const { data } = await api.get("/product-types", { params });
+    return data.data
   } catch (error) {
     throw new Error(error.response.data.message);
   }

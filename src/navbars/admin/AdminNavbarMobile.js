@@ -27,7 +27,7 @@ export const adminSections = [
         icon: <Storefront />,
         text: "Cotizaciones",
         href: `/admin/quotes`,
-        visibleFor: ["admin"],
+        visibleFor: ["admin", "superadmin"],
       },
       {
         icon: <AddCircleOutline />,
@@ -60,7 +60,7 @@ export const adminSections = [
         visibleFor: ["superadmin"],
       },
       {
-        text: "Tipos de producto",
+        text: "Variantes de Producto",
         href: "/admin/product-type",
         icon: <Category sx={{ fontSize: 20 }} />,
         visibleFor: ["superadmin"],

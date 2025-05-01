@@ -6,7 +6,9 @@ import { MainPage } from "./MainPage";
 export default async function Page() {
   const session = await auth();
   const brands = await getBrands();
-  const products = await getProducts()
+  const products = await getProducts();
 
-  return <MainPage session={session} brands={brands} products={products} />;
+  return (
+    <MainPage session={session} brands={brands?.brands} products={products} />
+  );
 }

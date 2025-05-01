@@ -37,38 +37,37 @@ export const getSelectOptions = (
 };
 
 export const getProductColumns = (onEdit) => [
-  // { field: "id", headerName: "ID", flex: 0.5 },
-  { field: "code", headerName: "Código", flex: 0.5 },
-  { field: "name", headerName: "Nombre", flex: 1 },
+  { field: "code", headerName: "Código", flex: 0.7, minWidth: 130 },
+  { field: "name", headerName: "Nombre", flex: 1.5, minWidth: 130 },
   {
-    field: "brand",
+    field: "brandName",
     headerName: "Marca",
     flex: 1,
-    renderCell: (params) => params.row.brand?.name || "Sin marca",
+    minWidth: 120,
   },
   {
-    field: "category",
+    field: "categoryName",
     headerName: "Categoría",
     flex: 1,
-    renderCell: (params) => params.row.category?.name || "Sin categoría",
+    minWidth: 130,
   },
   {
-    field: "subcategory",
+    field: "subCategoryName",
     headerName: "Subcategoría",
     flex: 1,
-    renderCell: (params) => params.row.subCategory?.name || "Sin subcategoría",
+    minWidth: 130,
   },
   {
-    field: "type",
+    field: "typeName",
     headerName: "Tipo",
-    flex: 1,
-    renderCell: (params) => params.row.type?.name || "",
+    flex: 0.8,
+    minWidth: 100,
   },
   {
     field: "actions",
     type: "actions",
     headerName: "Acciones",
-    flex: 0.5,
+    flex: 0.4,
     getActions: ({ row }) => [
       <GridActionsCellItem
         key={`edit-${row.id}`}

@@ -1,6 +1,5 @@
 "use client";
 
-import { Box, Button, Grid, Stack, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import {
@@ -14,6 +13,11 @@ import { productTypesColumns } from "./columns";
 
 const ProductTypes = () => {
   const [rows, setRows] = useState([]);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+  const [rowCount, setRowCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState(null);
@@ -21,18 +25,21 @@ const ProductTypes = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  const fetchInitialData = async () => {
+    try {
+      const data = await getProductTypes({
+        page: paginationModel.page + 1,
+        size: paginationModel.pageSize,
+      });
+      setRows(data.productTypes);
+      setRowCount(data.count);
+    } catch (error) {
+      console.error("Error fetching product types:", error);
+    }
+  };
   useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const productTypesData = await getProductTypes();
-        setRows(productTypesData);
-      } catch (error) {
-        console.error("Error fetching product types:", error);
-      }
-    };
-
     fetchInitialData();
-  }, []);
+  }, [paginationModel]);
 
   const handleAddProductType = async (data) => {
     try {
@@ -93,29 +100,16 @@ const ProductTypes = () => {
   };
 
   return (
-    <Grid container width="100%" gap={2} flexDirection="row">
-      <Grid item xs={12}>
-        <Stack>
-          <Typography variant="h1">Tipos de Producto</Typography>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography
-              sx={{ color: "#838383", fontWeight: 500 }}
-              variant="body"
-            >
-              Agrega o edita tipos de producto
-            </Typography>
-            <Button onClick={openAddModal}>Agregar</Button>
-          </Box>
-        </Stack>
-      </Grid>
+    <>
       <ProductTypesTable
         rows={rows}
         columns={productTypesColumns}
         onEditClick={openEditModal}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        rowCount={rowCount}
+        title="variante"
+        handleClick={openAddModal}
       />
       <ActionModal
         title="Tipo de Producto"
@@ -128,7 +122,7 @@ const ProductTypes = () => {
         selected={selectedProductType}
         loading={loading}
       />
-    </Grid>
+    </>
   );
 };
 

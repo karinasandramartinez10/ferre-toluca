@@ -1,6 +1,5 @@
 "use client";
 
-import { Box, Button, Grid, Stack, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import {
@@ -14,6 +13,11 @@ import { categoriesColumns } from "./columns";
 
 const Categories = () => {
   const [rows, setRows] = useState([]);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+  const [rowCount, setRowCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -21,18 +25,22 @@ const Categories = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const categoriesData = await getCategories();
-        setRows(categoriesData);
-      } catch (error) {
-        console.error("Error fetching initial data:", error);
-      }
-    };
+  const fetchInitialData = async () => {
+    try {
+      const data = await getCategories({
+        page: paginationModel.page + 1,
+        size: paginationModel.pageSize,
+      });
+      setRows(data.categories);
+      setRowCount(data.count);
+    } catch (error) {
+      console.error("Error fetching initial data:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchInitialData();
-  }, []);
+  }, [paginationModel]);
 
   const handleAddCategory = async (data) => {
     try {
@@ -117,29 +125,16 @@ const Categories = () => {
   };
 
   return (
-    <Grid container width="100%" gap={2} flexDirection="row">
-      <Grid item xs={12}>
-        <Stack>
-          <Typography variant="h1">Categorías</Typography>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography
-              sx={{ color: "#838383", fontWeight: 500 }}
-              variant="body"
-            >
-              Agrega o edita categorías
-            </Typography>
-            <Button onClick={openAddModal}>Agregar</Button>
-          </Box>
-        </Stack>
-      </Grid>
+    <>
       <CategoriesTable
         rows={rows}
         columns={categoriesColumns}
         onEditClick={openEditModal}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        rowCount={rowCount}
+        title="categoría"
+        handleClick={openAddModal}
       />
       <ActionModal
         title="Categoría"
@@ -150,7 +145,7 @@ const Categories = () => {
         selected={selectedCategory}
         loading={loading}
       />
-    </Grid>
+    </>
   );
 };
 

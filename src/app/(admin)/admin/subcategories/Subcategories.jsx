@@ -1,6 +1,5 @@
 "use client";
 
-import { Box, Button, Grid, Stack, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { getCategories } from "../../../../api/category";
@@ -15,6 +14,11 @@ import { subcategoriesColumns } from "./columns";
 
 const Subcategories = () => {
   const [rows, setRows] = useState([]);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+  const [rowCount, setRowCount] = useState(0);
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -23,24 +27,27 @@ const Subcategories = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  const fetchInitialData = async () => {
+    try {
+      const data = await getSubcategories({
+        page: paginationModel.page + 1,
+        size: paginationModel.pageSize,
+      });
+      setRows(data.subcategories);
+      setRowCount(data.count);
+    } catch (error) {
+      console.error("Error fetching initial data:", error);
+    }
+  };
   useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const subcategoriesData = await getSubcategories();
-        setRows(subcategoriesData);
-      } catch (error) {
-        console.error("Error fetching initial data:", error);
-      }
-    };
-
     fetchInitialData();
-  }, []);
+  }, [paginationModel]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         const categoriesData = await getCategories();
-        setCategories(categoriesData);
+        setCategories(categoriesData.categories);
       } catch (error) {
         console.error("Error fetching initial data:", error);
       }
@@ -134,29 +141,16 @@ const Subcategories = () => {
   };
 
   return (
-    <Grid container width="100%" gap={2} flexDirection="row">
-      <Grid item xs={12}>
-        <Stack>
-          <Typography variant="h1">Subcategorías</Typography>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography
-              sx={{ color: "#838383", fontWeight: 500 }}
-              variant="body"
-            >
-              Agrega o edita subcategorías
-            </Typography>
-            <Button onClick={openAddModal}>Agregar</Button>
-          </Box>
-        </Stack>
-      </Grid>
+    <>
       <SubcategoriesTable
         rows={rows}
         columns={subcategoriesColumns}
         onEditClick={openEditModal}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        rowCount={rowCount}
+        title="subcategoría"
+        handleClick={openAddModal}
       />
       <ActionModal
         title="Subcategoría"
@@ -172,7 +166,7 @@ const Subcategories = () => {
         loading={loading}
         options={categories}
       />
-    </Grid>
+    </>
   );
 };
 

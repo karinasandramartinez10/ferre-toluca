@@ -1,6 +1,5 @@
 "use client";
 
-import { Box } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
@@ -51,35 +50,33 @@ export const Quotes = () => {
   if (error) return <ErrorUI />;
 
   return (
-    <Box sx={{ height: { xs: 550, md: 700 }, width: "100%" }}>
-      <DataGrid
-        rows={quotes}
-        columns={quotesColumns}
-        rowCount={totalCount}
-        paginationMode="server"
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 10,
-            },
+    <DataGrid
+      rows={quotes}
+      columns={quotesColumns}
+      rowCount={totalCount}
+      paginationMode="server"
+      initialState={{
+        pagination: {
+          paginationModel: {
+            pageSize: 10,
           },
-        }}
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-        pageSizeOptions={[5, 10, 20]}
-        disableRowSelectionOnClick
-        sx={{
-          "& .MuiDataGrid-columnHeaderTitle": {
-            fontWeight: 700,
-          },
-          "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-            outline: "none !important",
-          },
-        }}
-        slots={{
-          noRowsOverlay: CustomNoRowsOverlay,
-        }}
-      />
-    </Box>
+        },
+      }}
+      paginationModel={paginationModel}
+      onPaginationModelChange={setPaginationModel}
+      pageSizeOptions={[5, 10, 20]}
+      disableRowSelectionOnClick
+      sx={{
+        "& .MuiDataGrid-columnHeaderTitle": {
+          fontWeight: 700,
+        },
+        "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+          outline: "none !important",
+        },
+      }}
+      slots={{
+        noRowsOverlay: CustomNoRowsOverlay,
+      }}
+    />
   );
 };

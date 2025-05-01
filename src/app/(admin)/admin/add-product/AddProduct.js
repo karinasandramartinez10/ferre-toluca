@@ -15,10 +15,13 @@ import { postProduct } from "../../../../api/admin";
 import { getCategories } from "../../../../api/category";
 import { getSubcategories } from "../../../../api/subcategories";
 import { validateRows } from "./helpers";
-import { ProductTable } from "./ProductTable";
 import AddProductFields from "./AddProductFields";
 import { getProductTypes } from "../../../../api/productTypes";
 import { getBrands } from "../../../../api/admin/brands";
+import { getMeasures } from "../../../../api/measures";
+import { getProductModels } from "../../../../api/productModels";
+import { ProductTable } from "./table/ProductTable";
+import { AddProductBanner } from "./AddProductBanner";
 
 const defaultFormValues = {
   brandId: "",
@@ -41,6 +44,10 @@ const initialRows = [
     description: "",
     code: "",
     specifications: "",
+    modelId: null,
+    modelName: "",
+    measureId: null,
+    measureValue: "",
   },
 ];
 
@@ -49,6 +56,8 @@ const AddProduct = ({ user }) => {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [types, setTypes] = useState([]);
+  const [measures, setMeasures] = useState([]);
+  const [productModels, setProductModels] = useState([]);
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [rows, setRows] = useState(initialRows);
@@ -69,19 +78,55 @@ const AddProduct = ({ user }) => {
     defaultValues: defaultFormValues,
   });
 
+  const brandId = watch("brandId");
+
   const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    const fetchModelsByBrand = async () => {
+      if (!brandId) return;
+      try {
+        const models = await getProductModels(brandId);
+        setProductModels(models);
+
+        // Limpia los modelos previos si cambió de marca
+        setRows((prevRows) =>
+          prevRows.map((row) => ({
+            ...row,
+            modelName: "",
+            modelId: null,
+          }))
+        );
+      } catch (err) {
+        console.error("Error fetching models by brand:", err);
+      }
+    };
+
+    fetchModelsByBrand();
+  }, [brandId]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const brandsData = await getBrands();
-        const categoriesData = await getCategories();
-        const subcategoriesData = await getSubcategories();
-        const typesData = await getProductTypes();
-        setBrands(brandsData);
-        setCategories(categoriesData);
-        setSubcategories(subcategoriesData);
-        setTypes(typesData);
+        const [
+          brandsData,
+          categoriesData,
+          subcategoriesData,
+          typesData,
+          measuresData,
+        ] = await Promise.all([
+          getBrands(),
+          getCategories(),
+          getSubcategories(),
+          getProductTypes(),
+          getMeasures(),
+          getProductModels(),
+        ]);
+        setBrands(brandsData.brands);
+        setCategories(categoriesData.categories);
+        setSubcategories(subcategoriesData.subcategories);
+        setTypes(typesData.productTypes);
+        setMeasures(measuresData);
       } catch (error) {
         console.error("Error fetching initial data:", error);
       }
@@ -102,13 +147,16 @@ const AddProduct = ({ user }) => {
 
   const onSubmit = async (values) => {
     if (!validateRows(rows)) {
-      enqueueSnackbar("Debes completar todos los campos de los productos", {
-        variant: "error",
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "right",
-        },
-      });
+      enqueueSnackbar(
+        "Debes completar al menos el nombre, codigo, descripción, valor y unidad",
+        {
+          variant: "error",
+          anchorOrigin: {
+            vertical: "top",
+            horizontal: "right",
+          },
+        }
+      );
       return;
     }
 
@@ -162,6 +210,24 @@ const AddProduct = ({ user }) => {
         requestBody.append(
           `products[${index}][size]`,
           product.size ? product.size : ""
+        );
+
+        if (product.modelId) {
+          requestBody.append(`products[${index}][modelId]`, product.modelId);
+        } else if (product.modelName) {
+          requestBody.append(
+            `products[${index}][modelName]`,
+            product.modelName.trim()
+          );
+        }
+
+        requestBody.append(
+          `products[${index}][measureId]`,
+          product.measureId || ""
+        );
+        requestBody.append(
+          `products[${index}][measureValue]`,
+          product.measureValue || ""
         );
       });
 
@@ -218,6 +284,7 @@ const AddProduct = ({ user }) => {
         alignItems: { xs: "center", sm: "flex-start" },
       }}
     >
+      <AddProductBanner />
       <AddProductFields
         brands={brands}
         categories={categories}
@@ -226,7 +293,6 @@ const AddProduct = ({ user }) => {
         control={control}
         hasType={hasType}
       />
-
       <ProductTable
         rows={rows}
         setRows={setRows}
@@ -235,6 +301,8 @@ const AddProduct = ({ user }) => {
         handleDeleteClick={handleDeleteClick}
         processRowUpdate={processRowUpdate}
         handleRowModesModelChange={handleRowModesModelChange}
+        measures={measures}
+        productModels={productModels}
       />
 
       <Dropzone
@@ -250,6 +318,7 @@ const AddProduct = ({ user }) => {
       <Grid item xs={12} textAlign="end">
         <LoadingButton
           loading={loading}
+          disabled={loading || !isValid}
           onClick={handleSubmit(onSubmit)}
           variant="contained"
         >

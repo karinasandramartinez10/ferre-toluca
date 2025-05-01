@@ -91,7 +91,7 @@ export const Dropzone = ({
           alignItems="center"
           gap={1}
           width="100%"
-          padding={{ xs: 4, md: 8 }}
+          padding={{ xs: 4 }}
           sx={{ background: "white" }}
         >
           <Box>

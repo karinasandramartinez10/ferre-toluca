@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { IconButton, Stack } from "@mui/material";
-import { Visibility } from "@mui/icons-material";
+import { IconButton } from "@mui/material";
+import { DescriptionOutlined } from "@mui/icons-material";
 import { calculateTotalQuantity } from "./utils";
 import { formatPhoneNumber } from "../../../../utils/phoneNumber";
 import { formatDateDayAbrev } from "../../../../utils/date";
@@ -8,16 +8,23 @@ import { formatDateDayAbrev } from "../../../../utils/date";
 export const quotesColumns = [
   {
     field: "actions",
-    headerName: "Detalle",
-    width: 85,
+    headerName: "Ver detalle",
+    width: 110,
+    align: "center", // Centra el contenido dentro de la celda
+    sortable: false,
     renderCell: (params) => (
-      <Stack>
-        <Link href={`/admin/quotes/${params.row.id}`} passHref>
-          <IconButton>
-            <Visibility />
-          </IconButton>
-        </Link>
-      </Stack>
+      <Link href={`/admin/quotes/${params.row.id}`} passHref>
+        <IconButton
+          sx={{
+            mx: "auto", // Centra horizontalmente si fuera necesario
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <DescriptionOutlined />
+        </IconButton>
+      </Link>
     ),
   },
   // { field: "id", headerName: "ID", width: 85 },
