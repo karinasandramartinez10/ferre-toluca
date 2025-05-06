@@ -13,10 +13,10 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  Alert,
 } from "@mui/material";
 import { signIn } from "next-auth/react";
 import { format } from "date-fns";
-import { useSnackbar } from "notistack";
 import { es } from "date-fns/locale";
 import { registerUser } from "../../../api/auth";
 import * as yup from "yup";
@@ -39,6 +39,7 @@ import { MuiTelInput } from "mui-tel-input";
 import { useRouter } from "next/navigation";
 
 const phoneRegExp = /^\+\d{9,15}$/; //TODO: add number international validation support
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
 
 const defaultFormValues = {
   email: "",
@@ -53,8 +54,8 @@ const defaultFormValues = {
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [signupError, setSignupError] = useState(null);
 
-  const { enqueueSnackbar } = useSnackbar();
   const isDesktop = useResponsive("up", "lg");
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
@@ -79,8 +80,12 @@ const SignUp = () => {
       ),
     password: yup
       .string()
-      .transform((x) => (x === "" ? undefined : x))
       .min(8, "La contraseña debe tener al menos 8 caracteres")
+      .matches(
+        passwordRegex,
+        "La contraseña debe tener al menos una mayúscula, una minúscula y un número"
+      )
+      // .transform((x) => (x === "" ? undefined : x))
       .required("Contraseña requerida"),
     confirmPassword: yup
       .string()
@@ -108,6 +113,8 @@ const SignUp = () => {
     control,
     handleSubmit,
     formState: { isValid },
+    setError,
+    clearErrors,
   } = useForm({
     resolver: yupResolver(SignUpSchema),
     mode: "onChange",
@@ -122,7 +129,7 @@ const SignUp = () => {
     phoneNumber,
     dateOfBirth,
   }) => {
-    const { hasError } = await registerUser({
+    const error = await registerUser({
       firstName: name.toLowerCase().trim(),
       lastName: lastname.toLowerCase().trim(),
       email,
@@ -131,18 +138,17 @@ const SignUp = () => {
       birthDate: format(new Date(dateOfBirth), "yyyy-MM-dd"),
       role: "user",
     });
-    // TODO: validate the same rules that the backend uses
-    if (hasError) {
-      enqueueSnackbar("There was an error", {
-        variant: "error",
-        autoHideDuration: 5000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "right",
-        },
-      });
+
+    console.log(error);
+
+    if (error) {
+      setSignupError(
+        `Error ${error?.response?.data.error}` ||
+          "Hubo un error al crear la cuenta."
+      );
       return;
     }
+    setSignupError(null);
 
     await signIn("credentials", { email, password, redirectTo: "/" });
     window.location.replace("/");
@@ -190,6 +196,12 @@ const SignUp = () => {
             <Box padding="8px 0px">
               <Divider variant="middle">O</Divider>
             </Box>
+
+            {signupError && (
+              <Box mb={2}>
+                <Alert severity="error">{signupError}</Alert>
+              </Box>
+            )}
 
             {/* Form */}
             <Grid component="form">

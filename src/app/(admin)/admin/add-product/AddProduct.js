@@ -51,7 +51,7 @@ const initialRows = [
   },
 ];
 
-const AddProduct = ({ user }) => {
+const AddProduct = () => {
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
@@ -231,7 +231,7 @@ const AddProduct = ({ user }) => {
         );
       });
 
-      await postProduct(requestBody, user.access_token);
+      await postProduct(requestBody);
       enqueueSnackbar("Producto(s) añadido(s) exitósamente", {
         variant: "success",
         autoHideDuration: 5000,

@@ -1,16 +1,23 @@
 import axios from "axios";
 import { getSession } from "next-auth/react";
+import { authEvents } from "../lib/authEvents";
+import { EVENTS_EMITERS } from "../lib/events";
 
-export const api = axios.create({
+let inMemoryToken;
+
+export const privateApi = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}`,
 });
 
-api.interceptors.request.use(
+privateApi.interceptors.request.use(
   async (config) => {
     try {
-      const session = await getSession();
-      if (session?.user?.access_token) {
-        config.headers.Authorization = `Bearer ${session.user.access_token}`;
+      if (!inMemoryToken) {
+        const session = await getSession();
+        inMemoryToken = session?.user?.access_token ?? null;
+      }
+      if (inMemoryToken) {
+        config.headers.Authorization = `Bearer ${inMemoryToken}`;
       }
     } catch (error) {
       console.error(`Error setting token in request header ${error}`);
@@ -22,4 +29,15 @@ api.interceptors.request.use(
   }
 );
 
-export default api;
+privateApi.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      console.warn("[Auth] Token vencido o inválido. Cerrando sesión...");
+      authEvents.emit(EVENTS_EMITERS.AUTH.SESSION_EXPIRED);
+    }
+    return Promise.reject(error); // sigue lanzando el error para el componente
+  }
+);
+
+export default privateApi;

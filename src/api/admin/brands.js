@@ -1,4 +1,5 @@
 import api from "../../config";
+import privateApi from "../../config/private";
 
 export const getBrands = async (params) => {
   try {
@@ -10,11 +11,10 @@ export const getBrands = async (params) => {
   }
 };
 
-export const createBrand = async (formData, token) => {
+export const createBrand = async (formData) => {
   try {
-    const resp = await api.post("/brands", formData, {
+    const resp = await privateApi.post("/brands", formData, {
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
     });
@@ -25,11 +25,10 @@ export const createBrand = async (formData, token) => {
   }
 };
 
-export const updateBrand = async (id, formData, token) => {
+export const updateBrand = async (id, formData) => {
   try {
-    const resp = await api.put(`/brands/${id}`, formData, {
+    const resp = await privateApi.put(`/brands/${id}`, formData, {
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
     });

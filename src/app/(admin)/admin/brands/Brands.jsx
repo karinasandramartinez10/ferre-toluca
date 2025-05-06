@@ -12,7 +12,7 @@ import { toCamelCase, toCapitalizeFirstLetter } from "../../../../utils/cases";
 import CrudAdminTable from "../../../../components/CrudAdminTable";
 import { brandsColumns } from "./columns";
 
-const Brands = ({ user }) => {
+const Brands = () => {
   const [rows, setRows] = useState([]);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -62,7 +62,7 @@ const Brands = ({ user }) => {
       formData.append("codeName", toCamelCase(data.name));
       formData.append("image", data.image);
 
-      const response = await createBrand(formData, user.access_token);
+      const response = await createBrand(formData);
       if (response.status === 201) {
         const { brand, file } = response.data;
         const newBrand = {
@@ -102,7 +102,6 @@ const Brands = ({ user }) => {
       const response = await updateBrand(
         selectedBrand.id,
         formData,
-        user.access_token
       );
 
       if (response.status === 200) {

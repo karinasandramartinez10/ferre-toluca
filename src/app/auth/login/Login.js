@@ -1,15 +1,18 @@
 "use client";
 
-import { Grid } from "@mui/material";
+import { Alert, Grid } from "@mui/material";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useSnackbar } from "notistack";
 import { LoadingButton } from "@mui/lab";
 import LoginContainer from "./LoginContainer";
-import LoginForm from './LoginForm'
+import LoginForm from "./LoginForm";
+import { useSearchParams } from "next/navigation";
 
 const Login = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
 
   const handleSubmit = async ({ email, password }) => {
     try {
@@ -44,6 +47,11 @@ const Login = () => {
         xs={12}
       >
         <LoginContainer>
+          {error === "CredentialsSignin" && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              Correo o contraseña incorrectos. Intenta nuevamente.
+            </Alert>
+          )}
           <LoginForm onSubmit={handleSubmit}>
             {({ loading, isValid }) => (
               <>

@@ -1,5 +1,5 @@
 import { api } from "../config";
-import { api as privateApi } from "../config/private";
+import privateApi from "../config/private";
 
 export const getSubcategories = async (params) => {
   try {

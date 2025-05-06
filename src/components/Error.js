@@ -1,8 +1,7 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-export const ErrorUI = ({ main = false }) => {
-  const router = useRouter();
+export const ErrorUI = ({ onRetry, message, href }) => {
   return (
     <Box
       display="flex"
@@ -15,12 +14,20 @@ export const ErrorUI = ({ main = false }) => {
     >
       <Stack gap={2} alignItems="center">
         <Typography variant="h3" component="h1" textAlign="center">
-          Ha ocurrido un error en el servidor
+          {message ?? "Ha ocurrido un error en el servidor"}
         </Typography>
         <Box>
-          <Button href="/" onClick={() => router.push("/")}>
-            {main ? "Recargar la página" : "Volver a la página principal"}
-          </Button>
+          {/* Client */}
+          {onRetry ? (
+            <Button onClick={onRetry} variant="contained">
+              Recargar
+            </Button>
+          ) : href ? (
+            // SSR
+            <Button component={Link} href={href} variant="contained">
+              Recargar
+            </Button>
+          ) : null}
         </Box>
       </Stack>
     </Box>

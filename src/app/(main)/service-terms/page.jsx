@@ -31,10 +31,9 @@ const TermsOfService = () => {
           1. Introducción
         </Typography>
         <Typography variant="body2">
-          Bienvenido a [Nombre de la plataforma]. Estos Términos de Servicio
-          regulan el uso de nuestra plataforma y todos los servicios
-          proporcionados. Al utilizar nuestro sitio web y servicios, aceptas
-          cumplir con estos términos.
+          Estos Términos de Servicio regulan el uso de nuestra plataforma y
+          todos los servicios proporcionados. Al utilizar nuestro sitio web y
+          servicios, aceptas cumplir con estos términos.
         </Typography>
       </Box>
 
