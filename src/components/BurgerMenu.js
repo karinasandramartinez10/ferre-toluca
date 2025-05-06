@@ -4,7 +4,6 @@ import {
   Link,
   List,
   ListItem,
-  ListItemIcon,
   ListItemText,
   IconButton,
   Divider,

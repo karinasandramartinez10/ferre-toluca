@@ -1,69 +1,72 @@
 "use client";
 
 import { DataGrid } from "@mui/x-data-grid";
-import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { fetchQuotes } from "../../../../api/quote";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
 import { quotesColumns } from "./columns";
 
-export const Quotes = () => {
-  const [quotes, setQuotes] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: 10,
-  });
-
+export const Quotes = ({ initialData }) => {
+  const [data, setData] = useState(initialData);
+  const [page, setPage] = useState(initialData.page);
+  const [pageSize, setSize] = useState(initialData.pageSize);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  const { data } = useSession();
+  const isFirstLoad = useRef(true);
+
+  const loadData = useCallback(
+    async (page, pageSize) => {
+      setError(false);
+      setLoading(true);
+      try {
+        const d = await fetchQuotes(page, pageSize);
+        setData({ ...d, page, pageSize });
+      } catch {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const { quotes, totalCount } = await fetchQuotes(
-          data.user.access_token,
-          paginationModel.page + 1, // Ajustar para backend (MUI usa base 0, backend usa base 1)
-          paginationModel.pageSize
-        );
-        setLoading(false);
-        setQuotes(quotes);
-        setTotalCount(totalCount || 0);
-      } catch (error) {
-        setLoading(false);
-        setError(true);
-      }
-    };
-
-    fetchData();
-  }, [data.user.access_token, paginationModel]);
+    if (isFirstLoad.current) {
+      // primer mount: no hacemos fetch porque ya vinimos con initialData
+      isFirstLoad.current = false;
+      return;
+    }
+    // para cualquier cambio de page/pageSize, incluso volver a 1
+    loadData(page, pageSize);
+  }, [page, pageSize, loadData]);
 
   if (loading) {
     return <Loading />;
   }
 
-  if (error) return <ErrorUI />;
+  if (error)
+    return (
+      <ErrorUI
+        onRetry={() => {
+          loadData(initialData.page, initialData.pageSize);
+        }}
+      />
+    );
 
   return (
     <DataGrid
-      rows={quotes}
+      rows={data.quotes}
       columns={quotesColumns}
-      rowCount={totalCount}
+      rowCount={data.totalCount}
       paginationMode="server"
-      initialState={{
-        pagination: {
-          paginationModel: {
-            pageSize: 10,
-          },
-        },
+      paginationModel={{ page: page - 1, pageSize }}
+      onPaginationModelChange={({ page, pageSize }) => {
+        setPage(page + 1);
+        setSize(pageSize);
       }}
-      paginationModel={paginationModel}
-      onPaginationModelChange={setPaginationModel}
       pageSizeOptions={[5, 10, 20]}
       disableRowSelectionOnClick
       sx={{

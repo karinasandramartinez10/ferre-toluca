@@ -17,8 +17,15 @@ import {
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { getBrands } from "../../../../api/admin/brands";
+import { getCategories } from "../../../../api/category";
+import { getMeasures } from "../../../../api/measures";
 import { getProductModels } from "../../../../api/productModels";
+import { getProductTypes } from "../../../../api/productTypes";
+import { getSubcategories } from "../../../../api/subcategories";
 import { Dropzone } from "../../../../components/Dropzone";
+import { ErrorUI } from "../../../../components/Error";
+import { Loading } from "../../../../components/Loading";
 import UploadingMessage from "../brands/UploadingMessage";
 import {
   getSelectOptions,
@@ -51,11 +58,11 @@ const defaultValues = {
   categoryId: "",
   subCategoryId: "",
   typeId: "",
-  image: null,
+  measureValue: null,
   measureId: "",
-  measureValue: "",
   modelName: "",
   modelId: "",
+  image: null,
 };
 
 const ProductActionModal = ({
@@ -64,16 +71,21 @@ const ProductActionModal = ({
   onClose,
   onSubmit,
   fetchData,
-  loading,
   selected,
-  brands = [],
-  categories = [],
-  subcategories = [],
-  types = [],
-  measures = [],
+  loading,
 }) => {
   const [photo, setPhoto] = useState(null);
   const [productModels, setProductModels] = useState([]);
+
+  const [refs, setRefs] = useState({
+    brands: [],
+    categories: [],
+    subcategories: [],
+    types: [],
+    measures: [],
+  });
+  const [loadingRefs, setLoadingRefs] = useState(false);
+  const [errorRefs, setErrorRefs] = useState(false);
 
   const {
     control,
@@ -90,46 +102,74 @@ const ProductActionModal = ({
   });
 
   const brandId = watch("brandId");
-  const currentModelName = getValues("modelName");
-  const currentModelId = getValues("modelId");
 
   useEffect(() => {
-    const fetchModelsAndSetValues = async () => {
-      if (selected) {
-        const selectedBrandId = selected.brand?.id;
-        if (selectedBrandId) {
-          const models = await getProductModels(selectedBrandId);
+    if (!open) return;
+    setLoadingRefs(true);
+    setErrorRefs(false);
+
+    const loadModalData = async () => {
+      try {
+        const { brands } = await getBrands();
+        const { categories } = await getCategories();
+        const { subcategories } = await getSubcategories();
+        const { productTypes } = await getProductTypes();
+        const measures = await getMeasures();
+
+        setRefs({
+          brands,
+          categories,
+          subcategories,
+          types: productTypes,
+          measures,
+        });
+
+        // construye objeto initial mezclando defaultValues y selected
+        const initial = {
+          ...defaultValues,
+          ...(selected && {
+            name: selected.name ?? "",
+            code: selected.code ?? "",
+            color: selected.color ?? "",
+            description: selected.description ?? "",
+            specifications: selected.specifications ?? "",
+            brandId: selected.brand?.id ?? "",
+            categoryId: selected.category?.id ?? "",
+            subCategoryId: selected.subCategory?.id ?? "",
+            typeId: selected.type?.id ?? "",
+            measureValue: selected.measureValue ?? null,
+            measureId: selected.measure?.id ?? "",
+            modelName: selected.productModel?.name ?? "",
+            modelId: selected.productModel?.id ?? "",
+          }),
+        };
+
+        reset(initial);
+        const existingImage = selected?.Files?.[0]?.path ?? null;
+        setPhoto(existingImage ? { preview: existingImage } : null);
+
+        // carga modelos si hay brandId
+        if (initial.brandId) {
+          const models = await getProductModels(initial.brandId);
           setProductModels(models);
         }
-
-        setValue("name", selected.name);
-        setValue("code", selected.code || "");
-        setValue("color", selected.color || "");
-        setValue("size", selected.size || "");
-        setValue("description", selected.description || "");
-        setValue("specifications", selected.specifications || "");
-        setValue("brandId", selected.brand?.id || "");
-        setValue("categoryId", selected.category?.id || "");
-        setValue("subCategoryId", selected.subCategory?.id || "");
-        setValue("typeId", selected.type?.id || "");
-        setValue("measureId", selected.measure?.id || "");
-        setValue("measureValue", selected.measureValue || "");
-        setValue("modelName", selected.productModel?.name || "");
-        setValue("modelId", selected.productModel?.id || "");
-
-        const existingImage =
-          selected.Files?.length > 0 ? selected.Files[0].path : null;
-        setPhoto(existingImage ? { preview: existingImage } : null);
+      } catch {
+        setErrorRefs(true);
+      } finally {
+        setLoadingRefs(false);
       }
     };
 
-    fetchModelsAndSetValues();
-  }, [selected]);
+    loadModalData();
+  }, [open, selected, reset]);
 
   useEffect(() => {
-    if (!brandId) return;
+    if (!brandId) {
+      setProductModels([]);
+      return;
+    }
 
-    const fetchModelsByBrand = async () => {
+    const loadModels = async () => {
       try {
         const models = await getProductModels(brandId);
         setProductModels(models);
@@ -138,13 +178,14 @@ const ProductActionModal = ({
       }
     };
 
-    fetchModelsByBrand();
+    loadModels();
 
     // Limpiar si la marca cambió respecto a la seleccionada
-    if (selected?.brand?.id !== brandId) {
+    /*     if (selected?.brand?.id !== brandId) {
       setValue("modelName", "", { shouldValidate: true, shouldDirty: true });
       setValue("modelId", null, { shouldValidate: true, shouldDirty: true });
     }
+ */
   }, [brandId]);
 
   const handleFormSubmit = async (data) => {
@@ -188,153 +229,158 @@ const ProductActionModal = ({
 
     await onSubmit(formData);
     await fetchData();
-    resetValues();
-  };
-
-  const resetValues = () => {
     reset(defaultValues);
   };
 
   const handleCloseModal = () => {
-    resetValues(defaultValues);
+    reset(defaultValues);
     onClose();
   };
 
   // const currentModelName = getValues("modelName");
   // const currentModelId = getValues("modelId");
 
-  return (
-    <Dialog open={open} onClose={handleCloseModal} fullWidth maxWidth="md">
-      <DialogTitle sx={{ fontWeight: 600 }}>{`Editar ${title}`}</DialogTitle>
-
-      <DialogContent>
-        <Box component="form" display="flex" flexDirection="column">
-          {/* Identificación */}
-          <Typography sx={sectionTitleSx}>Identificación</Typography>
-          <Box sx={twoColumnGrid}>
-            {["name", "code", "color"].map((name, i) => (
-              <Controller
-                key={name}
-                name={name}
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label={
-                      textFields.find((f) => f.name === name)?.label || name
-                    }
-                    fullWidth
-                    error={!!errors[name]}
-                    helperText={errors[name]?.message}
-                    disabled={loading}
-                  />
-                )}
-              />
-            ))}
-          </Box>
-
-          {/* Medidas */}
-          <Typography sx={sectionTitleSx}>Medidas</Typography>
-          <Box sx={twoColumnGrid}>
+  let content;
+  if (loadingRefs) {
+    content = <Loading />;
+  } else if (errorRefs) {
+    content = (
+      <ErrorUI
+        onRetry={() => {
+          loadModalData();
+        }}
+        message="Error cargando datos. Intenta de nuevo."
+      />
+    );
+  } else {
+    // aquí va todo tu formulario
+    content = (
+      <Box component="form" display="flex" flexDirection="column" noValidate>
+        {/* Identificación */}
+        <Typography sx={sectionTitleSx}>Identificación</Typography>
+        <Box sx={twoColumnGrid}>
+          {textFields.map(({ name, label }) => (
             <Controller
-              name="measureValue"
+              key={name}
+              name={name}
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  type="number"
-                  label="Valor"
+                  label={label}
                   fullWidth
-                  error={!!errors.measureValue}
-                  helperText={errors.measureValue?.message}
-                  disabled={loading}
+                  error={!!errors[name]}
+                  helperText={errors[name]?.message}
+                  disabled={loading || loadingRefs}
                 />
               )}
             />
-            <Controller
-              control={control}
-              name="measureId"
-              render={({ field }) => (
-                <FormControl size="small" fullWidth>
-                  <Select {...field} value={field.value || ""} displayEmpty>
-                    <MenuItem disabled value="">
-                      Unidad
+          ))}
+        </Box>
+
+        {/* Medidas */}
+        <Typography sx={sectionTitleSx}>Medidas</Typography>
+        <Box sx={twoColumnGrid}>
+          <Controller
+            name="measureValue"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                type="number"
+                label="Valor"
+                fullWidth
+                error={!!errors.measureValue}
+                helperText={errors.measureValue?.message}
+                disabled={loading}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="measureId"
+            render={({ field }) => (
+              <FormControl size="small" fullWidth>
+                <Select {...field} value={field.value || ""} displayEmpty>
+                  <MenuItem disabled value="">
+                    Unidad
+                  </MenuItem>
+                  {refs.measures.map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.abbreviation}
                     </MenuItem>
-                    {measures.map((option) => (
-                      <MenuItem key={option.id} value={option.id}>
-                        {option.abbreviation}
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          />
+        </Box>
+
+        {/* Clasificación */}
+        <Typography sx={sectionTitleSx}>Clasificación</Typography>
+        <Box sx={twoColumnGrid}>
+          {selectFields.map(({ name, label }) => (
+            <Controller
+              key={name}
+              name={name}
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth size="small">
+                  <Typography fontWeight={500} fontSize="0.85rem" mb={0.5}>
+                    {label}
+                  </Typography>
+                  <Select {...field} value={field.value ?? ""}>
+                    <MenuItem disabled value="">
+                      {label}
+                    </MenuItem>
+                    {getSelectOptions(
+                      name,
+                      refs.brands,
+                      refs.categories,
+                      refs.subcategories,
+                      refs.types
+                    ).map((opt) => (
+                      <MenuItem key={opt.id} value={opt.id}>
+                        {opt.name}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               )}
             />
-          </Box>
+          ))}
+        </Box>
 
-          {/* Clasificación */}
-          <Typography sx={sectionTitleSx}>Clasificación</Typography>
-          <Box sx={twoColumnGrid}>
-            {selectFields.map(({ label, name }) => (
-              <Controller
-                key={name}
-                control={control}
-                name={name}
-                render={({ field }) => (
-                  <FormControl size="small" fullWidth>
-                    <Typography fontWeight={500} fontSize="0.85rem" mb={0.5}>
-                      {label}
-                    </Typography>
-                    <Select {...field} value={field.value || ""} displayEmpty>
-                      <MenuItem disabled value="">
-                        {label}
-                      </MenuItem>
-                      {getSelectOptions(
-                        name,
-                        brands,
-                        categories,
-                        subcategories,
-                        types
-                      ).map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                )}
-              />
-            ))}
-          </Box>
-
-          {/* Modelo */}
-          <Typography sx={sectionTitleSx}>Modelo</Typography>
-          <Controller
-            name="modelName"
-            control={control}
-            render={({ field }) => (
+        {/* Modelo */}
+        <Typography sx={sectionTitleSx}>Modelo</Typography>
+        <Controller
+          name="modelName"
+          control={control}
+          render={({ field }) => {
+            const currentModelName = getValues("modelName");
+            const currentModelId = getValues("modelId");
+            return (
               <Autocomplete
                 freeSolo
                 disableClearable
                 options={productModels}
-                getOptionLabel={(option) =>
-                  typeof option === "string" ? option : option.name
+                getOptionLabel={(opt) =>
+                  typeof opt === "string" ? opt : opt.name
                 }
                 value={
                   productModels.find((m) => m.name === field.value) ||
                   field.value
                 }
-                onChange={(_, newValue) => {
-                  const isCustom = typeof newValue === "string";
-                  const newName = isCustom ? newValue : newValue.name;
-                  const newId = isCustom ? null : newValue.id;
-
+                onChange={(_, newVal) => {
+                  const isCustom = typeof newVal === "string";
+                  const newName = isCustom ? newVal : newVal.name;
+                  const newId = isCustom ? null : newVal.id;
                   if (newName !== currentModelName) {
                     setValue("modelName", newName, {
                       shouldValidate: true,
                       shouldDirty: true,
                     });
                   }
-
                   if (newId !== currentModelId) {
                     setValue("modelId", newId, {
                       shouldValidate: true,
@@ -365,47 +411,52 @@ const ProductActionModal = ({
                   />
                 )}
               />
-            )}
-          />
+            );
+          }}
+        />
 
-          {/* Descripción */}
-          <Typography sx={sectionTitleSx}>Descripción</Typography>
-          <Box sx={twoColumnGrid}>
-            {multiLineFields.map(({ name, label }) => (
-              <Controller
-                key={name}
-                name={name}
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label={label}
-                    fullWidth
-                    multiline
-                    minRows={3}
-                    error={!!errors[name]}
-                    helperText={errors[name]?.message}
-                    disabled={loading}
-                  />
-                )}
-              />
-            ))}
-          </Box>
-
-          {/* Imagen */}
-          <Typography sx={sectionTitleSx}>Imagen</Typography>
-          <Dropzone
-            text="Arrastra o escoge una nueva imagen"
-            preview
-            setValue={setValue}
-            photo={photo}
-            setPhoto={setPhoto}
-            onRemove={() => setPhoto(null)}
-          />
-          {loading && <UploadingMessage />}
+        {/* Descripción */}
+        <Typography sx={sectionTitleSx}>Descripción</Typography>
+        <Box sx={twoColumnGrid}>
+          {multiLineFields.map(({ name, label }) => (
+            <Controller
+              key={name}
+              name={name}
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label={label}
+                  fullWidth
+                  multiline
+                  minRows={3}
+                  error={!!errors[name]}
+                  helperText={errors[name]?.message}
+                  disabled={loading}
+                />
+              )}
+            />
+          ))}
         </Box>
-      </DialogContent>
 
+        {/* Imagen */}
+        <Typography sx={sectionTitleSx}>Imagen</Typography>
+        <Dropzone
+          text="Arrastra o escoge una nueva imagen"
+          preview
+          photo={photo}
+          setPhoto={setPhoto}
+          setValue={setValue}
+          onRemove={() => setPhoto(null)}
+        />
+      </Box>
+    );
+  }
+
+  return (
+    <Dialog open={open} onClose={handleCloseModal} fullWidth maxWidth="md">
+      <DialogTitle sx={{ fontWeight: 600 }}>{`Editar ${title}`}</DialogTitle>
+      <DialogContent>{content}</DialogContent>
       <DialogActions>
         <Button
           onClick={handleCloseModal}
@@ -417,7 +468,7 @@ const ProductActionModal = ({
         <LoadingButton
           onClick={handleSubmit(handleFormSubmit)}
           loading={loading}
-          disabled={loading || !isValid}
+          disabled={loading || !isValid || loadingRefs}
           variant="contained"
           color="primary"
         >

@@ -1,5 +1,5 @@
 import { api } from "../config";
-import { api as privateApi } from "../config/private";
+import privateApi from "../config/private";
 
 //TODO: mover a 10
 export async function fetchProducts(page = 1, size = 10) {
@@ -67,7 +67,7 @@ export const getProductsByQuery = async (query) => {
 
 export const updateProduct = async (id, body) => {
   try {
-    const { data } = await privateApi.patch(`/product/${id}`, body, {
+    const data = await privateApi.patch(`/product/${id}`, body, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return data;

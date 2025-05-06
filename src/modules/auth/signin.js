@@ -1,5 +1,5 @@
 import { POST } from "../requests/methods";
-import { decodeToken } from '../../utils/decode'
+import { decodeToken } from "../../utils/decode";
 
 async function signIn(credentials) {
   const { email, password } = credentials;
@@ -32,6 +32,7 @@ async function signIn(credentials) {
           role: decodedToken.role,
           email: decodedToken.userName,
           access_token: data.access_token,
+          expires_at: decodedToken.exp,
         };
 
         return {

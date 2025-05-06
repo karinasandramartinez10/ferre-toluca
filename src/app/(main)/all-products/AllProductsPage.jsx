@@ -62,7 +62,7 @@ const AllProductsPage = () => {
     return <Loading />;
   }
 
-  if (error) return <ErrorUI main />;
+  if (error) return <ErrorUI />;
 
   if (products.length === 0)
     return (

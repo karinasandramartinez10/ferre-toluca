@@ -145,7 +145,7 @@ export const AdminLayout = ({ children, role }) => {
         </Stack>
       </List>
     ),
-    [pathname]
+    [pathname, role]
   );
 
   return (

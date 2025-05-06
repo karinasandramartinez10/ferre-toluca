@@ -1,5 +1,5 @@
 import { api } from "../config";
-import { api as privateApi } from "../config/private";
+import privateApi from "../config/private";
 
 export const createQuote = async (body, token) => {
   try {
@@ -16,11 +16,10 @@ export const createQuote = async (body, token) => {
   }
 };
 
-export const fetchQuotes = async (token, page = 1, size = 10) => {
+export const fetchQuotes = async (page = 1, size = 10) => {
   try {
-    const { data } = await api.get("/quote", {
+    const { data } = await privateApi.get("/quote", {
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       params: {
@@ -28,8 +27,6 @@ export const fetchQuotes = async (token, page = 1, size = 10) => {
         size,
       },
     });
-
-    console.log('data',data.data)
 
     return data.data;
   } catch (error) {
@@ -55,11 +52,10 @@ export const fetchQuoteById = async (quoteId, token) => {
   }
 };
 
-export const updateQuote = async (id, body, token) => {
+export const updateQuote = async (id, body) => {
   try {
-    const resp = await api.patch(`/quote/${id}`, body, {
+    const resp = await privateApi.patch(`/quote/${id}`, body, {
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });

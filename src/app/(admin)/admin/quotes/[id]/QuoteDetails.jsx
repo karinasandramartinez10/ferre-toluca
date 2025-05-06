@@ -1,24 +1,23 @@
 import {
   CalendarToday,
-  Check,
   Email,
   Message,
   Person,
   Phone,
 } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Button, Card, CardContent, Grid } from "@mui/material";
+import { Card, CardContent, Grid } from "@mui/material";
 import { formatDateDayAbrev } from "../../../../../utils/date";
 import ActionButton from "./ActionButton";
 import InfoRow from "./InfoRow";
 
 const QuoteDetails = ({
   quote,
-  handleCall,
-  handleEmail,
-  handleMarkAsRead,
+  onCall,
+  onEmail,
+  onMarkAsRead,
   isRead,
-  loading,
+  loadingRead,
 }) => (
   <Card variant="outlined">
     <CardContent>
@@ -44,18 +43,10 @@ const QuoteDetails = ({
         <Grid item xs={12}>
           <Grid container spacing={2} justifyContent="space-between">
             <Grid item xs={12} md={4}>
-              <ActionButton
-                label="Llamar"
-                icon={<Phone />}
-                onClick={handleCall}
-              />
+              <ActionButton label="Llamar" icon={<Phone />} onClick={onCall} />
             </Grid>
             <Grid item xs={12} md={4}>
-              <ActionButton
-                label="Correo"
-                icon={<Email />}
-                onClick={handleEmail}
-              />
+              <ActionButton label="Correo" icon={<Email />} onClick={onEmail} />
             </Grid>
             <Grid item xs={12} md={4}>
               <LoadingButton
@@ -70,10 +61,10 @@ const QuoteDetails = ({
                       : theme.palette.green.hover,
                   },
                 })}
-                onClick={handleMarkAsRead}
+                onClick={onMarkAsRead}
                 disabled={isRead}
                 fullWidth
-                loading={loading}
+                loading={loadingRead}
               >
                 {isRead ? "Leído" : "Marcar como leído"}
               </LoadingButton>

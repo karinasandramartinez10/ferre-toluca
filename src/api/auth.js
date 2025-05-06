@@ -1,4 +1,3 @@
-import axios from "axios";
 import { api } from "../config";
 
 export const registerUser = async (body) => {
@@ -9,16 +8,12 @@ export const registerUser = async (body) => {
     };
   } catch (error) {
     console.log(error);
-    if (axios.isAxiosError(error)) {
-      return {
-        hasError: true,
-        message: error.response?.data.message,
-      };
-    }
-    return {
-      hasError: true,
-      message: "Account not created",
-    };
+    return error
+    // if (axios.isAxiosError(error)) return error
+    // return {
+    //   hasError: true,
+    //   message: "Account not created",
+    // };
   }
 };
 

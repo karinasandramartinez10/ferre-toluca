@@ -6,7 +6,7 @@ export const {
   auth,
   signIn,
   signOut,
-  update
+  update,
 } = NextAuth({
   pages: {
     signIn: "/auth/login",
@@ -15,20 +15,25 @@ export const {
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async session({ token, session, account }) {
+    async session({ token, session }) {
       session.user = token.data;
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
         token.data = {
-          ...user,
-          role: user.role
-        }
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          access_token: user.access_token,
+          expires_at: user.expires_at,
+          // ...user,
+          // role: user.role
+        };
       }
       return token;
     },
   },
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: 604800 },
   ...authConfig,
 });

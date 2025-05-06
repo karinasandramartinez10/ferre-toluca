@@ -5,7 +5,7 @@ export const textFields = [
   { name: "name", label: "Nombre", required: true },
   { name: "code", label: "Código", required: true },
   { name: "color", label: "Color" },
-  { name: "size", label: "Tamaño" },
+  // { name: "size", label: "Tamaño" },
 ];
 
 export const multiLineFields = [
@@ -33,7 +33,8 @@ export const getSelectOptions = (
     subCategoryId: subcategories,
     typeId: types,
   };
-  return optionsMap[name] || [];
+  const opts = optionsMap[name];
+  return Array.isArray(opts) ? opts : [];
 };
 
 export const getProductColumns = (onEdit) => [

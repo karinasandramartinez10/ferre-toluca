@@ -1,107 +1,97 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSnackbar } from "notistack";
 import { DataGrid } from "@mui/x-data-grid";
 import { fetchAllProducts, updateProduct } from "../../../../api/products";
-import { getBrands } from "../../../../api/admin/brands";
-import { getCategories } from "../../../../api/category";
-import { getSubcategories } from "../../../../api/subcategories";
-import { getProductTypes } from "../../../../api/productTypes";
 import { getProductColumns } from "./constants";
 import ProductActionModal from "./ProductActionModal";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
-import { getMeasures } from "../../../../api/measures";
 import { localeText } from "../../../../constants/x-datagrid/localeText";
 import { CustomToolbar } from "../../../../components/DataGrid/CustomToolbar";
 import { CustomFooter } from "../../../../components/DataGrid/CustomFooter";
+import { Loading } from "../../../../components/Loading";
+import { ErrorUI } from "../../../../components/Error";
 
-const ProductsPage = () => {
-  const [products, setProducts] = useState([]);
+const ProductsPage = ({ initialData }) => {
+  // Table and pagination
+  const [data, setData] = useState(initialData);
   const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: 10,
+    page: initialData.page - 1,
+    pageSize: initialData.pageSize,
   });
-  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [editProduct, setEditProduct] = useState(null);
+  const [error, setError] = useState(false);
+  const firstLoad = useRef(true);
+
+  // Modal
+  const [selected, setSelected] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [brands, setBrands] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [subcategories, setSubcategories] = useState([]);
-  const [types, setTypes] = useState([]);
-  const [measures, setMeasures] = useState([]);
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const fetchData = async () => {
+  const loadPage = useCallback(async (page1, size) => {
+    setError(false);
     setLoading(true);
-    const { products, count } = await fetchAllProducts(
-      paginationModel.page + 1,
-      paginationModel.pageSize
-    );
-    setLoading(false);
-    setProducts(products);
-    setTotalPages(count || 0);
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [paginationModel]);
-
-  useEffect(() => {
-    const fetchReferences = async () => {
-      try {
-        setBrands(await getBrands());
-        setCategories(await getCategories());
-        setSubcategories(await getSubcategories());
-        setTypes(await getProductTypes());
-        setMeasures(await getMeasures());
-      } catch (error) {
-        console.error("Error fetching references:", error);
-      }
-    };
-
-    fetchReferences();
+    try {
+      const d = await fetchAllProducts(page1, size);
+      setData({ ...d, page: page1, pageSize: size });
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const handleOpenEdit = (product) => {
-    setEditProduct(product);
+  useEffect(() => {
+    if (firstLoad.current) {
+      firstLoad.current = false;
+      return;
+    }
+    loadPage(paginationModel.page + 1, paginationModel.pageSize);
+  }, [paginationModel, loadPage]);
+
+  const handleOpenEdit = (row) => {
+    setSelected(row);
     setIsModalOpen(true);
   };
 
-  const handleEditProduct = async (data) => {
+  const handleEditProduct = async (formData) => {
     try {
       setLoading(true);
-      const response = await updateProduct(editProduct.id, data);
-      if (response.status === 200) {
+      const resp = await updateProduct(selected.id, formData);
+      if (resp.status === 200) {
         enqueueSnackbar("Producto actualizado exitosamente", {
           variant: "success",
         });
       }
-    } catch (error) {
-      console.error("Error actualizando el producto", error);
+      // recargar
+      await loadPage(data.page, data.pageSize);
+    } catch (e) {
+      enqueueSnackbar("Error al actualizar producto", { variant: "error" });
     } finally {
       setLoading(false);
       setIsModalOpen(false);
     }
   };
 
+  if (loading) return <Loading />;
+  if (error)
+    return (
+      <ErrorUI
+        onRetry={() => loadPage(initialData.page, initialData.pageSize)}
+        message="No pudimos cargar los productos"
+      />
+    );
+
   return (
     <>
       <DataGrid
         localeText={localeText}
-        rows={products}
+        rows={data.products}
         columns={getProductColumns(handleOpenEdit)}
-        rowCount={totalPages}
+        rowCount={data.count} //data.count
         paginationMode="server"
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 10,
-            },
-          },
-        }}
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
         pageSizeOptions={[10, 25, 50]}
@@ -127,19 +117,12 @@ const ProductsPage = () => {
       />
       <ProductActionModal
         title="Producto"
-        optionTitle="Selecciona una categoría asociada"
-        option="categoryId"
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleEditProduct}
-        fetchData={fetchData}
-        selected={editProduct}
+        fetchData={() => loadPage(data.page, data.pageSize)}
+        selected={selected}
         loading={loading}
-        brands={brands}
-        categories={categories}
-        subcategories={subcategories}
-        types={types}
-        measures={measures}
       />
     </>
   );

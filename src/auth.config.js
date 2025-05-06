@@ -6,13 +6,16 @@ export default {
     CredentialsProviders({
       async authorize(credentials) {
         const { email = "", password = "" } = credentials;
+        try {
+          const { status, session } = await signIn({ email, password });
 
-        const { status, session } = await signIn({ email, password });
-
-        if (status === "success" && session) {
-          return session;
+          if (status === "success" && session) {
+            return session;
+          }
+          throw new Error("Correo o contraseña incorrectos");
+        } catch (error) {
+          throw new Error("Correo o contraseña incorrectos");
         }
-        return null;
       },
     }),
   ],

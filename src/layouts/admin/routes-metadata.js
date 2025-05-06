@@ -43,5 +43,3 @@ export const getPageMetadata = (pathname) => {
 
   return PAGE_METADATA[pathname] || { title: "", subtitle: "" };
 };
-
-// TODO: agregar aqui las de brand, category etc
