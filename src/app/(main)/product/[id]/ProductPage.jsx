@@ -132,25 +132,37 @@ const ProductPage = ({ product, role }) => {
           </Typography>
           <Typography variant="h4">{product.name}</Typography>
           <Typography variant="body2" color="textSecondary" gutterBottom>
-            Código - {product?.code}
+            SKU {product?.code}
           </Typography>
 
           <Box display="flex" width="100%" gap={2}>
             <Stack>
-              <Typography variant="body2" fontWeight={600} >
+              <Typography variant="body2" fontWeight={600}>
                 Subcategoría
               </Typography>
-              <Typography variant="body2" fontWeight={600} >
-                Tipo
-              </Typography>
+              {product.productModel?.name && (
+                <Typography variant="body2" fontWeight={600}>
+                  Modelo
+                </Typography>
+              )}
+              {product?.type?.name && (
+                <Typography variant="body2" fontWeight={600}>
+                  Tipo
+                </Typography>
+              )}
             </Stack>
             <Stack>
               <Typography variant="body">
                 {product?.subCategory?.name}
               </Typography>
-              <Typography variant="body">
-                {product?.type?.name}
-              </Typography>
+              {product.productModel?.name && (
+                <Typography variant="body">
+                  {product.productModel?.name}
+                </Typography>
+              )}
+              {product?.type?.name && (
+                <Typography variant="body">{product?.type?.name}</Typography>
+              )}
             </Stack>
           </Box>
 
@@ -169,26 +181,32 @@ const ProductPage = ({ product, role }) => {
                 </Typography>
                 <Stack>
                   <List>
-                    <ListItem
-                      disableGutters
-                      disablePadding
-                      sx={{ fontSize: "14px", gap: 0.5 }}
-                    >
-                      <Typography variant="body3" fontWeight={600}>
-                        Color:
-                      </Typography>
-                      <Typography variant="body3">{product?.color}</Typography>
-                    </ListItem>
-                    <ListItem
-                      disableGutters
-                      disablePadding
-                      sx={{ fontSize: "14px", gap: 0.5 }}
-                    >
-                      <Typography variant="body3" fontWeight={600}>
-                        Tamaño:
-                      </Typography>
-                      <Typography variant="body3">{product?.size}</Typography>
-                    </ListItem>
+                    {product.color && (
+                      <ListItem
+                        disableGutters
+                        disablePadding
+                        sx={{ fontSize: "14px", gap: 0.5 }}
+                      >
+                        <Typography variant="body3" fontWeight={600}>
+                          Color:
+                        </Typography>
+                        <Typography variant="body3">
+                          {product?.color}
+                        </Typography>
+                      </ListItem>
+                    )}
+                    {product.size && (
+                      <ListItem
+                        disableGutters
+                        disablePadding
+                        sx={{ fontSize: "14px", gap: 0.5 }}
+                      >
+                        <Typography variant="body3" fontWeight={600}>
+                          Tamaño:
+                        </Typography>
+                        <Typography variant="body3">{product?.size}</Typography>
+                      </ListItem>
+                    )}
                   </List>
                 </Stack>
               </Box>
@@ -231,7 +249,7 @@ const ProductPage = ({ product, role }) => {
 
       <Box mt={4}>
         <Typography variant="h5" gutterBottom>
-          Descripción
+          Acerca de este producto
         </Typography>
         <Box sx={{ borderBottom: "2px solid #e53935", width: "80px", mb: 2 }} />
         <Typography variant="body1">{product.description}</Typography>
