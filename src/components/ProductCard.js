@@ -50,7 +50,7 @@ export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
               {product?.brand?.name}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {product.code}
+              SKU {product.code}
             </Typography>
           </Box>
           <Tooltip title={product?.name}>

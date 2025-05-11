@@ -22,6 +22,8 @@ import { getMeasures } from "../../../../api/measures";
 import { getProductModels } from "../../../../api/productModels";
 import { ProductTable } from "./table/ProductTable";
 import { AddProductBanner } from "./AddProductBanner";
+import CSVUploadButton from "./CSVUploadButton";
+import { useCSVParser } from "./useCSVParser";
 
 const defaultFormValues = {
   brandId: "",
@@ -81,6 +83,8 @@ const AddProduct = () => {
   const brandId = watch("brandId");
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { transformCSVToRows } = useCSVParser();
 
   useEffect(() => {
     const fetchModelsByBrand = async () => {
@@ -293,6 +297,41 @@ const AddProduct = () => {
         control={control}
         hasType={hasType}
       />
+
+      <CSVUploadButton
+        onCSVParsed={(parsedData) => {
+          const {
+            rows: parsedRows,
+            errors,
+            acceptedAbbreviations,
+          } = transformCSVToRows(parsedData, measures);
+
+          if (errors.length > 0) {
+            const message = errors
+              .map(
+                (err) =>
+                  `Fila ${err.index + 2}: "${
+                    err.value
+                  }" no es una unidad válida.`
+              )
+              .join("\n");
+
+            enqueueSnackbar(
+              `${message}\nUnidades aceptadas: ${acceptedAbbreviations.join(
+                ", "
+              )}`,
+              {
+                variant: "error",
+                autoHideDuration: 10000,
+                anchorOrigin: { vertical: "top", horizontal: "right" },
+              }
+            );
+            return;
+          }
+          setRows(parsedRows);
+        }}
+      />
+
       <ProductTable
         rows={rows}
         setRows={setRows}
