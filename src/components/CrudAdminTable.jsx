@@ -59,7 +59,7 @@ const CrudAdminTable = ({
       field: "actions",
       type: "actions",
       headerName: "Acciones",
-      flex: 0.2,
+      flex: 0.3,
       getActions: ({ row }) => {
         return [
           <GridActionsCellItem

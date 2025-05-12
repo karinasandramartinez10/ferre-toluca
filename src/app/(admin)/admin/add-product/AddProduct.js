@@ -81,6 +81,9 @@ const AddProduct = () => {
   });
 
   const brandId = watch("brandId");
+  const categoryId = watch("categoryId");
+  const subCategoryId = watch("subCategoryId");
+  const hasType = watch("hasType");
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -110,26 +113,54 @@ const AddProduct = () => {
   }, [brandId]);
 
   useEffect(() => {
+    if (!categoryId) return;
+
+    const fetchSubcategories = async () => {
+      try {
+        const res = await getSubcategories({ categoryId });
+        setSubcategories(res.subcategories);
+        setValue("subCategoryId", "");
+        setValue("typeId", "");
+        setTypes([]);
+      } catch (err) {
+        console.error("Error fetching subcategories:", err);
+      }
+    };
+
+    fetchSubcategories();
+  }, [categoryId]);
+
+  useEffect(() => {
+    if (!subCategoryId || subCategoryId === "") return;
+
+    const fetchTypes = async () => {
+      try {
+        const res = await getProductTypes({ subcategoryId: subCategoryId });
+        setTypes(res.productTypes || res.data.productTypes || []);
+        setValue("typeId", "");
+      } catch (err) {
+        console.error("Error fetching product types:", err);
+      }
+    };
+
+    fetchTypes();
+  }, [subCategoryId]);
+
+  useEffect(() => {
     const fetchInitialData = async () => {
       try {
         const [
           brandsData,
           categoriesData,
-          subcategoriesData,
-          typesData,
           measuresData,
         ] = await Promise.all([
           getBrands(),
           getCategories(),
-          getSubcategories(),
-          getProductTypes(),
           getMeasures(),
           getProductModels(),
         ]);
         setBrands(brandsData.brands);
         setCategories(categoriesData.categories);
-        setSubcategories(subcategoriesData.subcategories);
-        setTypes(typesData.productTypes);
         setMeasures(measuresData);
       } catch (error) {
         console.error("Error fetching initial data:", error);
@@ -274,8 +305,6 @@ const AddProduct = () => {
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
-
-  const hasType = watch("hasType");
 
   return (
     <Grid
