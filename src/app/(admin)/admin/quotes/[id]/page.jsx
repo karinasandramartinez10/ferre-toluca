@@ -4,10 +4,14 @@ import { ErrorUI } from "../../../../../components/Error";
 import { QuoteId } from "./QuoteIdPage";
 
 export default async function QuoteIdPage({ params: { id } }) {
-  const session = await auth();
-
   try {
-    const quote = await fetchQuoteServer(session?.user?.access_token, id);
+    const session = await auth();
+    const token = session?.user?.access_token;
+    if (!token) throw new Error('No autenticado');
+  
+    const result = await fetchQuoteServer(token, id);
+    const quote = result ?? {};
+
     return <QuoteId initialData={quote} />;
   } catch (error) {
     return (
