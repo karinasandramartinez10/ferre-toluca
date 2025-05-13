@@ -39,6 +39,7 @@ const Subcategories = () => {
       console.error("Error fetching initial data:", error);
     }
   };
+
   useEffect(() => {
     fetchInitialData();
   }, [paginationModel]);
@@ -66,6 +67,7 @@ const Subcategories = () => {
       };
 
       const response = await createSubcategory(body);
+      
       if (response.status === 201) {
         const { subcategory } = response.data;
         const newSubcategory = {

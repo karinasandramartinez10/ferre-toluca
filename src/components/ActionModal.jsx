@@ -53,7 +53,18 @@ const ActionModal = ({
   useEffect(() => {
     if (mode === "edit" && selected) {
       setValue("name", selected.name);
-      setValue(option, selected.category?.id || "");
+
+      const getRelationKey = (option) => {
+        const map = {
+          categoryId: "category",
+          subcategoryId: "subCategory",
+        };
+        return map[option] || null;
+      };
+
+      const relationKey = getRelationKey(option);
+      const relatedObject = selected[relationKey];
+      setValue(option, relatedObject?.id || "");
     }
   }, [mode, selected, setValue]);
 
