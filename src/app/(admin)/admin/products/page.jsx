@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { fetchAllProductsServer } from "../../../../actions/product";
 import { ErrorUI } from "../../../../components/Error";
 import Products from "./Products";

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { Typography } from "@mui/material";
 import { getProductById } from "../../../../actions/product";
 import { auth } from "../../../../auth";
