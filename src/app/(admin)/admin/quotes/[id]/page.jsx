@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { fetchQuoteServer } from "../../../../../actions/quotes";
 import { auth } from "../../../../../auth";
 import { ErrorUI } from "../../../../../components/Error";
