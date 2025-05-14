@@ -13,12 +13,12 @@ import { CustomFooter } from "../../../../components/DataGrid/CustomFooter";
 import { Loading } from "../../../../components/Loading";
 import { ErrorUI } from "../../../../components/Error";
 
-const ProductsPage = ({ initialData }) => {
+const ProductsPage = () => {
   // Table and pagination
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
   const [paginationModel, setPaginationModel] = useState({
-    page: initialData.page - 1,
-    pageSize: initialData.pageSize,
+    page: 0,
+    pageSize: 10,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);

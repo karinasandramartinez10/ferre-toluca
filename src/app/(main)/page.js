@@ -13,7 +13,7 @@ export default async function Page() {
     <MainPage
       session={session}
       brands={brands?.brands}
-      products={products.products}
+      products={products?.products}
     />
   );
 }
