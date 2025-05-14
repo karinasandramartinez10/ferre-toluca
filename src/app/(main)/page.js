@@ -11,7 +11,7 @@ export default async function Page() {
   return (
     <MainPage
       session={session}
-      brands={brands?.brands}
+      brands={brands}
       products={products}
     />
   );
