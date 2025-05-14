@@ -1,4 +1,4 @@
-import { getCategories } from "../../actions/categories";
+import { getCategoriesServer } from "../../actions/categories";
 import { MainLayout } from "../../layouts/main/MainLayout";
 
 export const metadata = {
@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function Layout({ children }) {
-  const categories = await getCategories();
+  const categories = await getCategoriesServer();
 
   return <MainLayout categories={categories}>{children}</MainLayout>;
 }

@@ -13,7 +13,7 @@ export async function getBrandsServer() {
     }
 
     const response = await res.json();
-    const brands = response.data.products ?? [];
+    const brands = response.data.brands ?? [];
     return brands;
   } catch (error) {
     console.error("error", error);
