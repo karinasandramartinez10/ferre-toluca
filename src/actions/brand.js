@@ -1,6 +1,6 @@
 "use server";
 
-export async function getBrands() {
+export async function getBrandsServer() {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/brands`
@@ -13,8 +13,10 @@ export async function getBrands() {
     }
 
     const response = await res.json();
-    return response.data;
+    const brands = response.data.brands ?? [];
+    return brands;
   } catch (error) {
     console.error("error", error);
+    return [];
   }
 }

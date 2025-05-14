@@ -18,6 +18,7 @@ import {
 } from "@mui/icons-material";
 import { useOrder } from "../hooks/order/useOrder";
 import Link from "next/link";
+import Image from "next/image";
 
 const Cart = () => {
   const { orderItems, removeFromOrder, updateQuantity, totalItems } =
@@ -87,11 +88,12 @@ const Cart = () => {
                     pb: 2,
                   }}
                 >
-                  <img
-                    src={product.Files && product.Files[0]?.path}
+                  <Image
+                    src={product.Files?.[0]?.path || "/placeholder.jpg"}
                     alt={product.name}
-                    width="50"
-                    style={{ marginRight: 8 }}
+                    width={50}
+                    height={50}
+                    style={{ marginRight: 8, objectFit: "cover" }}
                   />
 
                   <Box sx={{ flexGrow: 1 }}>

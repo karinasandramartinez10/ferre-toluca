@@ -10,23 +10,14 @@ export async function fetchAllProductsServer(page = 1, size = 10) {
       throw new Error(`Error ${res.status}: ${await res.text()}`);
     }
 
-    const { data } = await res.json();
-    return {
-      products: data.products,
-      page,
-      pageSize: size,
-      totalPages: data.totalPages,
-      totalCount: data.count,
-    };
+    const response = await res.json();
+
+    const products = response.data.products ?? [];
+
+    return products;
   } catch (error) {
     console.error("error", error);
-    return {
-      products: [],
-      page: 1,
-      pageSize: size,
-      totalPages: 0,
-      totalCount: 0,
-    };
+    return [];
   }
 }
 

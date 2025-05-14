@@ -3,12 +3,10 @@ import { api } from "../config";
 export const registerUser = async (body) => {
   try {
     await api.post("/auth/signup", body);
-    return {
-      hasError: false,
-    };
+    return null;
   } catch (error) {
     console.log(error);
-    return error
+    return error;
     // if (axios.isAxiosError(error)) return error
     // return {
     //   hasError: true,
@@ -39,8 +37,8 @@ export const resetPassword = async (body) => {
     });
     return resp;
   } catch (error) {
-    if (error.response.data.message === "jwt expired"){
-      throw new Error('Expiró el token');
+    if (error.response.data.message === "jwt expired") {
+      throw new Error("Expiró el token");
     } else {
       throw new Error("Error de conexión");
     }

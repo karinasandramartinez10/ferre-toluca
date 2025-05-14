@@ -1,7 +1,7 @@
 "use client";
 
 import { useSnackbar } from "notistack";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { getCategories } from "../../../../api/category";
 import {
   createSubcategory,
@@ -27,7 +27,7 @@ const Subcategories = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const fetchInitialData = async () => {
+  const fetchInitialData = useCallback(async () => {
     try {
       const data = await getSubcategories({
         page: paginationModel.page + 1,
@@ -38,11 +38,11 @@ const Subcategories = () => {
     } catch (error) {
       console.error("Error fetching initial data:", error);
     }
-  };
+  }, [paginationModel])
 
   useEffect(() => {
     fetchInitialData();
-  }, [paginationModel]);
+  }, [fetchInitialData]);
 
   useEffect(() => {
     const fetchInitialData = async () => {

@@ -13,7 +13,6 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
-  Alert,
 } from "@mui/material";
 import { signIn } from "next-auth/react";
 import { format } from "date-fns";
@@ -37,6 +36,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV3";
 import { MuiTelInput } from "mui-tel-input";
 import { useRouter } from "next/navigation";
+import { useSnackbar } from "notistack";
 
 const phoneRegExp = /^\+\d{9,15}$/; //TODO: add number international validation support
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
@@ -54,13 +54,14 @@ const defaultFormValues = {
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [signupError, setSignupError] = useState(null);
 
   const isDesktop = useResponsive("up", "lg");
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
 
   const router = useRouter();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const SignUpSchema = yup.object().shape({
     name: yup.string().required("Nombre es obligatorio"),
@@ -113,8 +114,6 @@ const SignUp = () => {
     control,
     handleSubmit,
     formState: { isValid },
-    setError,
-    clearErrors,
   } = useForm({
     resolver: yupResolver(SignUpSchema),
     mode: "onChange",
@@ -129,7 +128,7 @@ const SignUp = () => {
     phoneNumber,
     dateOfBirth,
   }) => {
-    const error = await registerUser({
+    const regError = await registerUser({
       firstName: name.toLowerCase().trim(),
       lastName: lastname.toLowerCase().trim(),
       email,
@@ -139,20 +138,20 @@ const SignUp = () => {
       role: "user",
     });
 
-    console.log(error);
-
-    if (error) {
-      setSignupError(
-        `Error ${error?.response?.data.error}` ||
-          "Hubo un error al crear la cuenta."
+    if (regError) {
+      enqueueSnackbar(
+        `Hubo un error, contacta al administrador, Error: ${regError?.response?.data?.error}`,
+        { variant: "error" }
       );
       return;
     }
-    setSignupError(null);
 
     await signIn("credentials", { email, password, redirectTo: "/" });
     window.location.replace("/");
     router.replace("/");
+    enqueueSnackbar("¡Bienvenido! Cuenta creada con éxito.", {
+      variant: "success",
+    });
   };
 
   return (
@@ -196,15 +195,8 @@ const SignUp = () => {
             <Box padding="8px 0px">
               <Divider variant="middle">O</Divider>
             </Box>
-
-            {signupError && (
-              <Box mb={2}>
-                <Alert severity="error">{signupError}</Alert>
-              </Box>
-            )}
-
             {/* Form */}
-            <Grid component="form">
+            <Grid component="form" onSubmit={handleSubmit(onSubmit)}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <Controller
@@ -477,7 +469,7 @@ const SignUp = () => {
                   </FormGroup>
                 </Grid>
               </Grid>
-              <Button fullWidth onClick={handleSubmit(onSubmit)}>
+              <Button fullWidth type="submit" disabled={!isValid}>
                 Registrarse
               </Button>
             </Grid>
