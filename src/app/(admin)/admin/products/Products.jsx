@@ -79,7 +79,7 @@ const ProductsPage = () => {
   if (error)
     return (
       <ErrorUI
-        onRetry={() => loadPage(initialData.page, initialData.pageSize)}
+        onRetry={() => loadPage(paginationModel.page, paginationModel.pageSize)}
         message="No pudimos cargar los productos"
       />
     );

@@ -6,32 +6,32 @@ import { fetchQuotes } from "../../../../api/quote";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
+import { localeText } from "../../../../constants/x-datagrid/localeText";
 import { quotesColumns } from "./columns";
 
-export const Quotes = ({ initialData }) => {
-  const [data, setData] = useState(initialData);
-  const [page, setPage] = useState(initialData.page);
-  const [pageSize, setSize] = useState(initialData.pageSize);
+export const Quotes = () => {
+  const [data, setData] = useState([]);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   const isFirstLoad = useRef(true);
 
-  const loadData = useCallback(
-    async (page, pageSize) => {
-      setError(false);
-      setLoading(true);
-      try {
-        const d = await fetchQuotes(page, pageSize);
-        setData({ ...d, page, pageSize });
-      } catch {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
+  const loadData = useCallback(async (page, pageSize) => {
+    setError(false);
+    setLoading(true);
+    try {
+      const d = await fetchQuotes(page, pageSize);
+      setData({ ...d, page, pageSize });
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (isFirstLoad.current) {
@@ -40,8 +40,8 @@ export const Quotes = ({ initialData }) => {
       return;
     }
     // para cualquier cambio de page/pageSize, incluso volver a 1
-    loadData(page, pageSize);
-  }, [page, pageSize, loadData]);
+    loadData(paginationModel.page + 1, paginationModel.pageSize);
+  }, [paginationModel, loadData]);
 
   if (loading) {
     return <Loading />;
@@ -51,23 +51,21 @@ export const Quotes = ({ initialData }) => {
     return (
       <ErrorUI
         onRetry={() => {
-          loadData(initialData.page, initialData.pageSize);
+          loadData(page, pageSize);
         }}
       />
     );
 
   return (
     <DataGrid
+      localeText={localeText}
       rows={data.quotes}
       columns={quotesColumns}
       rowCount={data.totalCount}
       paginationMode="server"
-      paginationModel={{ page: page - 1, pageSize }}
-      onPaginationModelChange={({ page, pageSize }) => {
-        setPage(page + 1);
-        setSize(pageSize);
-      }}
-      pageSizeOptions={[5, 10, 20]}
+      paginationModel={paginationModel}
+      onPaginationModelChange={setPaginationModel}
+      pageSizeOptions={[10, 25, 50]}
       disableRowSelectionOnClick
       sx={{
         "& .MuiDataGrid-columnHeaderTitle": {
