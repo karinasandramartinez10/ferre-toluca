@@ -8,6 +8,8 @@ import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 import GlobalAuthWatcher from "../components/GlobalAuthWatcher";
 import { auth } from "../auth";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,6 +35,8 @@ export default async function RootLayout({ children }) {
             >
               <GlobalAuthWatcher />
               {children}
+              <Analytics />
+              <SpeedInsights />
             </SessionProvider>
           </Providers>
         </AppRouterCacheProvider>
