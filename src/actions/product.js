@@ -10,14 +10,14 @@ export async function fetchAllProductsServer(page = 1, size = 10) {
       throw new Error(`Error ${res.status}: ${await res.text()}`);
     }
 
-    const { data } = await res.json();
+    const response = await res.json();
 
-    const products = data.products ?? [];
+    const products = response.data.products ?? [];
 
     return products;
   } catch (error) {
     console.error("error", error);
-    return []
+    return [];
   }
 }
 
