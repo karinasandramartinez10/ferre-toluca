@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 import { getBrands } from "../../actions/brand";
 import { fetchAllProductsServer } from "../../actions/product";
 import { auth } from "../../auth";
