@@ -10,7 +10,7 @@ export async function fetchAllProductsServer(page = 1, size = 10) {
       throw new Error(`Error ${res.status}: ${await res.text()}`);
     }
 
-    const { data } = await res.json(); 
+    const { data } = await res.json();
     return {
       products: data.products,
       page,
@@ -20,7 +20,13 @@ export async function fetchAllProductsServer(page = 1, size = 10) {
     };
   } catch (error) {
     console.error("error", error);
-    return [];
+    return {
+      products: [],
+      page: 1,
+      pageSize: size,
+      totalPages: 0,
+      totalCount: 0,
+    };
   }
 }
 
@@ -34,6 +40,6 @@ export const getProductById = async (id) => {
     return response;
   } catch (error) {
     console.log("e", error);
-    return [];
+    return {};
   }
 };

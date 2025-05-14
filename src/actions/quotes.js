@@ -1,9 +1,6 @@
-import { auth } from "../auth";
+"use server";
 
-export async function fetchQuotesServer(page = 1, size = 10) {
-  const session = await auth();
-  const token = session?.user?.access_token;
-
+export async function fetchQuotesServer(token, page = 1, size = 10) {
   if (!token) {
     throw new Error("No autenticado");
   }
@@ -26,9 +23,7 @@ export async function fetchQuotesServer(page = 1, size = 10) {
   return payload.data;
 }
 
-export async function fetchQuoteServer(id) {
-  const session = await auth();
-  const token = session?.user?.access_token;
+export async function fetchQuoteServer(token, id) {
   if (!token) throw new Error("No autenticado");
 
   const res = await fetch(

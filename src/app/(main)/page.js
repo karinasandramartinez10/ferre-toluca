@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getBrands } from "../../actions/brand";
 import { fetchAllProductsServer } from "../../actions/product";
 import { auth } from "../../auth";
@@ -12,7 +13,7 @@ export default async function Page() {
     <MainPage
       session={session}
       brands={brands?.brands}
-      products={products.products}
+      products={products?.products}
     />
   );
 }

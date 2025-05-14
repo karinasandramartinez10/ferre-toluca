@@ -9,12 +9,12 @@ import QuoteProductCard from "./QuoteProductCard";
 import QuoteDetails from "./QuoteDetails";
 import { useSnackbar } from "notistack";
 
-export const QuoteId = ({ initialData }) => {
-  const [quote, setQuote] = useState(initialData);
+export const QuoteId = ({ quoteId }) => {
+  const [quote, setQuote] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingRead, setLoadingRead] = useState(false);
   const [error, setError] = useState(false);
-  const [isRead, setIsRead] = useState(initialData.isRead);
+  const [isRead, setIsRead] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -22,7 +22,7 @@ export const QuoteId = ({ initialData }) => {
     setError(false);
     setLoading(true);
     try {
-      const fresh = await fetchQuoteById(initialData.id);
+      const fresh = await fetchQuoteById(quoteId);
       setQuote(fresh);
       setIsRead(fresh.isRead);
     } catch (error) {
@@ -30,7 +30,7 @@ export const QuoteId = ({ initialData }) => {
     } finally {
       setLoading(false);
     }
-  }, [initialData.id]);
+  }, [quoteId]);
 
   const handleCall = () => {
     window.location.href = `tel: ${quote?.User?.phoneNumber}`;
@@ -47,7 +47,7 @@ export const QuoteId = ({ initialData }) => {
   const handleMarkAsRead = async () => {
     setLoadingRead(true);
     try {
-      const resp = await updateQuote(initialData.id, { isRead: true });
+      const resp = await updateQuote(quoteId, { isRead: true });
       if (resp.status === 200) {
         setIsRead(true);
       }
