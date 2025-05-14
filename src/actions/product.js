@@ -17,13 +17,7 @@ export async function fetchAllProductsServer(page = 1, size = 10) {
     return products;
   } catch (error) {
     console.error("error", error);
-    return {
-      products: [],
-      page: 1,
-      pageSize: size,
-      totalPages: 0,
-      totalCount: 0,
-    };
+    return []
   }
 }
 
