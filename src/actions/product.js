@@ -11,13 +11,10 @@ export async function fetchAllProductsServer(page = 1, size = 10) {
     }
 
     const { data } = await res.json();
-    return {
-      products: data.products,
-      page,
-      pageSize: size,
-      totalPages: data.totalPages,
-      totalCount: data.count,
-    };
+
+    const products = data.products ?? [];
+
+    return products;
   } catch (error) {
     console.error("error", error);
     return {
