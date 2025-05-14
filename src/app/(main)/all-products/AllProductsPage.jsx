@@ -1,7 +1,7 @@
 "use client";
 
 import { Grid, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ProductCard } from "../../../components/ProductCard";
 import { Loading } from "../../../components/Loading";
 import { ErrorUI } from "../../../components/Error";
@@ -23,7 +23,7 @@ const AllProductsPage = () => {
   const isAdmin =
     session?.user?.role === "admin" || session?.user?.role === "superadmin";
 
-  const fetchData = async (page) => {
+  const fetchData = useCallback(async (page) => {
     setLoading(true);
     try {
       const fetchedData = await fetchProducts(page, size);
@@ -40,11 +40,11 @@ const AllProductsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [size])
 
   useEffect(() => {
     fetchData(currentPage);
-  }, [currentPage]);
+  }, [fetchData, currentPage]);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {

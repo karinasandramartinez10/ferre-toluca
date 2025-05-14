@@ -1,38 +1,34 @@
 "use client";
 
-import { Alert, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useSnackbar } from "notistack";
 import { LoadingButton } from "@mui/lab";
 import LoginContainer from "./LoginContainer";
 import LoginForm from "./LoginForm";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const searchParams = useSearchParams();
-  const error = searchParams.get("error");
+  const router = useRouter();
 
   const handleSubmit = async ({ email, password }) => {
-    try {
-      await signIn("credentials", {
-        email,
-        password,
-        // redirect: false,
-      });
-    } catch (error) {
-      console.log(error);
-      enqueueSnackbar("There was an error", {
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (res?.error) {
+      enqueueSnackbar("Correo o contraseña incorrectos", {
         variant: "error",
-        autoHideDuration: 5000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "right",
-        },
       });
       return;
     }
+
+    router.replace("/");
+    enqueueSnackbar("¡Bienvenido de nuevo!", { variant: "success" });
   };
 
   return (
@@ -47,11 +43,6 @@ const Login = () => {
         xs={12}
       >
         <LoginContainer>
-          {error === "CredentialsSignin" && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              Correo o contraseña incorrectos. Intenta nuevamente.
-            </Alert>
-          )}
           <LoginForm onSubmit={handleSubmit}>
             {({ loading, isValid }) => (
               <>

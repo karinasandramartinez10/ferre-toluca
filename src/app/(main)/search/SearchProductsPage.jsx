@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Grid, Typography } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ErrorUI } from "../../../components/Error";
@@ -27,30 +27,33 @@ const SearchProductsPage = () => {
     router.push(`/product/${id}`);
   };
 
-  const fetchProducts = async (page = 1) => {
-    setLoading(true);
-    try {
-      const { products, totalPages } = await getProductsByQuery(
-        query,
-        page,
-        size
-      );
-      setProducts(products);
-      setTotalPages(totalPages);
-      setLoading(false);
-    } catch (error) {
-      setError(true);
-      console.error("Error fetching products:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchProducts = useCallback(
+    async (page = 1) => {
+      setLoading(true);
+      try {
+        const { products, totalPages } = await getProductsByQuery(
+          query,
+          page,
+          size
+        );
+        setProducts(products);
+        setTotalPages(totalPages);
+        setLoading(false);
+      } catch (error) {
+        setError(true);
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [query, size]
+  );
 
   useEffect(() => {
     if (query) {
       fetchProducts(currentPage);
     }
-  }, [query, currentPage]);
+  }, [query, currentPage, fetchProducts]);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {

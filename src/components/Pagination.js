@@ -1,45 +1,60 @@
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos, MoreHoriz } from "@mui/icons-material";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 export default function Pagination({ currentPage, totalPages, onPageChange }) {
   const isLastPage = currentPage === totalPages;
   const isFirstPage = currentPage === 1;
 
-  const handlePageClick = (page) => {
-    if (page !== currentPage) {
-      onPageChange(page);
-    }
-  };
-
-  const commonButtonStyles = () => ({
-    borderRadius: "20px",
-    mx: 0.5,
-    minWidth: "40px",
-  });
-
-  const activeButtonStyles = (theme) => ({
-    backgroundColor: `${theme.palette.primary.main} !important`,
-    color: "#FFF !important",
-    ...commonButtonStyles(theme),
-  });
-
-  const inactiveButtonStyles = (theme) => ({
-    backgroundColor: `${theme.palette.primary.light} !important`,
-    "&:hover": {
-      backgroundColor: `${theme.palette.primary.main} !important`,
+  const handlePageClick = useCallback(
+    (page) => {
+      if (page !== currentPage) {
+        onPageChange(page);
+      }
     },
-    ...commonButtonStyles(theme),
-  });
+    [currentPage, onPageChange]
+  );
 
-  const renderPageButton = (page) => (
-    <Button
-      key={page}
-      sx={page === currentPage ? activeButtonStyles : inactiveButtonStyles}
-      onClick={() => handlePageClick(page)}
-    >
-      {page}
-    </Button>
+  const commonButtonStyles = useCallback(
+    () => ({
+      borderRadius: "20px",
+      mx: 0.5,
+      minWidth: "40px",
+    }),
+    []
+  );
+
+  const activeButtonStyles = useCallback(
+    (theme) => ({
+      backgroundColor: `${theme.palette.primary.main} !important`,
+      color: "#FFF !important",
+      ...commonButtonStyles(theme),
+    }),
+    [commonButtonStyles]
+  );
+
+  const inactiveButtonStyles = useCallback(
+    (theme) => ({
+      backgroundColor: `${theme.palette.primary.light} !important`,
+      "&:hover": {
+        backgroundColor: `${theme.palette.primary.main} !important`,
+      },
+      ...commonButtonStyles(theme),
+    }),
+    [commonButtonStyles]
+  );
+
+  const renderPageButton = useCallback(
+    (page) => (
+      <Button
+        key={page}
+        sx={page === currentPage ? activeButtonStyles : inactiveButtonStyles}
+        onClick={() => handlePageClick(page)}
+      >
+        {page}
+      </Button>
+    ),
+    [currentPage, activeButtonStyles, inactiveButtonStyles, handlePageClick]
   );
 
   const renderEllipsis = (key) => (
@@ -84,7 +99,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
     }
 
     return pages;
-  }, [currentPage, totalPages]);
+  }, [currentPage, totalPages, renderPageButton]);
 
   return (
     <Box

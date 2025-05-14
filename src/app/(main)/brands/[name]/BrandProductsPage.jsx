@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Grid, Typography } from "@mui/material";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ErrorUI } from "../../../../components/Error";
@@ -32,29 +32,32 @@ const BrandProductsPage = () => {
     },
   ];
 
-  const fetchProducts = async (page = 1) => {
-    setLoading(true);
-    try {
-      const { products, totalPages } = await getProductsByBrand(
-        brandId,
-        page,
-        size
-      );
-      setProducts(products);
-      setTotalPages(totalPages);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      setError(true);
-      console.error("Error fetching products:", error);
-    }
-  };
+  const fetchProducts = useCallback(
+    async (page = 1) => {
+      setLoading(true);
+      try {
+        const { products, totalPages } = await getProductsByBrand(
+          brandId,
+          page,
+          size
+        );
+        setProducts(products);
+        setTotalPages(totalPages);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        setError(true);
+        console.error("Error fetching products:", error);
+      }
+    },
+    [brandId, size]
+  );
 
   useEffect(() => {
     if (name && brandId) {
       fetchProducts(currentPage);
     }
-  }, [name, brandId, currentPage]);
+  }, [name, brandId, currentPage, fetchProducts]);
 
   const router = useRouter();
 

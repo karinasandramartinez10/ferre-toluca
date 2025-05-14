@@ -66,7 +66,7 @@ const ActionModal = ({
       const relatedObject = selected[relationKey];
       setValue(option, relatedObject?.id || "");
     }
-  }, [mode, selected, setValue]);
+  }, [mode, selected, option, setValue]);
 
   const handleFormSubmit = (data) => {
     onSubmit(data);

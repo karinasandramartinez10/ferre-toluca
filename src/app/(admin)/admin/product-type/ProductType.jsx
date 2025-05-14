@@ -1,7 +1,7 @@
 "use client";
 
 import { useSnackbar } from "notistack";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   getProductTypes,
   createProductType,
@@ -27,7 +27,7 @@ const ProductTypes = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const fetchInitialData = async () => {
+  const fetchInitialData = useCallback(async () => {
     try {
       const data = await getProductTypes({
         page: paginationModel.page + 1,
@@ -38,11 +38,11 @@ const ProductTypes = () => {
     } catch (error) {
       console.error("Error fetching product types:", error);
     }
-  };
+  }, [paginationModel]);
 
   useEffect(() => {
     fetchInitialData();
-  }, [paginationModel]);
+  }, [fetchInitialData]);
 
   useEffect(() => {
     const fetchSubcategories = async () => {
@@ -96,8 +96,6 @@ const ProductTypes = () => {
         name: data.name,
         subcategoryId: data.subcategoryId,
       };
-
-      console.log("23", body);
 
       const response = await updateProductType(selectedProductType.id, body);
 

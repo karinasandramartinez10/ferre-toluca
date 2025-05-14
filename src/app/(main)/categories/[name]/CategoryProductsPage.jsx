@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Grid, Typography } from "@mui/material";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ErrorUI } from "../../../../components/Error";
@@ -44,29 +44,32 @@ const CategoryProductsPage = () => {
   const handleProductClick = (id) => {
     router.push(`/product/${id}`);
   };
-  const fetchProducts = async (page = 1) => {
-    setLoading(true);
-    try {
-      const { products, totalPages } = await getProductsByCategory(
-        categoryId,
-        page,
-        size
-      );
-      setProducts(products);
-      setTotalPages(totalPages);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      setError(true);
-      console.error("Error fetching products:", error);
-    }
-  };
+  const fetchProducts = useCallback(
+    async (page = 1) => {
+      setLoading(true);
+      try {
+        const { products, totalPages } = await getProductsByCategory(
+          categoryId,
+          page,
+          size
+        );
+        setProducts(products);
+        setTotalPages(totalPages);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        setError(true);
+        console.error("Error fetching products:", error);
+      }
+    },
+    [categoryId, size]
+  );
 
   useEffect(() => {
     if (name && categoryId) {
       fetchProducts(currentPage);
     }
-  }, [name, categoryId, currentPage]);
+  }, [name, categoryId, currentPage, fetchProducts]);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -108,7 +111,8 @@ const CategoryProductsPage = () => {
           mb={{
             xs: 1,
             md: 2,
-          }}        >
+          }}
+        >
           {toCapitalizeFirstLetter(formattedName)}
         </Typography>
       </Grid>

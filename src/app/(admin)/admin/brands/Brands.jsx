@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   createBrand,
   getBrands,
@@ -26,7 +26,7 @@ const Brands = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const fetchInitialData = async () => {
+  const fetchInitialData = useCallback(async () => {
     try {
       const data = await getBrands({
         page: paginationModel.page + 1,
@@ -37,11 +37,11 @@ const Brands = () => {
     } catch (error) {
       console.error("Error fetching initial data:", error);
     }
-  };
+  }, [paginationModel]);
 
   useEffect(() => {
     fetchInitialData();
-  }, [paginationModel]);
+  }, [fetchInitialData]);
 
   const handleAddBrand = async (data) => {
     if (!data.image || data.image.length === 0) {
@@ -99,10 +99,7 @@ const Brands = () => {
         formData.append("image", data.image);
       }
 
-      const response = await updateBrand(
-        selectedBrand.id,
-        formData,
-      );
+      const response = await updateBrand(selectedBrand.id, formData);
 
       if (response.status === 200) {
         const { brand, file } = response.data;
