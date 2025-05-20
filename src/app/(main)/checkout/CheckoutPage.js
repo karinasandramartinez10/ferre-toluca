@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Typography,
-  Button,
-  TextField,
-  IconButton,
-} from "@mui/material";
+import { Box, Typography, Button, TextField, IconButton } from "@mui/material";
 
 import {
   Add as AddIcon,
@@ -23,8 +17,9 @@ import { useSnackbar } from "notistack";
 import { createQuote } from "../../../api/quote";
 import { LoadingButton } from "@mui/lab";
 import { useState } from "react";
-import LoginContainer from '../../auth/login/LoginContainer'
-import LoginForm from '../../auth/login/LoginForm'
+import LoginContainer from "../../auth/login/LoginContainer";
+import LoginForm from "../../auth/login/LoginForm";
+import { useRouter } from "next/navigation";
 
 const QuoteSchema = yup.object().shape({
   message: yup.string().required("El mensaje es requerido"),
@@ -32,6 +27,8 @@ const QuoteSchema = yup.object().shape({
 
 const CheckoutPage = ({ session }) => {
   const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   const isAuthenticated = !!session?.user;
 
@@ -104,24 +101,21 @@ const CheckoutPage = ({ session }) => {
   };
 
   const onSignIn = async ({ email, password }) => {
-    try {
-      await signIn("credentials", {
-        email,
-        password,
-        // redirect: false,
-      });
-    } catch (error) {
-      console.log(error);
-      enqueueSnackbar("There was an error", {
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (res?.error) {
+      enqueueSnackbar("Correo o contraseña incorrectos", {
         variant: "error",
-        autoHideDuration: 5000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "right",
-        },
       });
       return;
     }
+
+    enqueueSnackbar("¡Sesión iniciada!", { variant: "success" });
+    router.refresh();
   };
 
   if (orderItems.length === 0) {
