@@ -25,23 +25,23 @@ const HistoryList = ({ orders }) => {
   return (
     <Box>
       {orders.map((order) => (
-        <Card key={order.id} sx={{ marginBottom: 3, padding: 2 }}>
+        <Card key={order.orderNumber} sx={{ marginBottom: 3, padding: 2 }}>
           <CardHeader
-            title={`Orden #${order.id}`}
+            title={`#${order.orderNumber}`}
             subheader={`Fecha: ${format(
               new Date(order.createdAt),
               "dd/MM/yyyy HH:mm"
             )}`}
             action={
               <IconButton
-                onClick={() => handleToggleExpand(order.id)}
-                aria-expanded={expandedOrder === order.id}
+                onClick={() => handleToggleExpand(order.orderNumber)}
+                aria-expanded={expandedOrder === order.orderNumber}
                 aria-label="Mostrar productos"
               >
                 <ExpandMoreIcon
                   sx={{
                     transform:
-                      expandedOrder === order.id
+                      expandedOrder === order.orderNumber
                         ? "rotate(180deg)"
                         : "rotate(0deg)",
                     transition: "transform 0.3s",
@@ -56,7 +56,7 @@ const HistoryList = ({ orders }) => {
               <strong>Mensaje:</strong> {order.message || "Sin mensaje"}
             </Typography>
             <Collapse
-              in={expandedOrder === order.id}
+              in={expandedOrder === order.orderNumber}
               timeout="auto"
               unmountOnExit
             >
@@ -66,7 +66,7 @@ const HistoryList = ({ orders }) => {
               <List>
                 <Grid container spacing={2}>
                   {order.Products.map((product) => (
-                    <Grid item xs={12} sm={6} md={4} key={product.id}>
+                    <Grid item xs={12} sm={6} md={4} key={product.orderNumber}>
                       <Card
                         sx={{
                           display: "flex",

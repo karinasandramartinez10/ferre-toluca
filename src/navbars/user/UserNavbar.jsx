@@ -3,91 +3,18 @@
 import {
   AppBar,
   Box,
-  Button,
   Drawer,
   IconButton,
-  Popover,
   Toolbar,
 } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { BurgerMenu } from "../../components/BurgerMenu";
-import { Menu, Person } from "@mui/icons-material";
-import { logout } from "../../actions/logout";
+import { Menu } from "@mui/icons-material";
 import Cart from "../../components/Cart";
 import { userSectionsMobile } from "../main/list-items";
-
-const UserNavbarDesktop = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const handlePopoverOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handlePopoverClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-
-  const Logout = () => {
-    logout();
-  };
-
-  return (
-    <Box
-      justifyContent="space-between"
-      width="100%"
-      alignItems="center"
-      sx={{ display: { xs: "none", md: "flex" } }}
-    >
-      <Box sx={{ display: { xs: "none", md: "block" } }}>
-        <Link href="/">
-          <Image
-            src={"/images/texcoco_logo2.svg"}
-            alt="ferreteria texcoco"
-            width="120"
-            height="90"
-          />
-        </Link>
-      </Box>
-      <Box sx={{ display: { xs: "none", md: "block" } }}></Box>
-      <Box display="flex" alignItems="center" gap={1}>
-        <IconButton color="grey.main" onClick={handlePopoverOpen}>
-          <Person />
-        </IconButton>
-        <Popover
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handlePopoverClose}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "center",
-          }}
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "center",
-          }}
-        >
-          <Box sx={{ p: 2 }}>
-            <>
-              <Button
-                onClick={Logout}
-                color="error"
-                fullWidth
-                variant="outlined"
-              >
-                Cerrar sesión
-              </Button>
-            </>
-          </Box>
-        </Popover>
-        <Cart />
-      </Box>
-    </Box>
-  );
-};
+import { UserNavbarDesktop } from "./UserNavbarDesktop";
 
 const UserNavbarMobile = () => {
   const [openNavbar, setOpenNavbar] = useState(false);

@@ -82,7 +82,7 @@ const AddProductFields = ({
 
       {/* Subtipo */}
       <Grid item xs={12} >
-        <Typography fontWeight={600}>¿Tiene un subtipo?</Typography>
+        <Typography fontWeight={600}>¿Tiene una variante?</Typography>
         <Controller
           control={control}
           name="hasType"
@@ -100,7 +100,7 @@ const AddProductFields = ({
       {/* Tipo (condicional) */}
       {hasType === "yes" && (
         <Grid item xs={12} md={6}>
-          <Typography fontWeight={600}>Selecciona un subtipo</Typography>
+          <Typography fontWeight={600}>Selecciona una variante del producto</Typography>
           <Controller
             control={control}
             name="typeId"

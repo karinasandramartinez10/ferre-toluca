@@ -1,16 +1,10 @@
 "use client";
 
 import {
-  AddBusiness,
-  AddCircleOutline,
-  Home,
-  Storefront,
-  Category,
-  Inventory,
-} from "@mui/icons-material";
-import {
   AppBar,
   Box,
+  Button,
+  Divider,
   Drawer,
   Grid,
   List,
@@ -19,77 +13,32 @@ import {
   Stack,
   Toolbar,
   Typography,
+  IconButton,
 } from "@mui/material";
+import { ArrowBackIosNewRounded } from "@mui/icons-material";
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import NextLink from "next/link";
 import useResponsive from "../../hooks/use-responsive";
 import AdminNavbarMobile from "../../navbars/admin/AdminNavbarMobile";
 import { getPageMetadata } from "./routes-metadata";
+import { drawerItems } from "./drawerItems";
+import { useSession } from "next-auth/react";
+import { logout } from "../../actions/logout";
 
 const drawerWidth = 200;
 
-const listItems = [
-  {
-    text: "Inicio",
-    pathname: "/",
-    icon: <Home sx={{ fontSize: 20 }} />,
-    visibleFor: ["admin", "superadmin"],
-  },
-  {
-    text: "Cotizaciones",
-    pathname: "/admin/quotes",
-    icon: <Storefront sx={{ fontSize: 20 }} />,
-    isDynamic: true,
-    visibleFor: ["admin", "superadmin"],
-  },
-  {
-    text: "Agregar Productos",
-    pathname: "/admin/add-product",
-    icon: <AddCircleOutline sx={{ fontSize: 20 }} />,
-    visibleFor: ["superadmin"],
-  },
-  {
-    text: "Ver productos",
-    pathname: "/admin/products",
-    icon: <Inventory sx={{ fontSize: 20 }} />,
-    visibleFor: ["admin", "superadmin"],
-  },
-  {
-    text: "Marcas",
-    pathname: "/admin/brands",
-    icon: <AddBusiness sx={{ fontSize: 20 }} />,
-    visibleFor: ["superadmin"],
-  },
-  {
-    text: "Categorías",
-    pathname: "/admin/categories",
-    icon: <Category sx={{ fontSize: 20 }} />,
-    visibleFor: ["superadmin"],
-  },
-  {
-    text: "Subcategorías",
-    pathname: "/admin/subcategories",
-    icon: <Category sx={{ fontSize: 20 }} />,
-    visibleFor: ["superadmin"],
-  },
-  {
-    text: "Variantes de Producto",
-    pathname: "/admin/product-type",
-    icon: <Category sx={{ fontSize: 20 }} />,
-    visibleFor: ["superadmin"],
-  },
-];
-
-export const AdminLayout = ({ children, role }) => {
+export const AdminLayout = ({ children }) => {
   const [_, setIsClosing] = useState(false);
 
   const isMobile = useResponsive("down", "sm");
-
   const pathname = usePathname();
+  const router = useRouter();
 
   const { title, subtitle } = getPageMetadata(pathname);
+
+  const { data: session } = useSession();
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -97,56 +46,86 @@ export const AdminLayout = ({ children, role }) => {
 
   const drawer = useMemo(
     () => (
-      <List sx={{ paddingX: 2, borderRadius: 1, paddingTop: 0 }}>
-        <Box width="100%" padding={2} position="relative" height="100px">
-          <NextLink href="/">
-            <Image
-              src={"/images/texcoco_logo2.svg"}
-              alt="ferreteria texcoco"
-              fill
-            />
-          </NextLink>
-        </Box>
-        <Stack gap={1}>
-          {listItems
-            .filter((item) => item.visibleFor.includes(role))
-            .map((item) => (
-              <NextLink key={item.text} href={item.pathname}>
-                <ListItem disablePadding>
-                  <ListItemButton
-                    sx={(theme) => ({
-                      color:
-                        pathname === item.pathname ||
-                        (item.isDynamic && pathname.startsWith(item.pathname))
-                          ? "#FFF"
-                          : theme.palette.primary.main,
-                      borderRadius: 2,
-                      alignItems: "flex-start",
-                      gap: 1,
-                      backgroundColor:
-                        pathname === item.pathname ||
-                        (item.isDynamic && pathname.startsWith(item.pathname))
-                          ? theme.palette.primary.hover
-                          : "transparent",
-                      "&:hover": {
-                        color: "#FFF",
-                        backgroundColor: theme.palette.primary.hover,
-                        transition: "background-color 0.3s ease",
-                      },
-                    })}
-                    onClick={() => handleDrawerClose()}
-                  >
-                    {item.icon}
-                    {item.text}
-                  </ListItemButton>
-                </ListItem>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+        }}
+      >
+        <Box sx={{ flexGrow: 1, overflowY: "auto", px: 1 }}>
+          <List sx={{ paddingX: 2, borderRadius: 1, paddingTop: 0 }}>
+            <Box width="100%" padding={2} position="relative" height="100px">
+              <NextLink href="/">
+                <Image
+                  src={"/images/texcoco_logo2.svg"}
+                  alt="ferreteria texcoco"
+                  fill
+                />
               </NextLink>
-            ))}
-        </Stack>
-      </List>
+            </Box>
+            <Stack gap={1}>
+              {drawerItems
+                .filter((item) => item.visibleFor.includes(session?.user?.role))
+                .map((item) => (
+                  <NextLink key={item.text} href={item.pathname}>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        sx={(theme) => ({
+                          color:
+                            pathname === item.pathname ||
+                            (item.isDynamic &&
+                              pathname.startsWith(item.pathname))
+                              ? "#FFF"
+                              : theme.palette.primary.main,
+                          borderRadius: 2,
+                          alignItems: "flex-start",
+                          gap: 1,
+                          backgroundColor:
+                            pathname === item.pathname ||
+                            (item.isDynamic &&
+                              pathname.startsWith(item.pathname))
+                              ? theme.palette.primary.hover
+                              : "transparent",
+                          "&:hover": {
+                            color: "#FFF",
+                            backgroundColor: theme.palette.primary.hover,
+                            transition: "background-color 0.3s ease",
+                          },
+                        })}
+                        onClick={() => handleDrawerClose()}
+                      >
+                        {item.icon}
+                        {item.text}
+                      </ListItemButton>
+                    </ListItem>
+                  </NextLink>
+                ))}
+            </Stack>
+          </List>
+        </Box>
+        {/* Separador */}
+        <Divider sx={{ mx: 2 }} />
+
+        {/* Botón de logout */}
+        <Box sx={{ p: 2 }}>
+          <Button
+            variant="outlined"
+            color="primary"
+            fullWidth
+            onClick={() => logout()}
+          >
+            Cerrar sesión
+          </Button>
+        </Box>
+      </Box>
     ),
-    [pathname, role]
+    [pathname, session?.user?.role]
   );
+
+  const pathSegments = pathname.split("/").filter(Boolean);
+  // por ejemplo: si hay más de 2 segmentos (p.ej. /admin/quotes/123)
+  const showBackButton = pathSegments.length > 2;
 
   return (
     <Box
@@ -159,7 +138,7 @@ export const AdminLayout = ({ children, role }) => {
       <Box component="nav" sx={{ display: { xs: "block", sm: "none" } }}>
         <AppBar>
           <Toolbar sx={{ paddingRight: "8px" }}>
-            <AdminNavbarMobile role={role} />
+            <AdminNavbarMobile role={session?.user?.role} />
           </Toolbar>
         </AppBar>
       </Box>
@@ -191,14 +170,27 @@ export const AdminLayout = ({ children, role }) => {
           flexDirection="column"
           gap={2}
         >
-          <Grid item xs={12}>
-            <Typography variant="h1">{title}</Typography>
-            <Typography
-              sx={{ color: "#838383", fontWeight: 500 }}
-              variant="body"
-            >
-              {subtitle}
-            </Typography>
+          <Grid item xs={12} display="flex" alignItems="center" gap={1}>
+            <Box>
+              <Box display="flex" gap={1.5}>
+                {showBackButton && (
+                  <IconButton onClick={() => router.back()}>
+                    <ArrowBackIosNewRounded
+                      sx={{
+                        color: "primary.main",
+                      }}
+                    />
+                  </IconButton>
+                )}
+                <Typography variant="h1">{title}</Typography>
+              </Box>
+              <Typography
+                sx={{ color: "#838383", fontWeight: 500 }}
+                variant="body"
+              >
+                {subtitle}
+              </Typography>
+            </Box>
           </Grid>
           <Grid item xs={12}>
             {children}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Typography } from "@mui/material";
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchQuoteById, updateQuote } from "../../../../../api/quote";
 import { ErrorUI } from "../../../../../components/Error";
 import { Loading } from "../../../../../components/Loading";
@@ -11,25 +11,34 @@ import { useSnackbar } from "notistack";
 
 export const QuoteId = ({ quoteId }) => {
   const [quote, setQuote] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [loadingRead, setLoadingRead] = useState(false);
   const [error, setError] = useState(false);
   const [isRead, setIsRead] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const reload = useCallback(async () => {
-    setError(false);
-    setLoading(true);
-    try {
-      const fresh = await fetchQuoteById(quoteId);
-      setQuote(fresh);
-      setIsRead(fresh.isRead);
-    } catch (error) {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
+  useEffect(() => {
+    if (!quoteId) return;
+  
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const fetchedQuote = await fetchQuoteById(quoteId);
+        if (!fetchedQuote) {
+          throw new Error("Cotización no encontrada");
+        }
+        setQuote(fetchedQuote);
+        setIsRead(fetchedQuote.isRead);
+      } catch (err) {
+        console.error(err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchData();
   }, [quoteId]);
 
   const handleCall = () => {
@@ -47,7 +56,7 @@ export const QuoteId = ({ quoteId }) => {
   const handleMarkAsRead = async () => {
     setLoadingRead(true);
     try {
-      const resp = await updateQuote(quoteId, { isRead: true });
+      const resp = await updateQuote(quoteOrderId, { isRead: true });
       if (resp.status === 200) {
         setIsRead(true);
       }
@@ -66,15 +75,17 @@ export const QuoteId = ({ quoteId }) => {
     }
   };
 
-  if (loading) return <Loading />;
   if (error) {
-    return (
-      <ErrorUI
-        onRetry={reload}
-        message="Error cargando los detalles de la cotización"
-      />
-    );
+    return <ErrorUI message="Error cargando los detalles de la cotización" />;
   }
+
+  if (loading) return <Loading />;
+
+if (!quote) {
+  return (
+    <ErrorUI message="No se encontró la cotización solicitada." />
+  );
+}
 
   return (
     <Box component="div">

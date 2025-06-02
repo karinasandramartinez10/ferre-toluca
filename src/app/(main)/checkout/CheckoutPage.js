@@ -1,15 +1,17 @@
 "use client";
 
-import { Box, Typography, Button, TextField, IconButton } from "@mui/material";
-
 import {
-  Add as AddIcon,
-  Remove as RemoveIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
-import { useOrder } from "../../../hooks/order/useOrder";
+  Box,
+  Typography,
+  Button,
+  TextField,
+  IconButton,
+  Stack,
+} from "@mui/material";
+
+import { Delete as DeleteIcon } from "@mui/icons-material";
 import Image from "next/image";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
@@ -20,15 +22,19 @@ import { useState } from "react";
 import LoginContainer from "../../auth/login/LoginContainer";
 import LoginForm from "../../auth/login/LoginForm";
 import { useRouter } from "next/navigation";
+import { QuantityField } from "../../../components/QuantityField";
+import { useOrderContext } from "../../../context/order/useOrderContext";
 
 const QuoteSchema = yup.object().shape({
   message: yup.string().required("El mensaje es requerido"),
 });
 
-const CheckoutPage = ({ session }) => {
+const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+
+  const { data: session } = useSession();
 
   const isAuthenticated = !!session?.user;
 
@@ -38,7 +44,7 @@ const CheckoutPage = ({ session }) => {
     removeFromOrder,
     clearOrder,
     totalItems,
-  } = useOrder();
+  } = useOrderContext();
 
   const {
     control,
@@ -120,16 +126,21 @@ const CheckoutPage = ({ session }) => {
 
   if (orderItems.length === 0) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Stack sx={{ alignItems: "center", gap: 2, p: 3 }}>
         <Typography variant="h4" textAlign="center">
           Tu carrito está vacío.
         </Typography>
-      </Box>
+        {isAuthenticated && (
+          <Button href="/history" variant="contained">
+            Ver historial de órdenes
+          </Button>
+        )}
+      </Stack>
     );
   }
 
   return (
-    <Box width="100%" sx={{ p: 2 }}>
+    <Box width="100%">
       <Typography variant="h4" sx={{ mb: 2 }}>
         Checkout
       </Typography>
@@ -167,29 +178,7 @@ const CheckoutPage = ({ session }) => {
                 mt: 1,
               }}
             >
-              <IconButton
-                size="small"
-                onClick={() => handleQuantityChange(product.id, quantity - 1)}
-              >
-                <RemoveIcon />
-              </IconButton>
-              <TextField
-                type="number"
-                variant="outlined"
-                size="small"
-                value={quantity}
-                onChange={(e) =>
-                  handleQuantityChange(product.id, Number(e.target.value))
-                }
-                inputProps={{ min: 1, style: { textAlign: "center" } }}
-                sx={{ width: "100px", mx: 1 }}
-              />
-              <IconButton
-                size="small"
-                onClick={() => handleQuantityChange(product.id, quantity + 1)}
-              >
-                <AddIcon />
-              </IconButton>
+              <QuantityField productId={product.id} quantity={quantity} />
             </Box>
           </Box>
 

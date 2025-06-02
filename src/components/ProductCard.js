@@ -10,11 +10,11 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import React, { useState } from "react";
-import { useOrder } from "../hooks/order/useOrder";
+import { useOrderContext } from "../context/order/useOrderContext";
 
 export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
   const [quantity] = useState(1);
-  const { addToOrder } = useOrder();
+  const { addToOrder } = useOrderContext();
 
   const handleAddToOrder = () => {
     addToOrder(product, quantity);
@@ -106,7 +106,7 @@ export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
             fullWidth
             onClick={handleAddToOrder}
           >
-            Agregar a la orden
+            Añadir a la orden
           </Button>
         </CardActions>
       )}

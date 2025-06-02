@@ -7,22 +7,20 @@ import {
   Badge,
   Typography,
   Popover,
-  TextField,
   Button,
+  Tooltip,
 } from "@mui/material";
 import {
   ShoppingCart as ShoppingCartIcon,
   Delete as DeleteIcon,
-  Add as AddIcon,
-  Remove as RemoveIcon,
 } from "@mui/icons-material";
-import { useOrder } from "../hooks/order/useOrder";
 import Link from "next/link";
 import Image from "next/image";
+import { QuantityField } from "./QuantityField";
+import { useOrderContext } from "../context/order/useOrderContext";
 
 const Cart = () => {
-  const { orderItems, removeFromOrder, updateQuantity, totalItems } =
-    useOrder();
+  const { orderItems, removeFromOrder, totalItems } = useOrderContext();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = (event) => {
@@ -35,19 +33,15 @@ const Cart = () => {
 
   const open = Boolean(anchorEl);
 
-  const handleQuantityChange = (productId, newQuantity) => {
-    if (newQuantity > 0) {
-      updateQuantity(productId, newQuantity);
-    }
-  };
-
   return (
     <Box>
-      <IconButton aria-label="cart" onClick={handleClick}>
-        <Badge badgeContent={totalItems} color="secondary">
-          <ShoppingCartIcon />
-        </Badge>
-      </IconButton>
+      <Tooltip title="Carrito de productos" arrow>
+        <IconButton aria-label="cart" onClick={handleClick}>
+          <Badge badgeContent={totalItems} color="secondary">
+            <ShoppingCartIcon />
+          </Badge>
+        </IconButton>
+      </Tooltip>
 
       <Popover
         open={open}
@@ -98,55 +92,19 @@ const Cart = () => {
 
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="body2">{product.name}</Typography>
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        mt: 1,
-                      }}
-                      justifyContent="center"
-                    >
-                      <IconButton
-                        size="small"
-                        color="grey.main"
-                        onClick={() =>
-                          handleQuantityChange(product.id, quantity - 1)
-                        }
-                      >
-                        <RemoveIcon />
-                      </IconButton>
-                      <TextField
-                        type="number"
-                        variant="outlined"
-                        size="small"
-                        value={quantity}
-                        onChange={(e) =>
-                          handleQuantityChange(
-                            product.id,
-                            Number(e.target.value)
-                          )
-                        }
-                        inputProps={{ min: 1, style: { textAlign: "center" } }}
-                        sx={{ width: "100px", mx: 1 }}
+                    <Box sx={{ mt: 1 }}>
+                      <QuantityField
+                        productId={product.id}
+                        quantity={quantity}
                       />
-                      <IconButton
-                        size="small"
-                        color="grey.main"
-                        onClick={() =>
-                          handleQuantityChange(product.id, quantity + 1)
-                        }
-                      >
-                        <AddIcon />
-                      </IconButton>
-                      <IconButton
-                        color="primary"
-                        onClick={() => removeFromOrder(product.id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
                     </Box>
                   </Box>
+                  <IconButton
+                    color="primary"
+                    onClick={() => removeFromOrder(product.id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
                 </Box>
               ))}
               <Button
