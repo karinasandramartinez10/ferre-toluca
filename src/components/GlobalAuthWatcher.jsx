@@ -18,14 +18,14 @@ export default function GlobalAuthWatcher() {
         "Tu sesión ha expirado. Por favor inicia sesión nuevamente",
         {
           variant: "warning",
-          autoHideDuration: 3000,
+          autoHideDuration: 2000,
         }
       );
 
       // espera 3.5s para que termine el autoHide
       setTimeout(() => {
         signOut({ callbackUrl: "/auth/login" });
-      }, 3500);
+      }, 2500);
     };
 
     authEvents.on(EVENTS_EMITERS.AUTH.SESSION_EXPIRED, handler);

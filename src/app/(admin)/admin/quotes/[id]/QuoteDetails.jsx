@@ -6,7 +6,7 @@ import {
   Phone,
 } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Card, CardContent, Grid } from "@mui/material";
+import { Card, CardContent, CardHeader, Grid } from "@mui/material";
 import { formatDateDayAbrev } from "../../../../../utils/date";
 import ActionButton from "./ActionButton";
 import InfoRow from "./InfoRow";
@@ -20,6 +20,7 @@ const QuoteDetails = ({
   loadingRead,
 }) => (
   <Card variant="outlined">
+    <CardHeader title={quote?.orderNumber} sx={{ paddingBottom: 0 }} />
     <CardContent>
       <Grid container spacing={2}>
         <InfoRow

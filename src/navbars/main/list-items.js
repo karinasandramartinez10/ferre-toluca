@@ -1,4 +1,10 @@
-import { Dashboard, Favorite, LoginOutlined, Person, Receipt } from "@mui/icons-material";
+import {
+  AdminPanelSettings,
+  Favorite,
+  LoginOutlined,
+  Person,
+  Receipt,
+} from "@mui/icons-material";
 
 export const noAuthSectionsMobile = [
   {
@@ -22,8 +28,8 @@ export const adminSectionsMobile = [
     title: "Administrador",
     items: [
       {
-        icon: <Dashboard />,
-        text: "Panel",
+        icon: <AdminPanelSettings />,
+        text: "Panel de administrador",
         href: `/admin/add-product`,
       },
     ],

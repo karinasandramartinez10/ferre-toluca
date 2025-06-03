@@ -35,11 +35,10 @@ export const fetchQuotes = async (page = 1, size = 10) => {
   }
 };
 
-export const fetchQuoteById = async (quoteId, token) => {
+export const fetchQuoteById = async (quoteId) => {
   try {
-    const { data } = await api.get(`/quote/${quoteId}`, {
+    const { data } = await privateApi.get(`/quote/${quoteId}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });

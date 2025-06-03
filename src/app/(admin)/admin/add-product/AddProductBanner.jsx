@@ -23,7 +23,7 @@ export const AddProductBanner = () => {
         <Typography variant="body3" paragraph>
           Estás agregando productos por lote. Cada fila representa un producto
           diferente, pero todos compartirán la misma{" "}
-          <b>marca, categoría, subcategoría</b> y <b>subtipo</b>. Además, se
+          <b>marca, categoría, subcategoría</b> y <b>variante de producto</b>. Además, se
           usará <b>una sola imagen</b> para todos los productos.
         </Typography>
 

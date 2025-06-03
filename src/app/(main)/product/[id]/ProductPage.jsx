@@ -14,17 +14,24 @@ import {
 import Image from "next/image";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
-import { useOrder } from "../../../../hooks/order/useOrder";
 import { useFavorites } from "../../../../hooks/favorites/useFavorites";
 import ConfirmDeleteFavorite from "./ConfirmDeleteFavorite";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
 import { toSlug } from "../../../../utils/cases";
+import { motion } from "framer-motion";
+import { useOrderContext } from "../../../../context/order/useOrderContext";
+
+const MotionButton = motion(Button);
+const MotionIconButton = motion(IconButton);
+
+const tapAnim = { scale: 0.9 };
+const hoverAnim = { scale: 1.05 };
 
 const ProductPage = ({ product, role }) => {
   const [quantity] = useState(1);
   const [openDialog, setOpenDialog] = useState(false);
 
-  const { addToOrder } = useOrder();
+  const { addToOrder } = useOrderContext();
   const { toggleFavorite, isFavorite } = useFavorites();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -34,6 +41,7 @@ const ProductPage = ({ product, role }) => {
 
   const handleAddToOrder = () => {
     addToOrder(product, quantity);
+    showNotification("Producto añadido al carrito", "success");
   };
 
   const breadcrumbItems = [
@@ -213,17 +221,21 @@ const ProductPage = ({ product, role }) => {
             )}
 
             <Box display="flex" gap={1} alignItems="center">
-              <Button
+              <MotionButton
                 variant="contained"
                 color="primary"
                 onClick={handleAddToOrder}
+                whileTap={tapAnim}
+                whileHover={hoverAnim}
               >
                 Añadir a la orden
-              </Button>
+              </MotionButton>
               {showUserBtns && (
-                <IconButton
+                <MotionIconButton
                   onClick={handleToggleFavorite}
                   color={isFavorite(product.id) ? "error" : "default"}
+                  whileTap={tapAnim}
+                  whileHover={hoverAnim}
                   sx={{
                     border: "1px solid #ccc",
                     borderRadius: "8px",
@@ -234,7 +246,7 @@ const ProductPage = ({ product, role }) => {
                   }}
                 >
                   {isFavorite(product.id) ? <Favorite /> : <FavoriteBorder />}
-                </IconButton>
+                </MotionIconButton>
               )}
             </Box>
           </Stack>

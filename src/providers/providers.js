@@ -11,7 +11,7 @@ export function Providers({ children }) {
       <SnackbarProvider
         maxSnack={3}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        autoHideDuration={4000}
+        autoHideDuration={2500}
         sx={{ "& .SnackbarContent-root": { borderRadius: 8 } }}
       >
         <CssBaseline />

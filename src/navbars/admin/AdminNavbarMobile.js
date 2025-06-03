@@ -1,73 +1,10 @@
-import {
-  AddBusiness,
-  AddCircleOutline,
-  Category,
-  Home,
-  Inventory,
-  Menu,
-  Storefront,
-} from "@mui/icons-material";
+import { Menu } from "@mui/icons-material";
 import { Box, Drawer, IconButton } from "@mui/material";
 import Image from "next/image";
 import NextLink from "next/link";
 import { useMemo, useState } from "react";
 import { BurgerMenu } from "../../components/BurgerMenu";
-
-export const adminSections = [
-  {
-    title: "Administrador",
-    items: [
-      {
-        text: "Inicio",
-        href: "/",
-        icon: <Home />,
-        visibleFor: ["admin", "superadmin"],
-      },
-      {
-        icon: <Storefront />,
-        text: "Cotizaciones",
-        href: `/admin/quotes`,
-        visibleFor: ["admin", "superadmin"],
-      },
-      {
-        icon: <AddCircleOutline />,
-        text: "Agregar Productos",
-        href: `/admin/add-product`,
-        visibleFor: ["superadmin"],
-      },
-      {
-        text: "Ver productos",
-        href: "/admin/products",
-        icon: <Inventory sx={{ fontSize: 20 }} />,
-        visibleFor: ["admin", "superadmin"],
-      },
-      {
-        icon: <AddBusiness />,
-        text: "Marcas",
-        href: "/admin/brands",
-        visibleFor: ["superadmin"],
-      },
-      {
-        text: "Categorías",
-        href: "/admin/categories",
-        icon: <Category />,
-        visibleFor: ["superadmin"],
-      },
-      {
-        text: "Subcategorías",
-        href: "/admin/subcategories",
-        icon: <Category />,
-        visibleFor: ["superadmin"],
-      },
-      {
-        text: "Variantes de Producto",
-        href: "/admin/product-type",
-        icon: <Category sx={{ fontSize: 20 }} />,
-        visibleFor: ["superadmin"],
-      },
-    ],
-  },
-];
+import { adminSections } from "./admin-sections";
 
 const AdminNavbarMobile = ({ role }) => {
   const [openNavbar, setOpenNavbar] = useState(false);
@@ -121,6 +58,7 @@ const AdminNavbarMobile = ({ role }) => {
           src={"/images/texcoco_logo2.svg"}
           toggleDrawer={toggleDrawer}
           sections={filteredSections}
+          showLogout
         />
       </Drawer>
     </Box>

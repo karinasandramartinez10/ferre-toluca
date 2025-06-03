@@ -27,7 +27,7 @@ export const quotesColumns = [
       </Link>
     ),
   },
-  // { field: "id", headerName: "ID", width: 85 },
+  { field: "orderNumber", headerName: "# Orden", width: 110 },
   {
     field: "fullname",
     headerName: "Cliente",
