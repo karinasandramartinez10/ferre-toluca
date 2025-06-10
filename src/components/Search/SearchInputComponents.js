@@ -33,10 +33,7 @@ export const SearchInput = ({
       border: "none",
     }}
     endAdornment={
-      <IconButton
-        sx={{ p: "10px" }}
-        onClick={handleSearchSubmit}
-      >
+      <IconButton sx={{ p: "10px" }} onClick={handleSearchSubmit}>
         <Search />
       </IconButton>
     }
@@ -64,31 +61,40 @@ export const ErrorSearch = ({ error }) => (
 
 export const SearchList = ({ products, handleProductClick }) => (
   <List>
-    {products.map((product) => (
-      <ListItem
-        button
-        key={product.id}
-        onClick={() => handleProductClick(product.id)}
-      >
-        <Box
-          sx={{
-            width: "50px",
-            height: "50px",
-            marginRight: "16px",
-            borderRadius: "8px",
-            overflow: "hidden",
-          }}
+    {products.map((group) => {
+      const representativeProduct = group.variants[0];
+      return (
+        <ListItem
+          button
+          key={representativeProduct.id}
+          onClick={() => handleProductClick(representativeProduct.id)}
         >
-          <Image
-            src={product.Files?.[0]?.path ?? "/images/placeholder.png"}
-            alt={product.name}
-            width={50}
-            height={50}
-            style={{ objectFit: "cover" }}
+          <Box
+            sx={{
+              width: "50px",
+              height: "50px",
+              marginRight: "16px",
+              borderRadius: "8px",
+              overflow: "hidden",
+            }}
+          >
+            <Image
+              src={
+                representativeProduct.Files?.[0]?.path ??
+                "/images/placeholder.png"
+              }
+              alt={representativeProduct.name}
+              width={50}
+              height={50}
+              style={{ objectFit: "cover" }}
+            />
+          </Box>
+          <ListItemText
+            primary={representativeProduct.name}
+            secondary={representativeProduct.code}
           />
-        </Box>
-        <ListItemText primary={product.name} secondary={product.code} />
-      </ListItem>
-    ))}
+        </ListItem>
+      );
+    })}
   </List>
 );

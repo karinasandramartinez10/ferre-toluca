@@ -35,6 +35,10 @@ export const MainNavbarDesktop = ({ session }) => {
     setAnchorEl(null);
   };
 
+  const Logout = () => {
+    logout()
+  }
+
   const open = Boolean(anchorEl);
 
   return (
@@ -95,7 +99,7 @@ export const MainNavbarDesktop = ({ session }) => {
           <Stack sx={{ p: 2 }}>
             {isAuthenticated ? (
               <Button
-                onClick={logout}
+                onClick={Logout}
                 color="error"
                 fullWidth
                 variant="outlined"
