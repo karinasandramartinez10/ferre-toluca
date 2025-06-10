@@ -1,9 +1,9 @@
 "use server";
 
-export async function fetchAllProductsServer(page = 1, size = 10) {
+export async function fetchGroupedProductsServer(page = 1, size = 10) {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/product?page=${page}&size=${size}`
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/product/grouped?page=${page}&size=${size}`
     );
 
     if (!res.ok) {
@@ -12,11 +12,11 @@ export async function fetchAllProductsServer(page = 1, size = 10) {
 
     const response = await res.json();
 
-    const products = response.data.products ?? [];
+    const products = response?.products ?? [];
 
     return products;
   } catch (error) {
-    console.error("error", error);
+    console.error("Error fetching grouped products:", error);
     return [];
   }
 }
@@ -28,9 +28,8 @@ export const getProductById = async (id) => {
     );
 
     const response = await res.json();
-    return response;
+    return response.data
   } catch (error) {
-    console.log("e", error);
     return {};
   }
 };

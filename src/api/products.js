@@ -1,25 +1,6 @@
 import { api } from "../config";
 import privateApi from "../config/private";
 
-//TODO: mover a 10
-export async function fetchProducts(page = 1, size = 10) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/product?page=${page}&size=${size}`
-  );
-
-  if (!res.ok) {
-    return {
-      error: "Failed to fetch data",
-    };
-  }
-
-  const response = await res.json();
-  return {
-    data: response.data,
-    error: false,
-  };
-}
-
 export const getProductsByBrand = async (id, page = 1, size = 10) => {
   try {
     const { data } = await api.get(`/product/brand/${id}`, {
@@ -32,6 +13,49 @@ export const getProductsByBrand = async (id, page = 1, size = 10) => {
   } catch (error) {
     throw new Error(
       error.response?.data?.message || "Failed to fetch products by brand"
+    );
+  }
+};
+
+/**
+ * Obtiene productos agrupados usando el endpoint especificado.
+ * @param {string} endpoint - Endpoint dinámico: 'groupedBrand', 'groupedCategory', 'grouped', etc.
+ * @param {Object} options - Parámetros opcionales.
+ * @param {number} [options.page=1] - Página.
+ * @param {number} [options.size=10] - Tamaño de página.
+ * @param {string|number} [options.id] - ID para brand o category, según aplique.
+ * @returns {Promise<Object>} - Datos de productos agrupados.
+ */
+
+export const getGroupedProducts = async (
+  endpoint,
+  { page = 1, size = 10, id, q } = {}
+) => {
+  try {
+    const params = {
+      page,
+      size,
+    };
+
+    if (q) {
+      params.q = q;
+    }
+
+    const url = id ? `/product/${endpoint}/${id}` : `/product/${endpoint}`;
+
+    const { data } = await api.get(url, { params });
+
+    return {
+      data: {
+        products: data.products,
+        count: data.count,
+        totalPages: data.totalPages,
+      },
+    };
+  } catch (error) {
+    console.log("er", error);
+    throw new Error(
+      error.response?.data?.message || `Failed to fetch from ${endpoint}`
     );
   }
 };
@@ -62,6 +86,16 @@ export const getProductsByQuery = async (query) => {
     throw new Error(
       error.response?.data?.message || "Failed to fetch products by query"
     );
+  }
+};
+
+export const getProductById = async (id) => {
+  try {
+    const response = await api.get(`/product/${id}`);
+
+    return response.data.data
+  } catch (error) {
+    return {};
   }
 };
 

@@ -35,8 +35,8 @@ export default async function RootLayout({ children }) {
             >
               <GlobalAuthWatcher />
               {children}
-              <Analytics />
-              <SpeedInsights />
+              <Analytics debug={false} />
+              <SpeedInsights debug={false} />
             </SessionProvider>
           </Providers>
         </AppRouterCacheProvider>

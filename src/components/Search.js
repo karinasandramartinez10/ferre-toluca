@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useDebounce } from "../hooks/use-debounce";
-import { getProductsByQuery } from "../api/products";
+import { getGroupedProducts, getProductsByQuery } from "../api/products";
 import {
   Box,
   Paper,
@@ -37,8 +37,12 @@ export default function SearchComponent() {
       if (debouncedSearchQuery.length >= 3) {
         setLoading(true);
         try {
-          const { products } = await getProductsByQuery(debouncedSearchQuery);
-          setProducts(products);
+          const { data } = await getGroupedProducts("groupedSearch", {
+            q: debouncedSearchQuery,
+            page: 1,
+            size: 10,
+          });
+          setProducts(data.products);
           setLoading(false);
         } catch (err) {
           setError("Error al obtener productos");
