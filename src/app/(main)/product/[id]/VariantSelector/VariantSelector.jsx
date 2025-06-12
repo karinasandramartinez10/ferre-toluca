@@ -22,7 +22,7 @@ export const VariantSelector = ({ variants = [], initialId }) => {
 
   return (
     <Stack spacing={1} mt={2} mb={2}>
-      <Box display="flex" gap={2}>
+      <Box display="flex" gap={2} flexDirection={{ xs: "column", md: "row" }}>
         <ColorSelector
           colorOptions={colorOptions}
           selectedColor={selectedColor}

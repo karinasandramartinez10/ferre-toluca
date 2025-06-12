@@ -1,31 +1,38 @@
 import { COLOR_HEX } from "./constants";
 
-// Compilamos un regex de todos los colores base, con \b para palabra completa, case‐insensitive
-const COLOR_REGEX = new RegExp(
-  `\\b(${Object.keys(COLOR_HEX).join("|")})\\b`,
-  "i"
-);
-
-/**
- * Extrae la primera coincidencia con un color base en el label.
- * Si no hay match, devuelve 'gris' (fallback).
- */
-export function getBaseColorLabel(label = "") {
-  const m = COLOR_REGEX.exec(label);
-  return m ? m[1].toLowerCase() : "gris";
+export function normalizeKey(str = "") {
+  return str
+    .normalize("NFD") // separa acentos
+    .replace(/[\u0300-\u036f]/g, "") // quita las marcas diacríticas
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ""); // quita espacios/símbolos
 }
 
-/**
- * Dado un label completo, resuelve su color hex de tu mapa.
- */
+const COLOR_ENTRIES = Object.entries(COLOR_HEX)
+  .map(([key, hex]) => [normalizeKey(key), hex])
+  .sort((a, b) => b[0].length - a[0].length);
+
+// Dado un label completo, busca la primera clave del diccionario
+// cuyo normalizeKey esté contenido en normalizeKey(label).
+// Si no encuentra nada, retorna gris por defecto.
 export function resolveColorHex(label = "") {
-  const key = getBaseColorLabel(label);
-  return COLOR_HEX[key] || COLOR_HEX.gris;
+  const nl = normalizeKey(label);
+  for (const [keyNorm, hex] of COLOR_ENTRIES) {
+    if (nl.includes(keyNorm)) {
+      return hex;
+    }
+  }
+  return COLOR_HEX.gris;
 }
 
-/**
- * Blanco solo sobre fondo blanco; para cualquier otro color devolvemos texto blanco.
- */
+// 4️Calcula un color de texto (blanco o negro) basándose en luminancia percibida.
 export function getContrastColor(hex = "#ffffff") {
-  return hex.trim().toLowerCase() === COLOR_HEX.blanco ? "#000000" : "#ffffff";
+  const c = hex.charAt(0) === "#" ? hex.substring(1) : hex;
+  const r = parseInt(c.substr(0, 2), 16);
+  const g = parseInt(c.substr(2, 2), 16);
+  const b = parseInt(c.substr(4, 2), 16);
+  // fórmula aproximada de luminancia
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  // umbral típico a 186
+  return luminance > 186 ? "#000000" : "#ffffff";
 }
