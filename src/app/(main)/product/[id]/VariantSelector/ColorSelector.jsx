@@ -1,66 +1,88 @@
-import {
-  Stack,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Chip,
-} from "@mui/material";
-import { getContrastColor, resolveColorHex } from "../helpers";
+"use client";
 
-export const ColorSelector = ({
-  colorOptions,
-  selectedColor,
-  onColorChange,
-}) => {
-  if (colorOptions.length > 1) {
+import { Box, Stack, Typography } from "@mui/material";
+import { motion } from "framer-motion";
+import { resolveColorHex, getContrastColor } from "../helpers";
+
+const MotionBox = motion(Box);
+
+export function ColorSelector({ colorOptions, selectedColor, onColorChange }) {
+  // Único color
+  if (colorOptions.length <= 1) {
+    const only = colorOptions[0] || "";
+    const bg = resolveColorHex(only);
+    const fg = getContrastColor(bg);
+
     return (
-      <Stack gap={1} justifyContent="center">
+      <Stack gap={1.5}>
         <Typography variant="body2" fontWeight={600}>
-          También disponible en:
+          Único color
         </Typography>
-        <FormControl size="small">
-          <InputLabel id="variant-color-label">Color</InputLabel>
-          <Select
-            labelId="variant-color-label"
-            value={selectedColor || ""}
-            label="Color"
-            onChange={(e) => onColorChange(e.target.value)}
-            sx={{ minWidth: 140 }}
-          >
-            {colorOptions.map((color) => (
-              <MenuItem key={color} value={color}>
-                {color}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Box
+          component="span"
+          sx={{
+            mt: 1,
+            display: "inline-block",
+            bgcolor: bg,
+            color: fg,
+            px: 2,
+            py: 0.5,
+            borderRadius: "16px",
+            fontWeight: 600,
+            fontSize: "1rem",
+          }}
+        >
+          {only}
+        </Box>
       </Stack>
     );
   }
 
-  const label = colorOptions[0];
-  const bg = resolveColorHex(label);
-  const fg = getContrastColor(bg);
-
   return (
-    <Stack gap={1.5}>
+    <Stack gap={1} flex="1">
       <Typography variant="body2" fontWeight={600}>
-        Único color
+        Colores disponibles
       </Typography>
-      <Chip
-        label={label}
-        sx={{
-          bgcolor: bg,
-          color: fg,
-          fontWeight: 600,
-          borderRadius: "16px",
-          px: 2,
-          fontSize: "14px",
-          "& .MuiChip-label": { textShadow: "1px 1px 2px rgba(0,0,0,0.2)" },
-        }}
-      />
+      <Box display="flex" gap={1} flexWrap="wrap">
+        {colorOptions.map((color) => {
+          const bg = resolveColorHex(color);
+          const isSel = color === selectedColor;
+
+          const bgStyles = {
+            backgroundColor: bg,
+          };
+
+          // Borde de 2px fijo, sólo cambia de color
+          const borderColor = isSel ? "#000" : "rgba(0,0,0,0.1)";
+
+          return (
+            <MotionBox
+              key={color}
+              onClick={() => onColorChange(color)}
+              title={color}
+              component="span"
+              tabIndex={0}
+              sx={{
+                ...bgStyles,
+                width: 28,
+                height: 28,
+                borderRadius: "50%",
+                border: `2px solid ${borderColor}`,
+                boxSizing: "border-box",
+                cursor: "pointer",
+                outline: "none",
+                transition: "transform 0.2s ease, border-color 0.2s ease",
+                "&:focus": {
+                  boxShadow: `0 0 0 3px ${borderColor}`,
+                },
+              }}
+              animate={{ scale: isSel ? 1.3 : 1 }}
+              whileHover={{ scale: isSel ? 1.3 : 1.1 }}
+              transition={{ type: "tween", duration: 0.15 }}
+            />
+          );
+        })}
+      </Box>
     </Stack>
   );
-};
+}

@@ -6,6 +6,7 @@ import {
   Select,
   MenuItem,
   Chip,
+  Box,
 } from "@mui/material";
 
 export const MeasureSelector = ({
@@ -41,15 +42,24 @@ export const MeasureSelector = ({
   }
 
   return (
-    <Stack gap={1.5}>
-      <Typography variant="body2" fontWeight={600}>
-        Única medida
-      </Typography>
-      <Chip
-        label={measureOptions[0]?.label}
-        color="secondary"
-        sx={{ fontSize: "1rem", fontWeight: 600, borderRadius: "16px", px: 2 }}
-      />
+    <Stack width="auto" flex="1">
+      <Box>
+        <Typography variant="body2" fontWeight={600}>
+          Única medida
+        </Typography>
+
+        <Chip
+          label={measureOptions[0]?.label}
+          color="secondary"
+          sx={{
+            mt: 1.5,
+            fontSize: "1rem",
+            fontWeight: 600,
+            borderRadius: "16px",
+            px: 2,
+          }}
+        />
+      </Box>
     </Stack>
   );
 };
