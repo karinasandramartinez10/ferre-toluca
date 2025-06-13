@@ -38,13 +38,8 @@ const CheckoutPage = () => {
 
   const isAuthenticated = !!session?.user;
 
-  const {
-    orderItems,
-    updateQuantity,
-    removeFromOrder,
-    clearOrder,
-    totalItems,
-  } = useOrderContext();
+  const { orderItems, removeFromOrder, clearOrder, totalItems } =
+    useOrderContext();
 
   const {
     control,
@@ -61,12 +56,6 @@ const CheckoutPage = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleQuantityChange = (productId, newQuantity) => {
-    if (newQuantity > 0) {
-      updateQuantity(productId, newQuantity);
-    }
-  };
-
   const handleCheckout = async (values) => {
     setLoading(true);
     try {
@@ -80,7 +69,7 @@ const CheckoutPage = () => {
         products,
       };
 
-      await createQuote(requestBody, session.user.access_token);
+      await createQuote(requestBody);
       enqueueSnackbar("Solicitud de orden enviada correctamente.", {
         variant: "success",
         autoHideDuration: 5000,
