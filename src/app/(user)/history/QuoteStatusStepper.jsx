@@ -1,37 +1,21 @@
 import { Stepper, Step, StepLabel, Box } from "@mui/material";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-
-const steps = [
-  { label: "En revisión", Icon: InfoOutlinedIcon },
-  { label: "Parcialmente completo", Icon: PlaylistAddCheckIcon },
-  { label: "Completo", Icon: CheckCircleIcon },
-  { label: "Enviado", Icon: LocalShippingIcon },
-];
-
-const statusToIndex = {
-  IN_REVIEW: 0,
-  PARTIALLY_AVAILABLE: 1,
-  READY_FOR_DISPATCH: 2,
-  DISPATCHED: 3,
-};
+import { STEPS } from "../../../constants/quotes/status";
 
 export const QuoteStatusStepper = ({ status }) => {
-  const activeStep = statusToIndex[status] ?? 0;
+  const activeIndex = STEPS.findIndex((step) => step.value === status);
+  const idx0 = activeIndex >= 0 ? activeIndex : 0;
 
   return (
     <Box sx={{ width: "100%", mb: 2 }}>
-      <Stepper activeStep={activeStep} alternativeLabel>
-        {steps.map(({ label, Icon }, idx) => (
-          <Step key={label}>
+      <Stepper activeStep={activeIndex} alternativeLabel>
+        {STEPS.map(({ label, Icon }, idx) => (
+          <Step key={label} completed={idx < idx0}>
             <StepLabel
               icon={
                 <Icon
                   sx={{
                     fontSize: { xs: "1.9rem", md: "1.8rem", lg: "2rem" },
-                    color: idx === activeStep ? "secondary.main" : "grey.400",
+                    color: idx === idx0 ? "secondary.main" : "grey.400",
                   }}
                 />
               }
@@ -39,6 +23,7 @@ export const QuoteStatusStepper = ({ status }) => {
                 "& .MuiStepLabel-label": {
                   typography: "body3",
                   mt: 0.5,
+                  color: idx === idx0 ? "secondary.hover" : "grey.400",
                 },
               }}
             >

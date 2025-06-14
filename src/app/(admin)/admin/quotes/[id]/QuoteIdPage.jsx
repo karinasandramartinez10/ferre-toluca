@@ -8,19 +8,19 @@ import { Loading } from "../../../../../components/Loading";
 import QuoteProductCard from "./QuoteProductCard";
 import QuoteDetails from "./QuoteDetails";
 import { useSnackbar } from "notistack";
+import { STEPS } from "../../../../../constants/quotes/status";
 
 export const QuoteId = ({ quoteId }) => {
   const [quote, setQuote] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [loadingRead, setLoadingRead] = useState(false);
   const [error, setError] = useState(false);
-  const [isRead, setIsRead] = useState(false);
+  const [justSavedIdx, setJustSavedIdx] = useState(null);
 
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (!quoteId) return;
-  
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -29,7 +29,6 @@ export const QuoteId = ({ quoteId }) => {
           throw new Error("Cotización no encontrada");
         }
         setQuote(fetchedQuote);
-        setIsRead(fetchedQuote.isRead);
       } catch (err) {
         console.error(err);
         setError(true);
@@ -37,7 +36,7 @@ export const QuoteId = ({ quoteId }) => {
         setLoading(false);
       }
     };
-  
+
     fetchData();
   }, [quoteId]);
 
@@ -53,25 +52,18 @@ export const QuoteId = ({ quoteId }) => {
     )}`;
   };
 
-  const handleMarkAsRead = async () => {
-    setLoadingRead(true);
+  const handleSaveStatus = async (newStatus) => {
     try {
-      const resp = await updateQuote(quoteOrderId, { isRead: true });
-      if (resp.status === 200) {
-        setIsRead(true);
-      }
-    } catch (error) {
-      console.error("Error updating read status", error);
-      enqueueSnackbar("Hubo un error al agregar el producto", {
-        variant: "error",
-        autoHideDuration: 5000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "right",
-        },
-      });
-    } finally {
-      setLoadingRead(false);
+      await updateQuote(quoteId, { status: newStatus });
+      setQuote((q) => ({ ...q, status: newStatus }));
+
+      const idx = STEPS.findIndex((s) => s.value === newStatus);
+      setJustSavedIdx(idx);
+
+      enqueueSnackbar("Estado actualizado", { variant: "success" });
+      setTimeout(() => setJustSavedIdx(null), 800);
+    } catch {
+      enqueueSnackbar("Error al actualizar estado", { variant: "error" });
     }
   };
 
@@ -81,21 +73,18 @@ export const QuoteId = ({ quoteId }) => {
 
   if (loading) return <Loading />;
 
-if (!quote) {
-  return (
-    <ErrorUI message="No se encontró la cotización solicitada." />
-  );
-}
+  if (!quote) {
+    return <ErrorUI message="No se encontró la cotización solicitada." />;
+  }
 
   return (
     <Box component="div">
       <QuoteDetails
         quote={quote}
+        justSavedIdx={justSavedIdx}
         onCall={handleCall}
         onEmail={handleEmail}
-        onMarkAsRead={handleMarkAsRead}
-        isRead={isRead}
-        loadingRead={loadingRead}
+        onSave={handleSaveStatus}
       />
 
       <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>
