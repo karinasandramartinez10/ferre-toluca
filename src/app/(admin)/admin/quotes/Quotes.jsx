@@ -1,13 +1,17 @@
 "use client";
 
 import { DataGrid } from "@mui/x-data-grid";
-import React, { useEffect, useState } from "react";
-import { fetchQuotes } from "../../../../api/quote";
+import { useSnackbar } from "notistack";
+import React, { useCallback, useEffect, useState } from "react";
+import { fetchQuotes, updateQuote } from "../../../../api/quote";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
+import { CustomToolbar } from "../../../../components/DataGrid/CustomToolbar";
+import { CustomFooter } from "../../../../components/DataGrid/CustomFooter";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
 import { localeText } from "../../../../constants/x-datagrid/localeText";
-import { quotesColumns } from "./columns";
+import { getQuoteColumns } from "./columns";
+import { useStatusLogs } from "../../../../hooks/logs/useStatusLogs";
 
 export const Quotes = () => {
   const [quotes, setQuotes] = useState([]);
@@ -18,25 +22,69 @@ export const Quotes = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [updatingId, setUpdatingId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+
+  const { enqueueSnackbar } = useSnackbar();
+  const { appendLog } = useStatusLogs();
 
   useEffect(() => {
-    const fetchData = async () => {
+    let active = true;
+    (async () => {
       try {
         setLoading(true);
         const { quotes, totalCount } = await fetchQuotes(
-          paginationModel.page + 1, // Ajustar para backend (MUI usa base 0, backend usa base 1)
+          paginationModel.page + 1,
           paginationModel.pageSize
         );
-        setLoading(false);
-        setQuotes(quotes);
-        setTotalCount(totalCount || 0);
-      } catch (error) {
-        setLoading(false);
-        setError(true);
+        if (active) {
+          setQuotes(quotes);
+          setTotalCount(totalCount);
+        }
+      } catch {
+        if (active) setError(true);
+      } finally {
+        if (active) setLoading(false);
       }
+    })();
+    return () => {
+      active = false;
     };
-    fetchData();
   }, [paginationModel]);
+
+  const handleStatusChange = useCallback(
+    async (id, oldStatus, newStatus) => {
+      setUpdatingId(id);
+      try {
+        await updateQuote(id, { status: newStatus });
+        setQuotes((prev) =>
+          prev.map((q) => (q.id === id ? { ...q, status: newStatus } : q))
+        );
+
+        await appendLog(id, {
+          oldStatus,
+          newStatus,
+          changedAt: new Date().toISOString(),
+        });
+
+        enqueueSnackbar("Estado actualizado correctamente", {
+          variant: "success",
+        });
+      } catch (err) {
+        console.error("Error cambiando estado:", err);
+        enqueueSnackbar("Error al actualizar el estado", {
+          variant: "error",
+        });
+      } finally {
+        setUpdatingId(null);
+      }
+    },
+    [appendLog, enqueueSnackbar]
+  );
+
+  const finishEdit = useCallback(() => {
+    setEditingId(null);
+  }, []);
 
   if (loading) {
     return <Loading />;
@@ -48,7 +96,14 @@ export const Quotes = () => {
     <DataGrid
       localeText={localeText}
       rows={quotes}
-      columns={quotesColumns}
+      columns={getQuoteColumns({
+        updatingId,
+        editingId,
+        handleStatusChange,
+        handleStatusChange,
+        setEditingId,
+        finishEdit,
+      })}
       rowCount={totalCount}
       paginationMode="server"
       paginationModel={paginationModel}
@@ -62,9 +117,24 @@ export const Quotes = () => {
         "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
           outline: "none !important",
         },
+        "& .MuiDataGrid-row:hover": {
+          backgroundColor: (theme) => theme.palette.action.hover,
+        },
+        "& .statusCell:hover .editIcon": {
+          display: "block",
+        },
+        "& .MuiDataGrid-row:hover .statusCell .editIcon": {
+          display: "block",
+        },
+        // resaltar fila al hover
+        "& .MuiDataGrid-row:hover": {
+          backgroundColor: (theme) => theme.palette.action.hover,
+        },
       }}
       slots={{
         noRowsOverlay: CustomNoRowsOverlay,
+        toolbar: CustomToolbar,
+        footer: CustomFooter,
       }}
     />
   );

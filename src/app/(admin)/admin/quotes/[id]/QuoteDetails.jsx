@@ -5,76 +5,151 @@ import {
   Person,
   Phone,
 } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
-import { Card, CardContent, CardHeader, Grid } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { useState, useEffect } from "react";
+import { STEPS } from "../../../../../constants/quotes/status";
 import { formatDateDayAbrev } from "../../../../../utils/date";
-import ActionButton from "./ActionButton";
+import { EditableStatusStepper } from "./EditableStatusStepper";
 import InfoRow from "./InfoRow";
 
-const QuoteDetails = ({
-  quote,
-  onCall,
-  onEmail,
-  onMarkAsRead,
-  isRead,
-  loadingRead,
-}) => (
-  <Card variant="outlined">
-    <CardHeader title={quote?.orderNumber} sx={{ paddingBottom: 0 }} />
-    <CardContent>
-      <Grid container spacing={2}>
-        <InfoRow
-          icon={<Person />}
-          label="Cliente"
-          value={`${quote?.User?.firstName} ${quote?.User?.lastName}`}
-        />
-        <InfoRow icon={<Email />} label="Email" value={quote?.User?.email} />
-        <InfoRow
-          icon={<Phone />}
-          label="Teléfono"
-          value={quote?.User?.phoneNumber}
-        />
-        <InfoRow
-          icon={<CalendarToday />}
-          label="Fecha"
-          value={formatDateDayAbrev(quote?.createdAt)}
-        />
-        <InfoRow icon={<Message />} label="Mensaje" value={quote?.message} />
+const QuoteDetails = ({ quote, justSavedIdx, onCall, onEmail, onSave }) => {
+  const [selected, setSelected] = useState(quote.status);
+  const [activeIdx, setActiveIdx] = useState(
+    STEPS.findIndex((s) => s.value === quote.status)
+  );
+  const [showAlert, setShowAlert] = useState(false);
 
-        <Grid item xs={12}>
-          <Grid container spacing={2} justifyContent="space-between">
-            <Grid item xs={12} md={4}>
-              <ActionButton label="Llamar" icon={<Phone />} onClick={onCall} />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <ActionButton label="Correo" icon={<Email />} onClick={onEmail} />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <LoadingButton
-                sx={(theme) => ({
-                  background: isRead
-                    ? theme.palette.grey.main
-                    : theme.palette.green.main,
-                  color: "#FFF",
-                  "&:hover": {
-                    background: isRead
-                      ? theme.palette.grey.main
-                      : theme.palette.green.hover,
-                  },
-                })}
-                onClick={onMarkAsRead}
-                disabled={isRead}
-                fullWidth
-                loading={loadingRead}
+  useEffect(() => {
+    const idx = STEPS.findIndex((s) => s.value === quote.status);
+    setSelected(quote.status);
+    setActiveIdx(idx >= 0 ? idx : 0);
+    setShowAlert(false);
+  }, [quote.status]);
+
+  const handleStepClick = (idx) => {
+    if (idx === activeIdx) {
+      setShowAlert(true);
+    } else {
+      setShowAlert(false);
+      setActiveIdx(idx);
+      setSelected(STEPS[idx].value);
+    }
+  };
+
+  const headerAction = (
+    <Box>
+      {!showAlert && selected !== quote.status && (
+        <Button
+          size="small"
+          variant="contained"
+          onClick={() => onSave(selected)}
+        >
+          Guardar estado
+        </Button>
+      )}
+    </Box>
+  );
+
+  const infoConfig = [
+    {
+      icon: <Person />,
+      label: "Cliente",
+      value: `${quote.User.firstName} ${quote.User.lastName}`,
+    },
+    { icon: <Email />, label: "Email", value: quote.User.email },
+    { icon: <Phone />, label: "Teléfono", value: quote.User.phoneNumber },
+    {
+      icon: <CalendarToday />,
+      label: "Fecha",
+      value: formatDateDayAbrev(quote.createdAt),
+    },
+    {
+      icon: <Message />,
+      label: "Mensaje",
+      value: quote.message || "Sin mensaje",
+    },
+  ];
+
+  return (
+    <Card variant="outlined" sx={{ p: 2 }}>
+      <CardHeader
+        title={`Seguimiento de la cotización ${quote.orderNumber}`}
+        action={headerAction}
+        sx={{ pb: 0, mb: 3 }}
+      />
+      <CardContent sx={{ pt: 0, pb: 2 }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12}>
+            <EditableStatusStepper
+              activeStep={activeIdx}
+              justSavedIdx={justSavedIdx}
+              onStepClick={handleStepClick}
+            />
+            {showAlert && (
+              <Alert severity="info">
+                Haz clic en otro paso para habilitar “Guardar estado”
+              </Alert>
+            )}
+          </Grid>
+
+          {/* 1. Columna izquierda: datos */}
+          <Grid item xs={12} md={8}>
+            <Stack spacing={1}>
+              {infoConfig.map(({ icon, label, value }) => (
+                <InfoRow key={label} icon={icon} label={label} value={value} />
+              ))}
+            </Stack>
+          </Grid>
+          {/* 2. Columna derecha: botones alineados verticalmente */}
+          <Grid item xs={12} md={4}>
+            <Stack
+              spacing={1}
+              justifyContent="center"
+              alignItems={{ xs: "center", md: "flex-start" }}
+              sx={{ height: "100%" }}
+            >
+              {/* En mobile: row + gap, en md+: column */}
+              <Box
+                component="div"
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "row", md: "column" },
+                  gap: 1,
+                  width: "100%",
+                  justifyContent: "center", // centra en xs
+                  alignItems: "center",
+                }}
               >
-                {isRead ? "Leído" : "Marcar como leído"}
-              </LoadingButton>
-            </Grid>
+                <Typography
+                  variant="h5"
+                  textAlign={{ xs: "center", md: "left" }}
+                >
+                  ¿Quieres contactar al cliente?
+                </Typography>
+
+                <Button startIcon={<Phone />} onClick={onCall} size="small">
+                  Llamar
+                </Button>
+                <Button startIcon={<Email />} onClick={onEmail} size="small">
+                  Correo
+                </Button>
+              </Box>
+            </Stack>
           </Grid>
         </Grid>
-      </Grid>
-    </CardContent>
-  </Card>
-);
+      </CardContent>
+    </Card>
+  );
+};
 
 export default QuoteDetails;

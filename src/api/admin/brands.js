@@ -39,15 +39,3 @@ export const updateBrand = async (id, formData) => {
   }
 };
 
-export const deleteBrand = async (id, token) => {
-  try {
-    const response = await api.delete(`/brands/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return response;
-  } catch (error) {
-    throw new Error(error.response.data.message || "Error deleting brand");
-  }
-};
