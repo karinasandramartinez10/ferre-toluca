@@ -12,7 +12,7 @@ const QuoteProductCard = ({ product }) => (
       <Typography variant="subtitle1">{product.name}</Typography>
       <Typography variant="body" color="primary.main">{product.brand.name}</Typography>
       <Typography variant="body2" color="text.secondary">
-        Codigo - {product.code}
+        SKU {product.code}
       </Typography>
       <Typography>
         <strong>Cantidad:</strong> {product.QuoteProduct?.quantity}

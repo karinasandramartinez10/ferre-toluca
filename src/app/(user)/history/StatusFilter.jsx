@@ -1,5 +1,7 @@
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { STATUS_OPTIONS } from "./constants/statusOptions";
+import { STEPS } from "../../../constants/quotes/status";
+
+const USER_STEPS = [{ value: "", label: "Todas" }, ...STEPS];
 
 export const StatusFilter = ({ value, onChange }) => (
   <FormControl
@@ -17,12 +19,12 @@ export const StatusFilter = ({ value, onChange }) => (
       displayEmpty
       renderValue={(selected) => {
         if (selected === "") {
-          return STATUS_OPTIONS.find((o) => o.value === "")?.label;
+          return USER_STEPS.find((o) => o.value === "")?.label;
         }
-        return STATUS_OPTIONS.find((o) => o.value === selected)?.label;
+        return USER_STEPS.find((o) => o.value === selected)?.label;
       }}
     >
-      {STATUS_OPTIONS.map((opt) => (
+      {USER_STEPS.map((opt) => (
         <MenuItem key={opt.value} value={opt.value}>
           {opt.label}
         </MenuItem>

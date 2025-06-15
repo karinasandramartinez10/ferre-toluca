@@ -11,6 +11,7 @@ import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
 import { localeText } from "../../../../constants/x-datagrid/localeText";
 import { getQuoteColumns } from "./columns";
+import { useStatusLogs } from "../../../../hooks/logs/useStatusLogs";
 
 export const Quotes = () => {
   const [quotes, setQuotes] = useState([]);
@@ -25,6 +26,7 @@ export const Quotes = () => {
   const [editingId, setEditingId] = useState(null);
 
   const { enqueueSnackbar } = useSnackbar();
+  const { appendLog } = useStatusLogs();
 
   useEffect(() => {
     let active = true;
@@ -50,25 +52,35 @@ export const Quotes = () => {
     };
   }, [paginationModel]);
 
-  const handleStatusChange = useCallback(async (id, newStatus) => {
-    setUpdatingId(id);
-    try {
-      await updateQuote(id, { status: newStatus });
-      setQuotes((prev) =>
-        prev.map((q) => (q.id === id ? { ...q, status: newStatus } : q))
-      );
-      enqueueSnackbar("Estado actualizado correctamente", {
-        variant: "success",
-      });
-    } catch (err) {
-      console.error("Error cambiando estado:", err);
-      enqueueSnackbar("Error al actualizar el estado", {
-        variant: "error",
-      });
-    } finally {
-      setUpdatingId(null);
-    }
-  }, []);
+  const handleStatusChange = useCallback(
+    async (id, oldStatus, newStatus) => {
+      setUpdatingId(id);
+      try {
+        await updateQuote(id, { status: newStatus });
+        setQuotes((prev) =>
+          prev.map((q) => (q.id === id ? { ...q, status: newStatus } : q))
+        );
+
+        await appendLog(id, {
+          oldStatus,
+          newStatus,
+          changedAt: new Date().toISOString(),
+        });
+
+        enqueueSnackbar("Estado actualizado correctamente", {
+          variant: "success",
+        });
+      } catch (err) {
+        console.error("Error cambiando estado:", err);
+        enqueueSnackbar("Error al actualizar el estado", {
+          variant: "error",
+        });
+      } finally {
+        setUpdatingId(null);
+      }
+    },
+    [appendLog, enqueueSnackbar]
+  );
 
   const finishEdit = useCallback(() => {
     setEditingId(null);
@@ -122,7 +134,7 @@ export const Quotes = () => {
       slots={{
         noRowsOverlay: CustomNoRowsOverlay,
         toolbar: CustomToolbar,
-        footer: CustomFooter
+        footer: CustomFooter,
       }}
     />
   );

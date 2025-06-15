@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography } from "@mui/material";
+import { Box, Card, CardContent, CardHeader, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fetchQuoteById, updateQuote } from "../../../../../api/quote";
 import { ErrorUI } from "../../../../../components/Error";
@@ -9,6 +9,8 @@ import QuoteProductCard from "./QuoteProductCard";
 import QuoteDetails from "./QuoteDetails";
 import { useSnackbar } from "notistack";
 import { STEPS } from "../../../../../constants/quotes/status";
+import { StatusLogList } from "./StatusLogList";
+import { useStatusLogs } from "../../../../../hooks/logs/useStatusLogs";
 
 export const QuoteId = ({ quoteId }) => {
   const [quote, setQuote] = useState(null);
@@ -17,6 +19,8 @@ export const QuoteId = ({ quoteId }) => {
   const [justSavedIdx, setJustSavedIdx] = useState(null);
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { logsMap, loadingMap, fetchLogs, appendLog } = useStatusLogs();
 
   useEffect(() => {
     if (!quoteId) return;
@@ -40,6 +44,10 @@ export const QuoteId = ({ quoteId }) => {
     fetchData();
   }, [quoteId]);
 
+  useEffect(() => {
+    fetchLogs(quoteId);
+  }, [quoteId]);
+
   const handleCall = () => {
     window.location.href = `tel: ${quote?.User?.phoneNumber}`;
   };
@@ -53,12 +61,19 @@ export const QuoteId = ({ quoteId }) => {
   };
 
   const handleSaveStatus = async (newStatus) => {
+    const oldStatus = quote.status;
     try {
       await updateQuote(quoteId, { status: newStatus });
       setQuote((q) => ({ ...q, status: newStatus }));
 
       const idx = STEPS.findIndex((s) => s.value === newStatus);
       setJustSavedIdx(idx);
+
+      await appendLog(quoteId, {
+        oldStatus,
+        newStatus,
+        changedAt: new Date().toISOString(),
+      });
 
       enqueueSnackbar("Estado actualizado", { variant: "success" });
       setTimeout(() => setJustSavedIdx(null), 800);
@@ -78,7 +93,7 @@ export const QuoteId = ({ quoteId }) => {
   }
 
   return (
-    <Box component="div">
+    <Stack gap={2}>
       <QuoteDetails
         quote={quote}
         justSavedIdx={justSavedIdx}
@@ -86,21 +101,27 @@ export const QuoteId = ({ quoteId }) => {
         onEmail={handleEmail}
         onSave={handleSaveStatus}
       />
+      <StatusLogList
+        logs={logsMap[quoteId] || []}
+        loading={loadingMap[quoteId]}
+      />
 
-      <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>
-        Productos cotizados
-      </Typography>
-      <Box
-        sx={{
-          display: "grid",
-          gap: 2,
-          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-        }}
-      >
-        {quote?.Products?.map((product) => (
-          <QuoteProductCard key={product.id} product={product} />
-        ))}
-      </Box>
-    </Box>
+      <Card variant="outlined" sx={{ p: 1 }}>
+        <CardHeader title="Productos Cotizados" />
+        <CardContent sx={{ pt: 0 }}>
+          <Box
+            sx={{
+              display: "grid",
+              gap: 2,
+              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            }}
+          >
+            {quote?.Products?.map((product) => (
+              <QuoteProductCard key={product.id} product={product} />
+            ))}
+          </Box>
+        </CardContent>
+      </Card>
+    </Stack>
   );
 };

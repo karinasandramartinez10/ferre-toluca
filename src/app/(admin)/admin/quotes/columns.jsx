@@ -8,12 +8,9 @@ import {
   Select,
 } from "@mui/material";
 import { DescriptionOutlined, SettingsOutlined } from "@mui/icons-material";
-import { calculateTotalQuantity } from "./utils";
 import { formatPhoneNumber } from "../../../../utils/phoneNumber";
 import { formatDateDayAbrev } from "../../../../utils/date";
-import { STATUS_OPTIONS } from "../../../(user)/history/constants/statusOptions";
-
-const ADMIN_STATUS_OPTIONS = STATUS_OPTIONS.filter((opt) => opt.value !== "");
+import { STEPS } from "../../../../constants/quotes/status";
 
 export const getQuoteColumns = ({
   updatingId,
@@ -62,12 +59,13 @@ export const getQuoteColumns = ({
             autoFocus
             onBlur={finishEdit}
             onChange={async (e) => {
-              await handleStatusChange(id, e.target.value);
+              const newStatus = e.target.value;
+              await handleStatusChange(id, status, newStatus);
               finishEdit();
             }}
             sx={{ minWidth: 160 }}
           >
-            {ADMIN_STATUS_OPTIONS.map((opt) => (
+            {STEPS.map((opt) => (
               <MenuItem key={opt.value} value={opt.value}>
                 {opt.label}
               </MenuItem>
@@ -96,7 +94,7 @@ export const getQuoteColumns = ({
           }}
         >
           <Chip
-            label={STATUS_OPTIONS.find((o) => o.value === status).label}
+            label={STEPS.find((o) => o.value === status).label}
             color={colorMap[status]}
             onClick={() => setEditingId(id)}
             sx={{ cursor: "pointer" }}
@@ -108,7 +106,7 @@ export const getQuoteColumns = ({
               display: "none",
               position: "absolute",
               top: "50%",
-              right: 8, 
+              right: 8,
               transform: "translateY(-50%)",
             }}
             onClick={() => setEditingId(id)}
@@ -128,18 +126,6 @@ export const getQuoteColumns = ({
     valueGetter: (_, row) =>
       `${row?.User?.firstName || ""} ${row?.User?.lastName || ""}`,
   },
-/*   {
-    field: "product",
-    headerName: "# Productos",
-    width: 120,
-    valueGetter: (_, row) => row?.Products?.length || "",
-  },
-  {
-    field: "quantity",
-    headerName: "Cantidad Total",
-    width: 120,
-    valueGetter: (_, row) => calculateTotalQuantity(row?.Products),
-  }, */
   {
     field: "email",
     headerName: "Email",

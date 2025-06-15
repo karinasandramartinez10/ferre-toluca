@@ -32,7 +32,7 @@ export const CustomToolbar = () => {
             }}
           />
           <GridToolbarExport
-            printOptions={{ hideFooter: true, hideToolbar: true }}
+            printOptions={undefined}
             csvOptions={{ fileName: "productos", delimiter: ";" }}
           />
         </Stack>
