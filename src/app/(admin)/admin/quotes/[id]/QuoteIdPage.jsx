@@ -11,6 +11,7 @@ import { useSnackbar } from "notistack";
 import { STEPS } from "../../../../../constants/quotes/status";
 import { StatusLogList } from "./StatusLogList";
 import { useStatusLogs } from "../../../../../hooks/logs/useStatusLogs";
+import QuoteMessages from "../../../../../components/QuoteMessages";
 
 export const QuoteId = ({ quoteId }) => {
   const [quote, setQuote] = useState(null);
@@ -120,6 +121,14 @@ export const QuoteId = ({ quoteId }) => {
               <QuoteProductCard key={product.id} product={product} />
             ))}
           </Box>
+        </CardContent>
+      </Card>
+
+      {/* Sistema de mensajes */}
+      <Card variant="outlined" sx={{ p: 2 }}>
+        <CardHeader title="Mensajes" />
+        <CardContent>
+          <QuoteMessages quoteId={quoteId} />
         </CardContent>
       </Card>
     </Stack>

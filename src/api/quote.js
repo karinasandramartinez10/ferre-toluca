@@ -83,3 +83,49 @@ export const fetchOrderHistory = async ({
     throw new Error(error.response.data.message);
   }
 };
+
+export const fetchQuoteMessages = async (quoteId) => {
+  try {
+    const { data } = await privateApi.get(`/quote/${quoteId}/messages`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return data.data;
+  } catch (error) {
+    console.error("Error al obtener mensajes:", error);
+    throw new Error(error.response?.data?.message || "Error al obtener mensajes");
+  }
+};
+
+export const sendQuoteMessage = async (quoteId, content) => {
+  try {
+    const { data } = await privateApi.post(
+      `/quote/${quoteId}/messages`,
+      { content },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return data.data;
+  } catch (error) {
+    console.error("Error al enviar mensaje:", error);
+    throw new Error(error.response?.data?.message || "Error al enviar mensaje");
+  }
+};
+
+export const fetchUserQuoteById = async (quoteId) => {
+  try {
+    const { data } = await privateApi.get(`/quote-user/${quoteId}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return data.data;
+  } catch (error) {
+    console.error("Error al obtener cotización de usuario:", error);
+    throw new Error(error.response?.data?.message || "Error al obtener cotización de usuario");
+  }
+};
