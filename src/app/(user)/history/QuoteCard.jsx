@@ -9,13 +9,16 @@ import {
   IconButton,
   List,
   Typography,
+  Button,
 } from "@mui/material";
 import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 import { format } from "date-fns";
 import { ProductItem } from "./ProductItem";
 import { QuoteStatusStepper } from "./QuoteStatusStepper";
+import { useRouter } from "next/navigation";
 
 const QuoteCard = ({ order, expanded, onToggle }) => {
+  const router = useRouter();
   return (
     <Card
       key={order.orderNumber}
@@ -65,6 +68,15 @@ const QuoteCard = ({ order, expanded, onToggle }) => {
         <Typography variant="body2" gutterBottom noWrap>
           <strong>Mensaje:</strong> {order.message || "Sin mensaje"}
         </Typography>
+        <Box display="flex" justifyContent="flex-end" mb={1}>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => router.push(`/history/${order.id}`)}
+          >
+            Ver detalle
+          </Button>
+        </Box>
 
         <Collapse in={expanded} timeout={300} unmountOnExit>
           <Typography variant="body2">

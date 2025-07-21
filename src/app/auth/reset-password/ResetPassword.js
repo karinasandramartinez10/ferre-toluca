@@ -71,6 +71,7 @@ export const ResetPassword = () => {
                   disabled={!isValid}
                   type="submit"
                   fullWidth
+                  variant="contained"
                   // href="/auth/login"
                 >
                   Restablecer contraseña
