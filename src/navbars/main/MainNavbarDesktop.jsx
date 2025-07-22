@@ -19,6 +19,7 @@ import Cart from "../../components/Cart";
 import { logout } from "../../actions/logout";
 import { useState } from "react";
 import SearchComponent from "../../components/Search";
+import NotificationsBell from "../../components/NotificationsBell";
 
 export const MainNavbarDesktop = ({ session }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -127,6 +128,7 @@ export const MainNavbarDesktop = ({ session }) => {
           </Stack>
         </Popover>
         {!isAdmin && <Cart />}
+        <NotificationsBell />
         <Tooltip title="Mi cuenta" arrow>
           <IconButton color="grey.main" onClick={handlePopoverOpen}>
             <Person />

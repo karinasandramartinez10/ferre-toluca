@@ -19,6 +19,7 @@ import {
 import { BurgerMenu } from "../../components/BurgerMenu";
 import { Menu } from "@mui/icons-material";
 import Cart from "../../components/Cart";
+import NotificationsBell from "../../components/NotificationsBell";
 import { MainNavbarDesktop } from "./MainNavbarDesktop";
 
 const SearchInput = dynamic(() => import("../../components/Search"), { ssr: false });
@@ -69,6 +70,7 @@ const MainNavbarMobile = ({ session }) => {
       <Box display="flex" alignItems="center" gap={1}>
         <SearchInput />
         {!isAdmin && <Cart />}
+        <NotificationsBell />
         <IconButton
           size="large"
           edge="start"
