@@ -5,6 +5,7 @@ import NextLink from "next/link";
 import { useMemo, useState } from "react";
 import { BurgerMenu } from "../../components/BurgerMenu";
 import { adminSections } from "./admin-sections";
+import NotificationsBell from "../../components/NotificationsBell";
 
 const AdminNavbarMobile = ({ role }) => {
   const [openNavbar, setOpenNavbar] = useState(false);
@@ -44,23 +45,26 @@ const AdminNavbarMobile = ({ role }) => {
           height="60"
         />
       </NextLink>
-      <IconButton
-        size="large"
-        edge="start"
-        aria-label="menu"
-        onClick={toggleDrawer(true)}
-        color="primary"
-      >
-        <Menu />
-      </IconButton>
-      <Drawer anchor="top" open={openNavbar} onClose={toggleDrawer(false)}>
-        <BurgerMenu
-          src={"/images/texcoco_logo2.svg"}
-          toggleDrawer={toggleDrawer}
-          sections={filteredSections}
-          showLogout
-        />
-      </Drawer>
+      <Box display="flex">
+        <NotificationsBell />
+        <IconButton
+          size="large"
+          edge="start"
+          aria-label="menu"
+          onClick={toggleDrawer(true)}
+          color="primary"
+        >
+          <Menu />
+        </IconButton>
+        <Drawer anchor="top" open={openNavbar} onClose={toggleDrawer(false)}>
+          <BurgerMenu
+            src={"/images/texcoco_logo2.svg"}
+            toggleDrawer={toggleDrawer}
+            sections={filteredSections}
+            showLogout
+          />
+        </Drawer>
+      </Box>
     </Box>
   );
 };

@@ -26,6 +26,7 @@ import { getPageMetadata } from "./routes-metadata";
 import { drawerItems } from "./drawerItems";
 import { useSession } from "next-auth/react";
 import { logout } from "../../actions/logout";
+import NotificationsBell from "../../components/NotificationsBell";
 
 const drawerWidth = 200;
 
@@ -139,6 +140,7 @@ export const AdminLayout = ({ children }) => {
         <AppBar>
           <Toolbar sx={{ paddingRight: "8px" }}>
             <AdminNavbarMobile role={session?.user?.role} />
+            <Box flexGrow={1} />
           </Toolbar>
         </AppBar>
       </Box>
@@ -171,18 +173,21 @@ export const AdminLayout = ({ children }) => {
           gap={2}
         >
           <Grid item xs={12} display="flex" alignItems="center" gap={1}>
-            <Box>
-              <Box display="flex" gap={1.5}>
+            <Box width="100%">
+              <Box display="flex" gap={1.5} justifyContent="space-between">
                 {showBackButton && (
-                  <IconButton onClick={() => router.back()}>
-                    <ArrowBackIosNewRounded
-                      sx={{
-                        color: "primary.main",
-                      }}
-                    />
-                  </IconButton>
+                  <Box display="flex" gap={1}>
+                    <IconButton onClick={() => router.back()}>
+                      <ArrowBackIosNewRounded
+                        sx={{
+                          color: "primary.main",
+                        }}
+                      />
+                    </IconButton>
+                    <Typography variant="h1">{title}</Typography>
+                  </Box>
                 )}
-                <Typography variant="h1">{title}</Typography>
+                <NotificationsBell />
               </Box>
               <Typography
                 sx={{ color: "#838383", fontWeight: 500 }}

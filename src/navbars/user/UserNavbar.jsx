@@ -1,18 +1,13 @@
 "use client";
 
-import {
-  AppBar,
-  Box,
-  Drawer,
-  IconButton,
-  Toolbar,
-} from "@mui/material";
+import { AppBar, Box, Drawer, IconButton, Toolbar } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { BurgerMenu } from "../../components/BurgerMenu";
 import { Menu } from "@mui/icons-material";
 import Cart from "../../components/Cart";
+import NotificationsBell from "../../components/NotificationsBell";
 import { userSectionsMobile } from "../main/list-items";
 import { UserNavbarDesktop } from "./UserNavbarDesktop";
 
@@ -46,8 +41,9 @@ const UserNavbarMobile = () => {
         />
       </Link>
 
-      <Box display="flex" alignItems="center" gap={1}>
+      <Box display="flex" alignItems="center" gap={2}>
         <Cart />
+        <NotificationsBell />
         <IconButton
           size="large"
           edge="start"

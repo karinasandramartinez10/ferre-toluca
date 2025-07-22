@@ -63,7 +63,7 @@ const Cart = () => {
       >
         <Box sx={{ p: 2 }}>
           {orderItems.length === 0 ? (
-            <Typography variant="body2">
+            <Typography fontSize="14px" color="grey.main" variant="body2">
               No hay productos en el carrito.
             </Typography>
           ) : (

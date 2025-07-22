@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Favorite, Person, ReceiptLong } from "@mui/icons-material";
 import { logout } from "../../actions/logout";
 import Cart from "../../components/Cart";
+import NotificationsBell from "../../components/NotificationsBell";
 
 export const UserNavbarDesktop = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -75,6 +76,7 @@ export const UserNavbarDesktop = () => {
           </Box>
         </Popover>
         <Cart />
+        <NotificationsBell />
         <Tooltip title="Mi cuenta" arrow>
           <IconButton color="grey.main" onClick={handlePopoverOpen}>
             <Person />
