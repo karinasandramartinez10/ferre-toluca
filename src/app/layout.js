@@ -27,18 +27,18 @@ export default async function RootLayout({ children }) {
     <html lang="es">
       <body className={inter.className}>
         <AppRouterCacheProvider>
-          <Providers>
-            <SessionProvider
-              session={session}
-              refetchOnWindowFocus={false}
-              refetchInterval={0}
-            >
+          <SessionProvider
+            session={session}
+            refetchOnWindowFocus={false}
+            refetchInterval={0}
+          >
+            <Providers>
               <GlobalAuthWatcher />
               {children}
               <Analytics debug={false} />
               <SpeedInsights debug={false} />
-            </SessionProvider>
-          </Providers>
+            </Providers>
+          </SessionProvider>
         </AppRouterCacheProvider>
       </body>
     </html>

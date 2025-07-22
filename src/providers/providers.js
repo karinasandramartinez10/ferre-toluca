@@ -1,8 +1,9 @@
-"use client"; // TODO: check if we can remove
+"use client";
 
 import { SnackbarProvider } from "notistack";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { mainTheme } from "../theme/mainTheme";
+import { NotificationsProvider } from "../context/notifications/NotificationsProvider";
 import { OrderProvider } from "../context/order/OrderProvider";
 
 export function Providers({ children }) {
@@ -15,7 +16,9 @@ export function Providers({ children }) {
         sx={{ "& .SnackbarContent-root": { borderRadius: 8 } }}
       >
         <CssBaseline />
-        <OrderProvider>{children}</OrderProvider>
+        <NotificationsProvider>
+          <OrderProvider>{children}</OrderProvider>
+        </NotificationsProvider>
       </SnackbarProvider>
     </ThemeProvider>
   );
