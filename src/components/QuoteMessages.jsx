@@ -13,7 +13,7 @@ import { formatDateDayAbrev } from "../utils/date";
 import { useRef } from "react";
 import { useSession } from "next-auth/react";
 import { palette } from "../theme/palette";
-import { toCapitalizeWords } from "../utils/cases";
+import { useNotificationsContext } from "../context/notifications/useNotificationsContext";
 
 export default function QuoteMessages({ quoteId }) {
   const [messages, setMessages] = useState([]);
@@ -24,6 +24,8 @@ export default function QuoteMessages({ quoteId }) {
 
   const { data: session } = useSession();
   const userId = session?.user?.id;
+
+  const { socket } = useNotificationsContext();
 
   const loadMessages = async () => {
     setLoading(true);
@@ -44,6 +46,21 @@ export default function QuoteMessages({ quoteId }) {
     if (quoteId) loadMessages();
     // eslint-disable-next-line
   }, [quoteId]);
+
+  useEffect(() => {
+    if (!socket) return;
+    const handleQuoteMessage = ({ quoteId: incomingQuoteId, message }) => {
+      if (String(incomingQuoteId) === String(quoteId)) {
+        setMessages((prev) => [...prev, message]);
+      }
+    };
+    
+    socket.on("quote-message", handleQuoteMessage);
+
+    return () => {
+      socket.off("quote-message", handleQuoteMessage);
+    };
+  }, [socket, quoteId]);
 
   const messagesEndRef = useRef(null);
 
@@ -71,7 +88,7 @@ export default function QuoteMessages({ quoteId }) {
 
   return (
     <Stack gap={2}>
-      <Box>
+      <Box maxHeight="400px" overflow="auto">
         <Box minHeight={120}>
           {loading ? (
             <Typography variant="body2">Cargando mensajes...</Typography>
@@ -106,19 +123,6 @@ export default function QuoteMessages({ quoteId }) {
                       wordBreak: "break-word",
                     }}
                   >
-                    <Box display="flex" alignItems="center" gap={0.5}>
-                      <Typography
-                        variant="caption"
-                        fontWeight={700}
-                        color="#fff"
-                      >
-                        {isMine
-                          ? "Tú"
-                          : toCapitalizeWords(
-                              `${msg.sender?.firstName}  ${msg.sender?.lastName}`
-                            )}
-                      </Typography>
-                    </Box>
                     <Typography
                       variant="body2"
                       fontWeight={500}
