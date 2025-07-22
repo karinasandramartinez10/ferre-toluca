@@ -1,12 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
-import {
-  AppBar,
-  Box,
-  Drawer,
-  IconButton,
-  Toolbar,
-} from "@mui/material";
+import { AppBar, Box, Drawer, IconButton, Toolbar } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,7 +16,9 @@ import Cart from "../../components/Cart";
 import NotificationsBell from "../../components/NotificationsBell";
 import { MainNavbarDesktop } from "./MainNavbarDesktop";
 
-const SearchInput = dynamic(() => import("../../components/Search"), { ssr: false });
+const SearchInput = dynamic(() => import("../../components/Search"), {
+  ssr: false,
+});
 
 const MainNavbarMobile = ({ session }) => {
   const [openNavbar, setOpenNavbar] = useState(false);
@@ -70,7 +66,7 @@ const MainNavbarMobile = ({ session }) => {
       <Box display="flex" alignItems="center" gap={1}>
         <SearchInput />
         {!isAdmin && <Cart />}
-        <NotificationsBell />
+        {isAuthenticated && <NotificationsBell />}
         <IconButton
           size="large"
           edge="start"

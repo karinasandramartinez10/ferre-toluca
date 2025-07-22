@@ -37,8 +37,8 @@ export const MainNavbarDesktop = ({ session }) => {
   };
 
   const Logout = () => {
-    logout()
-  }
+    logout();
+  };
 
   const open = Boolean(anchorEl);
 
@@ -128,7 +128,7 @@ export const MainNavbarDesktop = ({ session }) => {
           </Stack>
         </Popover>
         {!isAdmin && <Cart />}
-        <NotificationsBell />
+        {isAuthenticated && <NotificationsBell />}
         <Tooltip title="Mi cuenta" arrow>
           <IconButton color="grey.main" onClick={handlePopoverOpen}>
             <Person />
