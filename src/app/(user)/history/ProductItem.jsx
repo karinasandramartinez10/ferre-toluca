@@ -1,5 +1,5 @@
 import { Box, Card, Typography, Tooltip, Chip, Stack } from "@mui/material";
-import Image from "next/image";
+import { CldImage } from 'next-cloudinary';
 
 export const ProductItem = ({ product }) => {
   const name = product.name;
@@ -16,14 +16,16 @@ export const ProductItem = ({ product }) => {
         boxShadow: "none",
       }}
     >
-      <Image
-        src={product.Files[0]?.path || "/fallback-image.jpg"}
-        alt={name}
-        width={40}
-        height={40}
-        style={{ objectFit: "contain", borderRadius: 4 }}
-      />
-
+        <CldImage
+          src={product.Files[0].publicId}
+          alt={name}
+          width={40}
+          height={40}
+          style={{ objectFit: "contain", borderRadius: 4 }}
+          crop="fill"
+          quality="auto:best"
+          format="auto"
+        />
       <Box
         sx={{
           flexGrow: 1,
