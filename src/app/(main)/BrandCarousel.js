@@ -42,21 +42,13 @@ const settings = (handleBeforeChange, handleAfterChange) => ({
     {
       breakpoint: 1280,
       settings: {
-        slidesToShow: 6,
-        slidesToScroll: 6,
-        rows: 2,
-      },
-    },
-    {
-      breakpoint: 1024,
-      settings: {
         slidesToShow: 5,
         slidesToScroll: 5,
         rows: 2,
       },
     },
     {
-      breakpoint: 768,
+      breakpoint: 1024,
       settings: {
         slidesToShow: 4,
         slidesToScroll: 4,
@@ -64,10 +56,18 @@ const settings = (handleBeforeChange, handleAfterChange) => ({
       },
     },
     {
-      breakpoint: 600,
+      breakpoint: 768,
       settings: {
         slidesToShow: 3,
         slidesToScroll: 3,
+        rows: 2,
+      },
+    },
+    {
+      breakpoint: 600,
+      settings: {
+        slidesToShow: 2,
+        slidesToScroll: 2,
         rows: 2,
       },
     },
@@ -135,9 +135,10 @@ const BrandCarousel = ({ brands }) => {
             <Box key={index} mt={1} mb={2} pr={2}>
               <BannerCard
                 height="120px"
-                src={brand?.File.path}
+                publicId={brand?.File.publicId}
                 onClick={() => handleBrandClick(brand.codeName, brand.id)}
                 alt={brand.name}
+                index={index}
               />
             </Box>
           ))}
