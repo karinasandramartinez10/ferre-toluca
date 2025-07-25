@@ -1,11 +1,21 @@
-import { Card, CardMedia } from "@mui/material";
+import { Card } from "@mui/material";
+import { CldImage } from "next-cloudinary";
 
-export const BannerCard = ({ height, src, onClick, alt = "brand-card" }) => {
+const WIDTH = 175;
+const HEIGHT = 120;
+
+export const BannerCard = ({
+  publicId,
+  onClick,
+  alt = "brand-card",
+  index
+}) => {
   return (
     <Card
       onClick={onClick}
       sx={{
-        height,
+        width: WIDTH,
+        height: HEIGHT,
         position: "relative",
         display: "flex",
         alignItems: "center",
@@ -14,20 +24,35 @@ export const BannerCard = ({ height, src, onClick, alt = "brand-card" }) => {
         backgroundColor: "#fff",
         overflow: "hidden",
         cursor: "pointer",
+        borderRadius: 2,
       }}
+      key={index}
     >
-      <CardMedia
-        component="img"
+      <CldImage
+        src={publicId}
         alt={alt}
-        image={src}
-        title={alt}
-        className="brand-image"
-        sx={{
+        width={WIDTH}
+        height={HEIGHT}
+        crop="pad"
+        quality="auto"
+        format="auto"
+        priority={index < 6}
+        fetchPriority={index < 6 ? "high" : "auto"}
+        loading={index < 6 ? "eager" : "lazy"}
+        decoding="async"
+        style={{
           objectFit: "contain",
-          height: "100%",
+          borderRadius: "8px",
+          display: "block",
           width: "100%",
-          transition: "filter 0.2s ease-in-out",
+          height: "auto",
         }}
+        sizes="
+            (max-width: 600px) 50vw,
+            (max-width: 960px) 33vw,
+            (max-width: 1280px) 25vw,
+            175px
+          "
       />
     </Card>
   );

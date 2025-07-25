@@ -33,6 +33,11 @@ const CustomSelect = styled(Select)(({ theme }) => ({
   transition: "background-color 0.2s ease",
 }));
 
+function FilteredInput(props) {
+  const { notched, ...rest } = props;
+  return <InputBase {...rest} />;
+}
+
 export default function DropdownAllCategories({ categories, onClose }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [open, setOpen] = useState(false);
@@ -47,6 +52,7 @@ export default function DropdownAllCategories({ categories, onClose }) {
 
   const handleClose = () => {
     setOpen(false);
+    setSelectedCategory("");
   };
 
   return (
@@ -59,7 +65,7 @@ export default function DropdownAllCategories({ categories, onClose }) {
       }}
     >
       <CustomSelect
-        value={selectedCategory}
+        value={selectedCategory || ""}
         onChange={handleChange}
         displayEmpty
         open={open}
@@ -84,7 +90,7 @@ export default function DropdownAllCategories({ categories, onClose }) {
           </IconButton>
         )}
         input={
-          <InputBase
+          <FilteredInput
             sx={(theme) => ({
               paddingY: "4px",
               paddingLeft: 2,

@@ -5,7 +5,6 @@ import "slick-carousel/slick/slick-theme.css";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import Providers from "../providers/providers";
 import { SessionProvider } from "next-auth/react";
-import "./globals.css";
 import GlobalAuthWatcher from "../components/GlobalAuthWatcher";
 import { auth } from "../auth";
 import { Analytics } from "@vercel/analytics/next";

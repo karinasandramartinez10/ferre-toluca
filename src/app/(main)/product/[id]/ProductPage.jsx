@@ -62,7 +62,10 @@ const ProductPage = ({ product, role }) => {
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
-          <ProductImage path={product.Files[0]?.path} name={product.name} />
+          <ProductImage
+            name={product.name}
+            publicId={product.Files[0]?.publicId}
+          />
         </Grid>
         <Grid item xs={12} md={8}>
           <ProductOverview

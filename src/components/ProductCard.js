@@ -1,24 +1,26 @@
 "use client";
 
 import { Button, Box, Tooltip } from "@mui/material";
-import {
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Typography,
-} from "@mui/material";
+import { Card, CardActions, CardContent, Typography } from "@mui/material";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useOrderContext } from "../context/order/useOrderContext";
+import ProductImage from "../app/(main)/product/[id]/ProductImage";
 
-export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
+export const ProductCard = ({
+  product,
+  onViewMore,
+  showBtns = true,
+  priority = false,
+}) => {
   const [quantity] = useState(1);
   const { addToOrder } = useOrderContext();
 
   const handleAddToOrder = () => {
     addToOrder(product, quantity);
   };
+
+  const imagePublicId = product?.Files?.[0]?.publicId;
 
   return (
     <Card
@@ -33,12 +35,15 @@ export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
       }}
     >
       <Link href={`/product/${product.id}`} passHref>
-        <CardMedia
-          component="img"
-          image={product.Files && product.Files[0]?.path}
-          sx={{ height: 150, objectFit: "contain" }}
-          alt={product.name}
-        />
+        <div style={{ position: "relative", height: 150, width: "100%" }}>
+          {imagePublicId && (
+            <ProductImage
+              publicId={imagePublicId}
+              name={product.name}
+              heightFactor={2.3}
+            />
+          )}
+        </div>
 
         <CardContent sx={{ flexGrow: 1 }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>

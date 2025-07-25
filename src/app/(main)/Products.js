@@ -103,6 +103,7 @@ const Products = ({ products }) => {
               key={product.id}
               product={product}
               onViewMore={handleProductClick}
+              priority
             />
           </Box>
         ))}
