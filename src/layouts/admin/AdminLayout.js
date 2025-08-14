@@ -184,9 +184,9 @@ export const AdminLayout = ({ children }) => {
                         }}
                       />
                     </IconButton>
-                    <Typography variant="h1">{title}</Typography>
                   </Box>
                 )}
+                <Typography variant="h1">{title}</Typography>
                 <NotificationsBell />
               </Box>
               <Typography
