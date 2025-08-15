@@ -175,8 +175,8 @@ export const AdminLayout = ({ children }) => {
           <Grid item xs={12} display="flex" alignItems="center" gap={1}>
             <Box width="100%">
               <Box display="flex" gap={1.5} justifyContent="space-between">
-                {showBackButton && (
-                  <Box display="flex" gap={1}>
+                <Box display="flex" gap={1}>
+                  {showBackButton && (
                     <IconButton onClick={() => router.back()}>
                       <ArrowBackIosNewRounded
                         sx={{
@@ -184,9 +184,9 @@ export const AdminLayout = ({ children }) => {
                         }}
                       />
                     </IconButton>
-                  </Box>
-                )}
-                <Typography variant="h1">{title}</Typography>
+                  )}
+                  <Typography variant="h1">{title}</Typography>
+                </Box>
                 <NotificationsBell />
               </Box>
               <Typography

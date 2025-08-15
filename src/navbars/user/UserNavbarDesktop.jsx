@@ -40,12 +40,12 @@ export const UserNavbarDesktop = () => {
       <Box sx={{ display: { xs: "none", md: "block" } }}></Box>
       <Box display="flex" alignItems="center" gap={1}>
         <Tooltip title="Mis favoritos" arrow>
-          <IconButton color="grey.main" href="/favorites">
+          <IconButton color="grey.main" component={Link} href="/favorites">
             <Favorite />
           </IconButton>
         </Tooltip>
         <Tooltip title="Historial de órdenes" arrow>
-          <IconButton color="grey.main" href="/history">
+          <IconButton color="grey.main" component={Link} href="/history">
             <ReceiptLong />
           </IconButton>
         </Tooltip>
@@ -86,3 +86,5 @@ export const UserNavbarDesktop = () => {
     </Box>
   );
 };
+
+export default UserNavbarDesktop;
