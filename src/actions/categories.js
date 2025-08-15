@@ -9,7 +9,7 @@ function createCategoryPath(name) {
 export async function getCategoriesServer() {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/category`,
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/category`,
       { cache: "force-cache" }
     );
 
@@ -25,7 +25,7 @@ export async function getCategoriesServer() {
     }));
     return categories;
   } catch (error) {
-    console.error("[getCategoriesServer]", err);
+    console.error("[getCategoriesServer]", error);
     return [];
   }
 }

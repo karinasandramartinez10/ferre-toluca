@@ -3,7 +3,7 @@
 export async function fetchGroupedProductsServer(page = 1, size = 10) {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/product/grouped?page=${page}&size=${size}`
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/product/grouped?page=${page}&size=${size}`
     );
 
     if (!res.ok) {
@@ -24,7 +24,7 @@ export async function fetchGroupedProductsServer(page = 1, size = 10) {
 export const getProductById = async (id) => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/product/${id}`
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/product/${id}`
     );
 
     const response = await res.json();

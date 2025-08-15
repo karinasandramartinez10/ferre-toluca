@@ -24,6 +24,7 @@ import LoginForm from "../../auth/login/LoginForm";
 import { useRouter } from "next/navigation";
 import { QuantityField } from "../../../components/QuantityField";
 import { useOrderContext } from "../../../context/order/useOrderContext";
+import Link from "next/link";
 
 const QuoteSchema = yup.object().shape({
   message: yup.string().required("El mensaje es requerido"),
@@ -120,7 +121,7 @@ const CheckoutPage = () => {
           Tu carrito está vacío.
         </Typography>
         {isAuthenticated && (
-          <Button href="/history" variant="contained">
+          <Button component={Link} href="/history" variant="contained">
             Ver historial de órdenes
           </Button>
         )}
@@ -189,9 +190,7 @@ const CheckoutPage = () => {
           </Box>
 
           <Box mt={2}>
-            <Typography id="quote-modal-description">
-              Agrega un mensaje
-            </Typography>
+            <Typography id="quote-modal-description">Agrega un mensaje</Typography>
             <Controller
               control={control}
               name="message"

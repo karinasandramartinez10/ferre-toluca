@@ -66,12 +66,12 @@ export const MainNavbarDesktop = ({ session }) => {
         {isAuthenticated && !isAdmin && (
           <>
             <Tooltip title="Mis favoritos" arrow>
-              <IconButton color="grey.main" href="/favorites">
+              <IconButton color="grey.main" component={Link} href="/favorites">
                 <Favorite />
               </IconButton>
             </Tooltip>
             <Tooltip title="Historial de órdenes" arrow>
-              <IconButton color="grey.main" href="/history">
+              <IconButton color="grey.main" component={Link} href="/history">
                 <ReceiptLong />
               </IconButton>
             </Tooltip>
@@ -79,7 +79,7 @@ export const MainNavbarDesktop = ({ session }) => {
         )}
         {isAdmin && (
           <Tooltip title="Panel de administador" arrow>
-            <IconButton color="grey.main" href="/admin/quotes">
+            <IconButton color="grey.main" component={Link} href="/admin/quotes">
               <AdminPanelSettings />
             </IconButton>
           </Tooltip>
@@ -99,12 +99,7 @@ export const MainNavbarDesktop = ({ session }) => {
         >
           <Stack sx={{ p: 2 }}>
             {isAuthenticated ? (
-              <Button
-                onClick={Logout}
-                color="error"
-                fullWidth
-                variant="outlined"
-              >
+              <Button onClick={Logout} color="error" fullWidth variant="outlined">
                 Cerrar sesión
               </Button>
             ) : (
@@ -112,11 +107,12 @@ export const MainNavbarDesktop = ({ session }) => {
                 <Typography fontWeight={700} variant="body1" sx={{ mb: 1 }}>
                   Accede o crea una cuenta
                 </Typography>
-                <Button variant="contained" href="/auth/login" fullWidth>
+                <Button variant="contained" component={Link} href="/auth/login" fullWidth>
                   Iniciar sesión
                 </Button>
                 <Button
                   variant="outlined"
+                  component={Link}
                   href="/auth/signup"
                   fullWidth
                   sx={{ mt: 1 }}
@@ -138,3 +134,5 @@ export const MainNavbarDesktop = ({ session }) => {
     </Box>
   );
 };
+
+export default MainNavbarDesktop;
