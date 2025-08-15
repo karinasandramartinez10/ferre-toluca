@@ -13,7 +13,7 @@ import { formatDateDayAbrev } from "../utils/date";
 import { useRef } from "react";
 import { useSession } from "next-auth/react";
 import { palette } from "../theme/palette";
-import { useNotificationsContext } from "../context/notifications/useNotificationsContext";
+import { useSocket } from "../context/socket/useSocket";
 
 export default function QuoteMessages({ quoteId }) {
   const [messages, setMessages] = useState([]);
@@ -25,8 +25,8 @@ export default function QuoteMessages({ quoteId }) {
   const { data: session } = useSession();
   const userId = session?.user?.id;
 
-  const { socket } = useNotificationsContext();
-
+  const { socket } = useSocket();
+  
   const loadMessages = async () => {
     setLoading(true);
     setError(null);
@@ -47,18 +47,46 @@ export default function QuoteMessages({ quoteId }) {
     // eslint-disable-next-line
   }, [quoteId]);
 
+  // Join/leave de la sala de la cotización y re-join tras reconexión
+  useEffect(() => {
+    if (!socket || !quoteId) return;
+
+    // Join idempotente (el servidor se encarga del prefijo quote-)
+    socket.emit("join-quote-room", quoteId);
+
+    const handleConnect = () => {
+      socket.emit("join-quote-room", quoteId);
+    };
+
+    socket.on("connect", handleConnect);
+
+    return () => {
+      socket.off("connect", handleConnect);
+      socket.emit("leave-quote-room", quoteId);
+    };
+  }, [socket, quoteId]);
+
+  // Listener de mensajes de la cotización
   useEffect(() => {
     if (!socket) return;
-    const handleQuoteMessage = ({ quoteId: incomingQuoteId, message }) => {
-      if (String(incomingQuoteId) === String(quoteId)) {
-        setMessages((prev) => [...prev, message]);
+    
+    const handler = (payload) => {
+      const incomingQuoteId = payload?.quoteId ?? payload?.message?.quoteId;
+      const message = payload?.message ?? payload;
+      if (String(incomingQuoteId) === String(quoteId) && message?.content) {
+        setMessages((prev) => {
+          const next = [...prev, message];
+          return next;
+        });
       }
     };
     
-    socket.on("quote-message", handleQuoteMessage);
+    socket.on("quote-message", handler);
+    socket.on("quote_message", handler); // por compatibilidad
 
     return () => {
-      socket.off("quote-message", handleQuoteMessage);
+      socket.off("quote-message", handler);
+      socket.off("quote_message", handler);
     };
   }, [socket, quoteId]);
 
@@ -89,7 +117,7 @@ export default function QuoteMessages({ quoteId }) {
   return (
     <Stack gap={2}>
       <Box maxHeight="400px" overflow="auto">
-        <Box minHeight={120}>
+        <Box minHeight="120px">
           {loading ? (
             <Typography variant="body2">Cargando mensajes...</Typography>
           ) : error ? (
