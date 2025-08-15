@@ -6,7 +6,7 @@ import { EVENTS_EMITERS } from "../lib/events";
 let inMemoryToken;
 
 export const privateApi = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}`,
+  baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1`,
 });
 
 privateApi.interceptors.request.use(
