@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import { DataGrid } from "@mui/x-data-grid";
 import { fetchAllProducts, updateProduct } from "../../../../api/products";
@@ -15,14 +15,18 @@ import { ErrorUI } from "../../../../components/Error";
 
 const ProductsPage = () => {
   // Table and pagination
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({
+    products: [],
+    count: 0,
+    page: 0,
+    pageSize: 10,
+  });
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 10,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const firstLoad = useRef(true);
 
   // Modal
   const [selected, setSelected] = useState(null);
@@ -44,10 +48,6 @@ const ProductsPage = () => {
   }, []);
 
   useEffect(() => {
-    if (firstLoad.current) {
-      firstLoad.current = false;
-      return;
-    }
     loadPage(paginationModel.page + 1, paginationModel.pageSize);
   }, [paginationModel, loadPage]);
 
@@ -88,9 +88,9 @@ const ProductsPage = () => {
     <>
       <DataGrid
         localeText={localeText}
-        rows={data.products}
+        rows={Array.isArray(data.products) ? data.products : []}
         columns={getProductColumns(handleOpenEdit)}
-        rowCount={data.count} //data.count
+        rowCount={Number.isFinite(data.count) ? data.count : 0}
         paginationMode="server"
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
