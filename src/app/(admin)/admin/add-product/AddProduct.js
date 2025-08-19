@@ -36,7 +36,6 @@ const defaultFormValues = {
 const ProductSchema = yup.object().shape({
   brandId: yup.string().required("La marca es requerida"),
   categoryId: yup.string().required("La categoría es requerida"),
-  subCategoryId: yup.string().required("La subcategoría es requerida"),
 });
 
 const initialRows = [
