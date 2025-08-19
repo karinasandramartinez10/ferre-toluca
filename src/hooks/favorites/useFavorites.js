@@ -1,10 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
+import { useSession } from "next-auth/react";
 import { toggleFavorites, getFavorites } from "../../api/favorites";
 
 export const useFavorites = () => {
   const [favoritesMap, setFavoritesMap] = useState(new Map());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { status } = useSession();
 
   const fetchFavorites = async () => {
     setLoading(true);
@@ -63,8 +65,15 @@ export const useFavorites = () => {
   );
 
   useEffect(() => {
-    fetchFavorites();
-  }, []);
+    if (status === "authenticated") {
+      fetchFavorites();
+    } else if (status === "unauthenticated") {
+      // limpiar estado cuando no hay sesión
+      setFavoritesMap(new Map());
+      setLoading(false);
+      setError(null);
+    }
+  }, [status]);
 
   return {
     favorites,
