@@ -41,7 +41,6 @@ const Schema = yup.object().shape({
   code: yup.string().required("El código es requerido"),
   brandId: yup.string().required("La marca es requerida"),
   categoryId: yup.string().required("La categoría es requerida"),
-  subCategoryId: yup.string().required("La subcategoría es requerida"),
   specifications: yup.string(),
   color: yup.string(),
   // size: yup.string(),
