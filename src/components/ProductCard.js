@@ -45,7 +45,7 @@ export const ProductCard = ({
           )}
         </div>
 
-        <CardContent sx={{ flexGrow: 1 }}>
+        <CardContent sx={{ flexGrow: 1, paddingTop: 3 }}>
           <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
             <Typography
               variant="body2"
