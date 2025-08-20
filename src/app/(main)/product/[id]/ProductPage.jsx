@@ -81,7 +81,7 @@ const ProductPage = ({ product, role }) => {
             />
           </Box>
           <VariantSelector variants={product.variants} initialId={product.id} />
-          <Stack gap={2}>
+          <Stack gap={2} mt={2}>
             <ProductActions
               onAdd={handleAdd}
               onToggleFav={handleToggleFav}
