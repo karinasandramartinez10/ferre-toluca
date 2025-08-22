@@ -8,6 +8,7 @@ export const publicRoutes = [
   "/checkout", // Checkout
   /^\/brands\/.*$/, // Ruta dinámica para marcas
   /^\/categories\/.*$/, // Ruta dinámica para categorías
+  /^\/subcategories\/.*$/, // Ruta dinámica para subcategorías
   /^\/product\/.*$/, // Ruta dinámica para productos individuales
   "/faq", // Preguntas Frecuentes
   "/privacy-statement", // Aviso de Privacidad
