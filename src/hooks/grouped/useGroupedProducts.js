@@ -5,6 +5,7 @@ export default function useGroupedProducts({
   pageSize = 10,
   brandId,
   categoryId,
+  subcategoryId,
   query,
 }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,6 +34,14 @@ export default function useGroupedProducts({
       });
       return data;
     },
+    subcategory: async (page) => {
+      const { data } = await getGroupedProducts("groupedSubcategory", {
+        id: subcategoryId,
+        page,
+        size: pageSize,
+      });
+      return data;
+    },
     search: async (page) => {
       const { data } = await getGroupedProducts("groupedSearch", {
         q: query,
@@ -54,6 +63,7 @@ export default function useGroupedProducts({
     if (query && query.length >= 3) return "search";
     if (brandId) return "brand";
     if (categoryId) return "category";
+    if (subcategoryId) return "subcategory";
     return "all";
   };
 
