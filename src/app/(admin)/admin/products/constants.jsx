@@ -1,5 +1,6 @@
 import { Edit } from "@mui/icons-material";
 import { GridActionsCellItem } from "@mui/x-data-grid";
+import { toCapitalizeFirstLetter } from "../../../../utils/cases";
 
 export const textFields = [
   { name: "name", label: "Nombre", required: true },
@@ -38,37 +39,11 @@ export const getSelectOptions = (
 };
 
 export const getProductColumns = (onEdit) => [
-  { field: "code", headerName: "Código", flex: 0.7, minWidth: 130 },
-  { field: "name", headerName: "Nombre", flex: 1.5, minWidth: 130 },
-  {
-    field: "brandName",
-    headerName: "Marca",
-    flex: 1,
-    minWidth: 120,
-  },
-  {
-    field: "categoryName",
-    headerName: "Categoría",
-    flex: 1,
-    minWidth: 130,
-  },
-  {
-    field: "subCategoryName",
-    headerName: "Subcategoría",
-    flex: 1,
-    minWidth: 130,
-  },
-  {
-    field: "typeName",
-    headerName: "Tipo",
-    flex: 0.8,
-    minWidth: 100,
-  },
   {
     field: "actions",
     type: "actions",
     headerName: "Acciones",
-    flex: 0.4,
+    width: 90,
     getActions: ({ row }) => [
       <GridActionsCellItem
         key={`edit-${row.id}`}
@@ -78,5 +53,34 @@ export const getProductColumns = (onEdit) => [
         color="inherit"
       />,
     ],
+  },
+  { field: "code", headerName: "Código", width: 125 },
+  { field: "name", headerName: "Nombre", width: 260 },
+  {
+    field: "brandName",
+    headerName: "Marca",
+    width: 160,
+  },
+  {
+    field: "categoryName",
+    headerName: "Categoría",
+    width: 220,
+  },
+  {
+    field: "subCategoryName",
+    headerName: "Subcategoría",
+    width: 200,
+  },
+  {
+    field: "typeName",
+    headerName: "Tipo",
+    width: 140,
+  },
+  {
+    field: "modelName",
+    headerName: "Modelo",
+    width: 150,
+    valueGetter: (_, row) =>
+      toCapitalizeFirstLetter(row?.productModel?.name) || "",
   },
 ];
