@@ -9,12 +9,12 @@ export const getBreadcrumbsItems = (product) =>
         product?.category.id
       }`,
     },
-    /*     product?.subCategory && {
-          label: product?.subCategory.name,
-          path: `/subcategories/${toSlug(product.subCategory.name)}?id=${
-            product?.subCategory.id
-          }`,
-        }, */
+    product?.subCategory && {
+      label: product?.subCategory.name,
+      path: `/subcategories/${toSlug(product.subCategory.name)}?id=${
+        product?.subCategory.id
+      }`,
+    },
     product?.brand && {
       label: product?.brand.name,
       path: `/brands/${toSlug(product.brand.name)}?id=${product.brand.id}`,

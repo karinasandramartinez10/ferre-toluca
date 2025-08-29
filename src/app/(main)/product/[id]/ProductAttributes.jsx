@@ -1,4 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
+import { toCapitalizeFirstLetter } from "../../../../utils/cases";
 
 export const ProductAttributes = ({ subCategory, model, type }) => (
   <Stack direction="row" spacing={2}>
@@ -7,7 +8,9 @@ export const ProductAttributes = ({ subCategory, model, type }) => (
         <Typography variant="body2" color="textSecondary">
           Subcategoría
         </Typography>
-        <Typography variant="body">{subCategory}</Typography>
+        <Typography variant="body">
+          {toCapitalizeFirstLetter(subCategory)}
+        </Typography>
       </Box>
     )}
     {type && (
@@ -15,7 +18,7 @@ export const ProductAttributes = ({ subCategory, model, type }) => (
         <Typography variant="body2" color="textSecondary">
           Tipo
         </Typography>
-        <Typography variant="body">{type}</Typography>
+        <Typography variant="body">{toCapitalizeFirstLetter(type)}</Typography>
       </Box>
     )}
     {model && (
@@ -23,7 +26,7 @@ export const ProductAttributes = ({ subCategory, model, type }) => (
         <Typography variant="body2" color="textSecondary">
           Modelo
         </Typography>
-        <Typography variant="body">{model}</Typography>
+        <Typography variant="body">{toCapitalizeFirstLetter(model)}</Typography>
       </Box>
     )}
   </Stack>
