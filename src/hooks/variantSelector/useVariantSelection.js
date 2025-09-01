@@ -1,31 +1,46 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function useVariantSelection(variants, initialId) {
   const router = useRouter();
-  const [selectedColor, setSelectedColor] = useState();
   const [selectedVariantId, setSelectedVariantId] = useState(initialId);
 
   useEffect(() => {
-    const init = variants.find((v) => v.id === initialId);
-    setSelectedColor(init?.color);
     setSelectedVariantId(initialId);
-  }, [initialId, variants]);
+  }, [initialId]);
 
-  const colorOptions = Array.from(
-    new Set(variants.map((v) => v.color).filter(Boolean))
+  const selectedVariant = useMemo(
+    () => variants.find((v) => v.id === selectedVariantId) ?? variants[0],
+    [variants, selectedVariantId]
   );
 
-  const filtered = variants.filter((v) => v.color === selectedColor);
-  const measureOptions = filtered.map((v) => ({
-    id: v.id,
-    label: `${v.measureValue} ${v.measure?.abbreviation || ""}`.trim(),
-  }));
+  const selectedColor = selectedVariant?.color;
 
-  const measureLabel = filtered[0]?.measure?.name || "Medida";
+  const colorOptions = useMemo(
+    () => Array.from(new Set(variants.map((v) => v.color).filter(Boolean))),
+    [variants]
+  );
+
+  const filteredByColor = useMemo(
+    () => variants.filter((v) => v.color === selectedColor),
+    [variants, selectedColor]
+  );
+
+  const measureOptions = useMemo(
+    () =>
+      filteredByColor.map((v) => ({
+        id: v.id,
+        label: `${v.measureValue} ${v.measure?.abbreviation || ""}`.trim(),
+      })),
+    [filteredByColor]
+  );
+
+  const measureLabel =
+    selectedVariant?.measure?.name ||
+    filteredByColor[0]?.measure?.name ||
+    "Medida";
 
   const handleColorChange = (color) => {
-    setSelectedColor(color);
     const first = variants.find((v) => v.color === color);
     if (first) router.push(`/product/${first.id}`);
   };
