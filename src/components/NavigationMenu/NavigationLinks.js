@@ -16,7 +16,7 @@ const NavigationLinks = ({ mainCategories = [] }) => {
             sx={(theme) => ({
               fontWeight: 600,
               fontSize: "14px",
-              borderRadius: "20px",
+              borderRadius: "10px",
               paddingX: "8px",
               paddingY: "20px",
               color: theme.palette.grey.text,

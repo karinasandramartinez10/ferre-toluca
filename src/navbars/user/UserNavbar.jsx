@@ -34,22 +34,24 @@ const UserNavbarMobile = () => {
     >
       <Link href="/">
         <Image
-          src={"/images/texcoco_logo2.svg"}
+          src={"/images/texcocowhite.svg"}
           alt="ferreteria texcoco"
           width="90"
           height="60"
         />
       </Link>
 
-      <Box display="flex" alignItems="center" gap={2}>
+      <Box display="flex" alignItems="center">
         <Cart />
         <NotificationsBell />
         <IconButton
-          size="large"
           edge="start"
           aria-label="menu"
           onClick={toggleDrawer(true)}
-          color="primary"
+          sx={(theme) => ({
+            color: theme.palette.grey.light,
+            marginLeft: "auto",
+          })}
         >
           <Menu />
         </IconButton>
