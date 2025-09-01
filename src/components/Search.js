@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
 import { useState, useEffect } from "react";
 import { useDebounce } from "../hooks/use-debounce";
-import { getGroupedProducts, getProductsByQuery } from "../api/products";
+import { getGroupedProducts } from "../api/products";
 import {
   Box,
   Paper,
@@ -88,10 +88,10 @@ export default function SearchComponent() {
       <Box sx={{ position: "relative", display: "flex", alignItems: "center" }}>
         {!isSearchVisible && (
           <IconButton
-            sx={{
+            sx={(theme) => ({
               display: { xs: "-webkit-inline-flex", md: "none" },
-              color: "text.primary",
-            }}
+              color: theme.palette.grey.light,
+            })}
             onClick={toggleSearchVisibility}
           >
             <Search />
