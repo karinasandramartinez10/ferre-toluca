@@ -9,6 +9,7 @@ import {
   Plumbing as PlumbingIcon,
   Kitchen as KitchenIcon,
   ColorLens as ColorLensIcon,
+  FilterList,
 } from "@mui/icons-material";
 
 export const getCategoryIcon = (path) => {
@@ -34,7 +35,7 @@ export const getCategoryIcon = (path) => {
     case "línea-blanca":
       return <KitchenIcon color="secondary" />;
     default:
-      return null;
+      return <FilterList color="secondary" />;
   }
 };
 

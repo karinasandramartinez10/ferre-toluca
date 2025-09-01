@@ -87,11 +87,7 @@ export const components = {
       },
       styleOverrides: {
         root: {
-          backgroundColor: palette.palette.white.background,
           height: 60,
-          [theme.breakpoints.up("sm")]: {
-            height: 66,
-          },
         },
       },
     },
