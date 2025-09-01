@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import Image from "next/image";
+import { toCapitalizeWords } from "../../../../utils/cases";
 
 export const brandsColumns = [
   {
@@ -24,5 +25,8 @@ export const brandsColumns = [
       </Box>
     ),
   },
-  { field: "name", headerName: "Nombre", flex: 1 },
+  { field: "name", headerName: "Nombre", flex: 1,
+    valueGetter: (_, row) =>
+      row?.name ? toCapitalizeWords(row?.name) : "",
+  },
 ];

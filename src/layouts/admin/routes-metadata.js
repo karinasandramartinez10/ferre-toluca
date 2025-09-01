@@ -27,7 +27,7 @@ export const PAGE_METADATA = {
     subtitle: "Asocia subcategorías a una categoría principal y edítalas cuando sea necesario."
   },
   "/admin/product-type": {
-    title: "Variantes de Producto",
+    title: "Tipos de Producto",
     subtitle: "Añade detalles como acabados, colores u otras variantes. Los tipos son opcionales."
   }
 };

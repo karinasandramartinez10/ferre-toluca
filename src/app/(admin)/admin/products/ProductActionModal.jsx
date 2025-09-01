@@ -34,6 +34,7 @@ import {
   textFields,
 } from "./constants";
 import { sectionTitleSx, twoColumnGrid } from "./styles";
+import { toCapitalizeWords } from "../../../../utils/cases";
 
 const Schema = yup.object().shape({
   name: yup.string().required("El nombre es requerido"),
@@ -340,7 +341,7 @@ const ProductActionModal = ({
                       refs.types
                     ).map((opt) => (
                       <MenuItem key={opt.id} value={opt.id}>
-                        {opt.name}
+                        {toCapitalizeWords(opt.name)}
                       </MenuItem>
                     ))}
                   </Select>

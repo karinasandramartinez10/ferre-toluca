@@ -1,6 +1,6 @@
 import { Edit } from "@mui/icons-material";
 import { GridActionsCellItem } from "@mui/x-data-grid";
-import { toCapitalizeFirstLetter } from "../../../../utils/cases";
+import { toCapitalizeWords } from "../../../../utils/cases";
 
 export const textFields = [
   { name: "name", label: "Nombre", required: true },
@@ -55,24 +55,37 @@ export const getProductColumns = (onEdit) => [
     ],
   },
   { field: "code", headerName: "Código", width: 125 },
-  { field: "name", headerName: "Nombre", width: 260 },
+  {
+    field: "name",
+    headerName: "Nombre",
+    width: 260,
+    valueGetter: (_, row) => (row?.name ? toCapitalizeWords(row?.name) : ""),
+  },
   {
     field: "brandName",
     headerName: "Marca",
     width: 160,
+    valueGetter: (_, row) =>
+      row?.brand?.name ? toCapitalizeWords(row?.brand?.name) : "",
   },
   {
     field: "categoryName",
+    valueGetter: (_, row) =>
+      row?.category?.name ? toCapitalizeWords(row?.category?.name) : "",
     headerName: "Categoría",
     width: 220,
   },
   {
     field: "subCategoryName",
+    valueGetter: (_, row) =>
+      row?.subCategory?.name ? toCapitalizeWords(row?.subCategory?.name) : "",
     headerName: "Subcategoría",
     width: 200,
   },
   {
     field: "typeName",
+    valueGetter: (_, row) =>
+      row?.type?.name ? toCapitalizeWords(row?.type?.name) : "",
     headerName: "Tipo",
     width: 140,
   },
@@ -81,6 +94,6 @@ export const getProductColumns = (onEdit) => [
     headerName: "Modelo",
     width: 150,
     valueGetter: (_, row) =>
-      toCapitalizeFirstLetter(row?.productModel?.name) || "",
+      row?.productModel?.name ? toCapitalizeWords(row?.productModel?.name) : "",
   },
 ];
