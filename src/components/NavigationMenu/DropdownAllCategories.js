@@ -14,7 +14,7 @@ import { getCategoryIcon, trimCategoryName } from "../../helpers/categories";
 import Link from "next/link";
 
 const CustomSelect = styled(Select)(({ theme }) => ({
-  borderRadius: "40px",
+  borderRadius: "10px",
   backgroundColor: theme.palette.grey.light,
   paddingLeft: "16px",
   paddingRight: "10px",

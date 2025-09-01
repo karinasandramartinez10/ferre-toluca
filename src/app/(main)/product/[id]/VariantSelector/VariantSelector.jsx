@@ -16,10 +16,6 @@ export const VariantSelector = ({ variants = [], initialId }) => {
     handleMeasureChange,
   } = useVariantSelection(variants, initialId);
 
-  if (colorOptions.length <= 1 && measureOptions.length <= 1) {
-    return null;
-  }
-
   return (
     <Stack spacing={1} mt={2} mb={2}>
       <Box display="flex" gap={2} flexDirection={{ xs: "column", md: "row" }}>

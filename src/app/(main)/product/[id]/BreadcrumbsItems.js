@@ -1,22 +1,22 @@
-import { toSlug } from "../../../../utils/cases";
+import { toCapitalizeWords, toSlug } from "../../../../utils/cases";
 
 export const getBreadcrumbsItems = (product) =>
   [
     { label: "Inicio", path: "/" },
     product?.category && {
-      label: product?.category.name,
+      label: toCapitalizeWords(product?.category.name),
       path: `/categories/${toSlug(product.category.name)}?id=${
         product?.category.id
       }`,
     },
     product?.subCategory && {
-      label: product?.subCategory.name,
+      label: toCapitalizeWords(product?.subCategory.name),
       path: `/subcategories/${toSlug(product.subCategory.name)}?id=${
         product?.subCategory.id
       }`,
     },
     product?.brand && {
-      label: product?.brand.name,
+      label: toCapitalizeWords(product?.brand.name),
       path: `/brands/${toSlug(product.brand.name)}?id=${product.brand.id}`,
     },
     /*     product?.type && {

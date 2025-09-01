@@ -20,9 +20,12 @@ import { logout } from "../../actions/logout";
 import { useState } from "react";
 import SearchComponent from "../../components/Search";
 import NotificationsBell from "../../components/NotificationsBell";
+import useResponsive from "../../hooks/use-responsive";
 
 export const MainNavbarDesktop = ({ session }) => {
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const isMobile = useResponsive("down", "sm");
 
   const isAuthenticated = !!session?.user;
   const isAdmin =
@@ -49,16 +52,19 @@ export const MainNavbarDesktop = ({ session }) => {
       alignItems="center"
       sx={{ display: { xs: "none", md: "flex" } }}
     >
-      <Box sx={{ display: { xs: "none", md: "block" } }}>
-        <Link href="/">
-          <Image
-            src={"/images/texcoco_logo2.svg"}
-            alt="ferreteria texcoco"
-            width="120"
-            height="90"
-          />
+      {!isMobile && (
+        <Link href="/" style={{ display: "inline-block", lineHeight: 0 }}>
+          <Box sx={{ position: "relative", width: 120, height: 60 }}>
+            <Image
+              src={"/images/texcocowhite.svg"}
+              alt="ferreteria texcoco"
+              fill
+              sizes="120px"
+              style={{ objectFit: "contain" }}
+            />
+          </Box>
         </Link>
-      </Box>
+      )}
       <Box sx={{ display: { xs: "none", md: "block" } }}>
         <SearchComponent />
       </Box>
@@ -66,12 +72,24 @@ export const MainNavbarDesktop = ({ session }) => {
         {isAuthenticated && !isAdmin && (
           <>
             <Tooltip title="Mis favoritos" arrow>
-              <IconButton color="grey.main" component={Link} href="/favorites">
+              <IconButton
+                component={Link}
+                href="/favorites"
+                sx={(theme) => ({
+                  color: theme.palette.grey.light,
+                })}
+              >
                 <Favorite />
               </IconButton>
             </Tooltip>
             <Tooltip title="Historial de órdenes" arrow>
-              <IconButton color="grey.main" component={Link} href="/history">
+              <IconButton
+                sx={(theme) => ({
+                  color: theme.palette.grey.light,
+                })}
+                component={Link}
+                href="/history"
+              >
                 <ReceiptLong />
               </IconButton>
             </Tooltip>
@@ -79,7 +97,13 @@ export const MainNavbarDesktop = ({ session }) => {
         )}
         {isAdmin && (
           <Tooltip title="Panel de administador" arrow>
-            <IconButton color="grey.main" component={Link} href="/admin/quotes">
+            <IconButton
+              sx={(theme) => ({
+                color: theme.palette.grey.light,
+              })}
+              component={Link}
+              href="/admin/quotes"
+            >
               <AdminPanelSettings />
             </IconButton>
           </Tooltip>
@@ -99,7 +123,12 @@ export const MainNavbarDesktop = ({ session }) => {
         >
           <Stack sx={{ p: 2 }}>
             {isAuthenticated ? (
-              <Button onClick={Logout} color="error" fullWidth variant="outlined">
+              <Button
+                onClick={Logout}
+                color="error"
+                fullWidth
+                variant="outlined"
+              >
                 Cerrar sesión
               </Button>
             ) : (
@@ -107,7 +136,12 @@ export const MainNavbarDesktop = ({ session }) => {
                 <Typography fontWeight={700} variant="body1" sx={{ mb: 1 }}>
                   Accede o crea una cuenta
                 </Typography>
-                <Button variant="contained" component={Link} href="/auth/login" fullWidth>
+                <Button
+                  variant="contained"
+                  component={Link}
+                  href="/auth/login"
+                  fullWidth
+                >
                   Iniciar sesión
                 </Button>
                 <Button
@@ -126,7 +160,12 @@ export const MainNavbarDesktop = ({ session }) => {
         {!isAdmin && <Cart />}
         {isAuthenticated && <NotificationsBell />}
         <Tooltip title="Mi cuenta" arrow>
-          <IconButton color="grey.main" onClick={handlePopoverOpen}>
+          <IconButton
+            sx={(theme) => ({
+              color: theme.palette.grey.light,
+            })}
+            onClick={handlePopoverOpen}
+          >
             <Person />
           </IconButton>
         </Tooltip>

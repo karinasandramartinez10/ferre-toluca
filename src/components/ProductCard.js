@@ -6,13 +6,9 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useOrderContext } from "../context/order/useOrderContext";
 import ProductImage from "../app/(main)/product/[id]/ProductImage";
+import { toCapitalizeWords } from "../utils/cases";
 
-export const ProductCard = ({
-  product,
-  onViewMore,
-  showBtns = true,
-  priority = false,
-}) => {
+export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
   const [quantity] = useState(1);
   const { addToOrder } = useOrderContext();
 
@@ -52,13 +48,13 @@ export const ProductCard = ({
               color="text.secondary"
               sx={{ fontWeight: "bold" }}
             >
-              {product?.brand?.name}
+              {toCapitalizeWords(product?.brand?.name)}
             </Typography>
             <Typography variant="body2" color="text.secondary">
               SKU {product.code}
             </Typography>
           </Box>
-          <Tooltip title={product?.name}>
+          <Tooltip title={toCapitalizeWords(product?.name)}>
             <Typography
               gutterBottom
               variant="subtitle1"
@@ -72,10 +68,10 @@ export const ProductCard = ({
                 display: "-webkit-box",
               }}
             >
-              {product?.name}
+              {toCapitalizeWords(product?.name)}
             </Typography>
           </Tooltip>
-          <Tooltip title={product?.name}>
+          <Tooltip title={toCapitalizeWords(product?.name)}>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -89,7 +85,7 @@ export const ProductCard = ({
                 cursor: "pointer",
               }}
             >
-              {product?.description}
+              {toCapitalizeWords(product?.description)}
             </Typography>
           </Tooltip>
         </CardContent>

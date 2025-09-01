@@ -1,5 +1,6 @@
 import { Card, CardContent, Typography } from "@mui/material";
 import { CldImage } from "next-cloudinary";
+import { toCapitalizeWords } from "../../../../../utils/cases";
 
 const QuoteProductCard = ({ product }) => (
   <Card variant="outlined" key={product.id}>
@@ -15,9 +16,11 @@ const QuoteProductCard = ({ product }) => (
       />
     </div>
     <CardContent>
-      <Typography variant="subtitle1">{product.name}</Typography>
+      <Typography variant="subtitle1">
+        {toCapitalizeWords(product.name)}
+      </Typography>
       <Typography variant="body" color="primary.main">
-        {product.brand.name}
+        {toCapitalizeWords(product.brand.name)}
       </Typography>
       <Typography variant="body2" color="text.secondary">
         SKU {product.code}

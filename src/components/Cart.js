@@ -34,9 +34,15 @@ const Cart = () => {
   const open = Boolean(anchorEl);
 
   return (
-    <Box>
+    <>
       <Tooltip title="Carrito de productos" arrow>
-        <IconButton aria-label="cart" onClick={handleClick}>
+        <IconButton
+          sx={(theme) => ({
+            color: theme.palette.grey.light,
+          })}
+          aria-label="cart"
+          onClick={handleClick}
+        >
           <Badge badgeContent={totalItems} color="secondary">
             <ShoppingCartIcon />
           </Badge>
@@ -122,7 +128,7 @@ const Cart = () => {
           )}
         </Box>
       </Popover>
-    </Box>
+    </>
   );
 };
 

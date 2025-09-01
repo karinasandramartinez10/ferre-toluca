@@ -17,6 +17,7 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import UploadingMessage from "../app/(admin)/admin/brands/UploadingMessage";
+import { toCapitalizeWords } from "../utils/cases";
 
 const Schema = yup.object().shape({
   name: yup.string().required("El nombre es requerido"),
@@ -119,7 +120,7 @@ const ActionModal = ({
                     >
                       {options.map((option) => (
                         <MenuItem key={option.id} value={option.id}>
-                          {option.name}
+                          {toCapitalizeWords(option.name)}
                         </MenuItem>
                       ))}
                     </Select>

@@ -6,6 +6,7 @@ import { Favorite, Person, ReceiptLong } from "@mui/icons-material";
 import { logout } from "../../actions/logout";
 import Cart from "../../components/Cart";
 import NotificationsBell from "../../components/NotificationsBell";
+import useResponsive from "../../hooks/use-responsive";
 
 export const UserNavbarDesktop = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -20,6 +21,8 @@ export const UserNavbarDesktop = () => {
 
   const open = Boolean(anchorEl);
 
+  const isMobile = useResponsive("down", "sm");
+
   return (
     <Box
       justifyContent="space-between"
@@ -27,25 +30,40 @@ export const UserNavbarDesktop = () => {
       alignItems="center"
       sx={{ display: { xs: "none", md: "flex" } }}
     >
-      <Box sx={{ display: { xs: "none", md: "block" } }}>
-        <Link href="/">
-          <Image
-            src={"/images/texcoco_logo2.svg"}
-            alt="ferreteria texcoco"
-            width="120"
-            height="90"
-          />
+      {!isMobile && (
+        <Link href="/" style={{ display: "inline-block", lineHeight: 0 }}>
+          <Box sx={{ position: "relative", width: 120, height: 60 }}>
+            <Image
+              src={"/images/texcocowhite.svg"}
+              alt="ferreteria texcoco"
+              fill
+              sizes="120px"
+              style={{ objectFit: "contain" }}
+            />
+          </Box>
         </Link>
-      </Box>
+      )}
       <Box sx={{ display: { xs: "none", md: "block" } }}></Box>
       <Box display="flex" alignItems="center" gap={1}>
         <Tooltip title="Mis favoritos" arrow>
-          <IconButton color="grey.main" component={Link} href="/favorites">
+          <IconButton
+            sx={(theme) => ({
+              color: theme.palette.grey.light,
+            })}
+            component={Link}
+            href="/favorites"
+          >
             <Favorite />
           </IconButton>
         </Tooltip>
         <Tooltip title="Historial de órdenes" arrow>
-          <IconButton color="grey.main" component={Link} href="/history">
+          <IconButton
+            sx={(theme) => ({
+              color: theme.palette.grey.light,
+            })}
+            component={Link}
+            href="/history"
+          >
             <ReceiptLong />
           </IconButton>
         </Tooltip>
@@ -78,7 +96,12 @@ export const UserNavbarDesktop = () => {
         <Cart />
         <NotificationsBell />
         <Tooltip title="Mi cuenta" arrow>
-          <IconButton color="grey.main" onClick={handlePopoverOpen}>
+          <IconButton
+            sx={(theme) => ({
+              color: theme.palette.grey.light,
+            })}
+            onClick={handlePopoverOpen}
+          >
             <Person />
           </IconButton>
         </Tooltip>

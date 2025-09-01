@@ -52,7 +52,7 @@ export const drawerItems = [
     visibleFor: ["superadmin"],
   },
   {
-    text: "Variantes de Producto",
+    text: "Tipos de Producto",
     pathname: "/admin/product-type",
     icon: <Category sx={{ fontSize: 20 }} />,
     visibleFor: ["superadmin"],

@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
+import { toCapitalizeWords } from "../../../../utils/cases";
 
 const AddProductFields = ({
   brands,
@@ -31,7 +32,7 @@ const AddProductFields = ({
               <Select {...field} sx={{ background: "#FFF" }}>
                 {brands.map((brand) => (
                   <MenuItem key={brand.id} value={brand.id}>
-                    {brand.name}
+                    {toCapitalizeWords(brand.name)}
                   </MenuItem>
                 ))}
               </Select>
@@ -51,7 +52,7 @@ const AddProductFields = ({
               <Select {...field} sx={{ background: "#FFF" }}>
                 {categories.map((category) => (
                   <MenuItem key={category.id} value={category.id}>
-                    {category.name}
+                    {toCapitalizeWords(category.name)}
                   </MenuItem>
                 ))}
               </Select>
@@ -71,7 +72,7 @@ const AddProductFields = ({
               <Select {...field} sx={{ background: "#FFF" }}>
                 {subcategories.map((subcategory) => (
                   <MenuItem key={subcategory.id} value={subcategory.id}>
-                    {subcategory.name}
+                    {toCapitalizeWords(subcategory.name)}
                   </MenuItem>
                 ))}
               </Select>
@@ -81,7 +82,7 @@ const AddProductFields = ({
       </Grid>
 
       {/* Subtipo */}
-      <Grid item xs={12} >
+      <Grid item xs={12}>
         <Typography fontWeight={600}>¿Tiene una variante?</Typography>
         <Controller
           control={control}
@@ -100,7 +101,9 @@ const AddProductFields = ({
       {/* Tipo (condicional) */}
       {hasType === "yes" && (
         <Grid item xs={12} md={6}>
-          <Typography fontWeight={600}>Selecciona una variante del producto</Typography>
+          <Typography fontWeight={600}>
+            Selecciona una variante del producto
+          </Typography>
           <Controller
             control={control}
             name="typeId"
@@ -109,7 +112,7 @@ const AddProductFields = ({
                 <Select {...field} sx={{ background: "#FFF" }}>
                   {types.map((type) => (
                     <MenuItem key={type.id} value={type.id}>
-                      {type.name}
+                      {toCapitalizeWords(type.name)}
                     </MenuItem>
                   ))}
                 </Select>

@@ -21,7 +21,7 @@ export const SearchInput = ({
     onChange={handleSearchChange}
     placeholder="Buscar..."
     sx={{
-      borderRadius: "40px",
+      borderRadius: "10px",
       backgroundColor: "#f1f1f1",
       paddingLeft: "16px",
       paddingRight: "8px",
@@ -29,7 +29,14 @@ export const SearchInput = ({
       height: "40px",
       display: "flex",
       alignItems: "center",
-      boxShadow: "none",
+      boxShadow: "0 2px 2px rgba(0,0,0,0.08)",
+      transition: "box-shadow 0.2s ease",
+      "&:hover": {
+        boxShadow: "0 2px 6px rgba(0,0,0,0.12)",
+      },
+      "&:focus-within": {
+        boxShadow: "0 2px 8px rgba(0,0,0,0.14)",
+      },
       border: "none",
     }}
     endAdornment={

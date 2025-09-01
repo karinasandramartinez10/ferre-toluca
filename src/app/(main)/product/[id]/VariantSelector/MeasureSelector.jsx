@@ -50,9 +50,9 @@ export const MeasureSelector = ({
 
         <Chip
           label={measureOptions[0]?.label}
-          color="secondary"
+          variant="outlined"
           sx={{
-            mt: 1.5,
+            mt: 1.4,
             fontSize: "1rem",
             fontWeight: 600,
             borderRadius: "16px",

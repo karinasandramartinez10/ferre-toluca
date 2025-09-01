@@ -14,7 +14,7 @@ export function ColorSelector({ colorOptions, selectedColor, onColorChange }) {
     const fg = getContrastColor(bg);
 
     return (
-      <Stack gap={1.5}>
+      <Stack gap={0.5}>
         <Typography variant="body2" fontWeight={600}>
           Único color
         </Typography>

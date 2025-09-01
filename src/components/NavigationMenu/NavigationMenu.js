@@ -37,7 +37,7 @@ export default function NavigationMenu({ categories }) {
     <Box
       component="section"
       sx={{
-        paddingTop: { xs: "60px", sm: "66px" },
+        paddingTop: { xs: "60px", sm: "70px" },
         paddingX: 2,
       }}
     >

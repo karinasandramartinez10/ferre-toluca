@@ -10,7 +10,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import { v4 as uuidv4 } from "uuid";
-import { toCapitalizeFirstLetter } from "../../../../utils/cases";
 import { postProduct } from "../../../../api/admin";
 import { getCategories } from "../../../../api/category";
 import { getSubcategories } from "../../../../api/subcategories";
@@ -148,11 +147,7 @@ const AddProduct = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [
-          brandsData,
-          categoriesData,
-          measuresData,
-        ] = await Promise.all([
+        const [brandsData, categoriesData, measuresData] = await Promise.all([
           getBrands(),
           getCategories(),
           getMeasures(),
@@ -219,13 +214,11 @@ const AddProduct = () => {
       rows.forEach((product, index) => {
         requestBody.append(
           `products[${index}][name]`,
-          product.name ? toCapitalizeFirstLetter(product.name.trim()) : ""
+          product.name ? product.name.trim() : ""
         );
         requestBody.append(
           `products[${index}][description]`,
-          product.description
-            ? toCapitalizeFirstLetter(product.description)
-            : ""
+          product.description ? product.description.trim() : ""
         );
         requestBody.append(
           `products[${index}][code]`,
@@ -233,13 +226,11 @@ const AddProduct = () => {
         );
         requestBody.append(
           `products[${index}][specifications]`,
-          product.specifications
-            ? toCapitalizeFirstLetter(product.specifications)
-            : ""
+          product.specifications ? product.specifications.trim() : ""
         );
         requestBody.append(
           `products[${index}][color]`,
-          product.color ? toCapitalizeFirstLetter(product.color.trim()) : ""
+          product.color ? product.color.trim() : ""
         );
         requestBody.append(
           `products[${index}][size]`,
