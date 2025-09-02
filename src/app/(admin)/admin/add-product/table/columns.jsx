@@ -19,7 +19,9 @@ export const getAddProductColumns = (
     disableColumnMenu: true,
     renderCell: ({ row }) => {
       return isRowValid(row) ? (
-        <span role="img" aria-label="Validado">✅</span>
+        <span role="img" aria-label="Validado">
+          ✅
+        </span>
       ) : null;
     },
   },
@@ -77,7 +79,6 @@ export const getAddProductColumns = (
       TextFieldCellEditor({
         params,
         placeholder: "Ej: 100",
-        type: "number",
       }),
   },
   {
