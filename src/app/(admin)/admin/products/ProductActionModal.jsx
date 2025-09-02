@@ -287,7 +287,6 @@ const ProductActionModal = ({
             render={({ field }) => (
               <TextField
                 {...field}
-                type="number"
                 label="Valor"
                 fullWidth
                 error={!!errors.measureValue}
