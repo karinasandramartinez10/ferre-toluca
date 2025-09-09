@@ -3,12 +3,10 @@ import privateApi from "../config/private";
 export const fetchNotifications = async () => {
   try {
     const { data } = await privateApi.get("/notifications");
-    return data.data;
+    return Array.isArray(data?.data) ? data.data : [];
   } catch (error) {
     console.error("Error al obtener notificaciones:", error);
-    throw new Error(
-      error.response?.data?.message || "Error al obtener notificaciones"
-    );
+    return [];
   }
 };
 
@@ -29,9 +27,13 @@ export const markAllNotificationsAsRead = async () => {
     await privateApi.patch("/notifications/read-all");
     return true;
   } catch (error) {
-    console.error("Error al marcar todas las notificaciones como leídas:", error);
+    console.error(
+      "Error al marcar todas las notificaciones como leídas:",
+      error
+    );
     throw new Error(
-      error.response?.data?.message || "Error al marcar todas las notificaciones como leídas"
+      error.response?.data?.message ||
+        "Error al marcar todas las notificaciones como leídas"
     );
   }
 };
