@@ -77,7 +77,7 @@ const CrudAdminTable = ({
   return (
     <Box
       sx={{
-        height: 700,
+        height: 900,
         width: "100%",
       }}
     >
