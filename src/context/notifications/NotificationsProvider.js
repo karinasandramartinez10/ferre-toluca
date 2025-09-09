@@ -33,8 +33,11 @@ export const NotificationsProvider = ({ children }) => {
 
     try {
       const notifications = await fetchNotifications();
-      setNotifications(notifications || []);
-    } catch {}
+      setNotifications(Array.isArray(notifications) ? notifications : []);
+    } catch {
+      // Si la llamada falla, aseguramos estado consistente
+      setNotifications([]);
+    }
   }, [userId]);
 
   const markAsRead = useCallback(async (id) => {

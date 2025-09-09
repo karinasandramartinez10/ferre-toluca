@@ -103,7 +103,7 @@ export default function NotificationsBell() {
           )}
         </Box>
         <Divider />
-        {notifications.length === 0 && (
+        {(!Array.isArray(notifications) || notifications.length === 0) && (
           <MenuItem sx={{ marginTop: 1 }} disabled>
             <ListItemText
               primaryTypographyProps={{ fontSize: "14px" }}
@@ -111,7 +111,8 @@ export default function NotificationsBell() {
             />
           </MenuItem>
         )}
-        {notifications.slice(0, MAX_NOTIFICATIONS).map((n) => (
+        {Array.isArray(notifications) &&
+          notifications.slice(0, MAX_NOTIFICATIONS).map((n) => (
           <MenuItem
             key={n.id}
             onClick={() => handleNotificationClick(n)}

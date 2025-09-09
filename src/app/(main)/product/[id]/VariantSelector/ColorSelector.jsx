@@ -39,7 +39,7 @@ export function ColorSelector({ colorOptions, selectedColor, onColorChange }) {
   }
 
   return (
-    <Stack gap={1} flex="1">
+    <Stack gap={1}>
       <Typography variant="body2" fontWeight={600}>
         Colores disponibles
       </Typography>

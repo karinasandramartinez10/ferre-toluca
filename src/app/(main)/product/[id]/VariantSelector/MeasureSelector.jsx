@@ -42,7 +42,7 @@ export const MeasureSelector = ({
   }
 
   return (
-    <Stack width="auto" flex="1">
+    <Stack width="auto">
       <Box>
         <Typography variant="body2" fontWeight={600}>
           Única medida
