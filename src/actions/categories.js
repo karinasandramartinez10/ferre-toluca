@@ -1,7 +1,8 @@
 "use server";
 
 function createCategoryPath(name) {
-  return name
+  const safeName = typeof name === "string" ? name : "";
+  return safeName
     .toLowerCase() // Convertir a minúsculas
     .replace(/\s+/g, "-"); // Reemplazar espacios por guiones
 }
@@ -14,18 +15,33 @@ export async function getCategoriesServer() {
     );
 
     if (!res.ok) {
-      throw new Error("Failed to fetch categories");
+      console.warn(
+        "[getCategoriesServer] Non-OK response. Falling back to []",
+        res.status
+      );
+      return [];
     }
 
-    const response = await res.json();
+    const response = await res
+      .json()
+      .catch(() => ({ data: { categories: [] } }));
 
-    const categories = (response?.data?.categories ?? []).map((cat) => ({
+    const rawCategories = response?.data?.categories;
+    if (!Array.isArray(rawCategories)) {
+      console.warn("[getCategoriesServer] Invalid payload shape. Using []");
+      return [];
+    }
+
+    const categories = rawCategories.map((cat) => ({
       ...cat,
-      path: createCategoryPath(cat.name),
+      path: createCategoryPath(cat?.name),
     }));
     return categories;
   } catch (error) {
-    console.error("[getCategoriesServer]", error);
+    console.warn(
+      "[getCategoriesServer] Fetch failed. Using []",
+      error?.message
+    );
     return [];
   }
 }
