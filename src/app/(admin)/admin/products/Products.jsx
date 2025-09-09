@@ -97,6 +97,7 @@ const ProductsPage = () => {
         pageSizeOptions={[10, 25, 50]}
         disableRowSelectionOnClick
         sx={{
+          height: 900,
           "& .MuiDataGrid-columnHeaderTitle": {
             fontWeight: 700,
           },

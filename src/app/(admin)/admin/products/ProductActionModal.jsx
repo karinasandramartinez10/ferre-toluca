@@ -14,7 +14,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { getBrands } from "../../../../api/admin/brands";
@@ -102,6 +102,12 @@ const ProductActionModal = ({
   });
 
   const brandId = watch("brandId");
+  const categoryId = watch("categoryId");
+  const subCategoryId = watch("subCategoryId");
+
+  // Flags para preservar valores en la carga inicial
+  const isInitialCategoryRunRef = useRef(true);
+  const isInitialSubcategoryRunRef = useRef(true);
 
   useEffect(() => {
     if (!open) return;
@@ -112,15 +118,36 @@ const ProductActionModal = ({
       try {
         const { brands } = await getBrands();
         const { categories } = await getCategories();
-        const { subcategories } = await getSubcategories();
-        const { productTypes } = await getProductTypes();
+        // Precarga filtrada según selección inicial
+        let fetchedSubcategories = [];
+        let fetchedTypes = [];
+        if (selected?.category?.id) {
+          try {
+            const res = await getSubcategories({
+              categoryId: selected.category.id,
+            });
+            fetchedSubcategories = res.subcategories || [];
+          } catch (_) {
+            fetchedSubcategories = [];
+          }
+        }
+        if (selected?.subCategory?.id) {
+          try {
+            const res = await getProductTypes({
+              subcategoryId: selected.subCategory.id,
+            });
+            fetchedTypes = res.productTypes || res.data?.productTypes || [];
+          } catch (_) {
+            fetchedTypes = [];
+          }
+        }
         const measures = await getMeasures();
 
         setRefs({
           brands,
           categories,
-          subcategories,
-          types: productTypes,
+          subcategories: fetchedSubcategories,
+          types: fetchedTypes,
           measures,
         });
 
@@ -145,6 +172,9 @@ const ProductActionModal = ({
         };
 
         reset(initial);
+        // Marcar que la próxima ejecución de efectos es inicial (preservar valores)
+        isInitialCategoryRunRef.current = true;
+        isInitialSubcategoryRunRef.current = true;
         const existingImage = selected?.Files?.[0]?.path ?? null;
         setPhoto(existingImage ? { preview: existingImage } : null);
 
@@ -187,6 +217,74 @@ const ProductActionModal = ({
     }
  */
   }, [brandId]);
+
+  // Efecto: cuando cambia la categoría, cargar subcategorías filtradas y limpiar dependencias
+  useEffect(() => {
+    if (!categoryId) return;
+
+    const fetchSubcategoriesByCategory = async () => {
+      try {
+        const res = await getSubcategories({ categoryId });
+        setRefs((prev) => ({
+          ...prev,
+          subcategories: res.subcategories || [],
+        }));
+
+        const preserveInitial =
+          isInitialCategoryRunRef.current &&
+          selected?.category?.id === categoryId;
+        if (!preserveInitial) {
+          setValue("subCategoryId", "", {
+            shouldValidate: true,
+            shouldDirty: true,
+          });
+          setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
+          setRefs((prev) => ({ ...prev, types: [] }));
+        }
+      } catch (_) {
+        setRefs((prev) => ({ ...prev, subcategories: [] }));
+      } finally {
+        // Solo preservar en la primera corrida tras abrir el modal
+        isInitialCategoryRunRef.current = false;
+      }
+    };
+
+    fetchSubcategoriesByCategory();
+  }, [categoryId, selected, setValue]);
+
+  // Efecto: cuando cambia la subcategoría, cargar tipos filtrados y limpiar typeId si aplica
+  useEffect(() => {
+    if (!subCategoryId) {
+      // Si se limpió la subcategoría, limpiamos tipos
+      setRefs((prev) => ({ ...prev, types: [] }));
+      setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
+      return;
+    }
+
+    const fetchTypesBySubcategory = async () => {
+      try {
+        const res = await getProductTypes({ subcategoryId: subCategoryId });
+        setRefs((prev) => ({
+          ...prev,
+          types: res.productTypes || res.data?.productTypes || [],
+        }));
+
+        const preserveInitial =
+          isInitialSubcategoryRunRef.current &&
+          selected?.subCategory?.id === subCategoryId;
+        if (!preserveInitial) {
+          setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
+        }
+      } catch (_) {
+        setRefs((prev) => ({ ...prev, types: [] }));
+      } finally {
+        // Solo preservar en la primera corrida tras abrir el modal
+        isInitialSubcategoryRunRef.current = false;
+      }
+    };
+
+    fetchTypesBySubcategory();
+  }, [subCategoryId, selected, setValue]);
 
   const handleFormSubmit = async (data) => {
     const formData = new FormData();
