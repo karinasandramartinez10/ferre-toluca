@@ -7,9 +7,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
-  MenuItem,
-  Select,
   TextField,
   Typography,
 } from "@mui/material";
@@ -17,7 +14,8 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import UploadingMessage from "../app/(admin)/admin/brands/UploadingMessage";
-import { toCapitalizeWords } from "../utils/cases";
+import GroupedSelect from "./inputs/GroupedSelect";
+import { useGroupedMenuItems } from "../hooks/useGroupedMenuItems";
 
 const Schema = yup.object().shape({
   name: yup.string().required("El nombre es requerido"),
@@ -38,6 +36,7 @@ const ActionModal = ({
   selected,
   options = [],
   option,
+  groupBy, // optional: function(option) => group label
 }) => {
   const {
     control,
@@ -83,6 +82,8 @@ const ActionModal = ({
     onClose();
   };
 
+  const groupedMenuItems = useGroupedMenuItems(options, groupBy);
+
   return (
     <Dialog open={open} onClose={handleCloseModal} fullWidth maxWidth="md">
       <DialogTitle sx={{ fontWeight: 600 }}>
@@ -111,20 +112,14 @@ const ActionModal = ({
                 control={control}
                 name={option}
                 render={({ field }) => (
-                  <FormControl sx={{ minWidth: 120 }} size="small">
-                    <Select
-                      {...field}
-                      value={field.value || ""}
-                      fullWidth
-                      sx={{ background: "#FFF" }}
-                    >
-                      {options.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {toCapitalizeWords(option.name)}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <GroupedSelect
+                    value={field.value}
+                    onChange={field.onChange}
+                    dense
+                    maxMenuHeight={360}
+                  >
+                    {groupedMenuItems}
+                  </GroupedSelect>
                 )}
               />
             </>

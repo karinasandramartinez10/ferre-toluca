@@ -155,6 +155,7 @@ const ProductTypes = () => {
         optionTitle="Selecciona la subcategoría a asociar"
         option="subcategoryId"
         options={subcategories}
+        groupBy={(opt) => opt.category?.name || "Sin categoría"}
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={

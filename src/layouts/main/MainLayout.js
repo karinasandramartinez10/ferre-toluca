@@ -30,7 +30,7 @@ export const MainLayout = ({
           maxWidth: "1440px",
           margin: "0 auto",
           width: "100%",
-          flexGrow: 1
+          flexGrow: 1,
         }}
       >
         <NavigationMenu categories={categories} />
