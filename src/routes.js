@@ -9,6 +9,7 @@ export const publicRoutes = [
   /^\/brands\/.*$/, // Ruta dinámica para marcas
   /^\/categories\/.*$/, // Ruta dinámica para categorías
   /^\/subcategories\/.*$/, // Ruta dinámica para subcategorías
+  /^\/types\/.*$/, // Ruta dinámica para tipos de producto
   /^\/product\/.*$/, // Ruta dinámica para productos individuales
   "/faq", // Preguntas Frecuentes
   "/privacy-statement", // Aviso de Privacidad

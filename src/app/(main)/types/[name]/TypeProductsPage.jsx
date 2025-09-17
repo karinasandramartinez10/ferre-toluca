@@ -7,26 +7,30 @@ import {
   transformCategoryPath,
 } from "../../../../utils/cases";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
-import { buildCategoryBreadcrumbs } from "../../../../helpers/breadcrumbs";
+import { buildTypeBreadcrumbs } from "../../../../helpers/breadcrumbs";
 import useGroupedProducts from "../../../../hooks/grouped/useGroupedProducts";
 import GroupedProductsList from "../../../../components/GroupedProductsList";
 
-const CategoryProductsPage = () => {
+const TypeProductsPage = () => {
   const { name } = useParams();
   const searchParams = useSearchParams();
-  const categoryId = searchParams.get("id");
+  const typeId = searchParams.get("id");
   const router = useRouter();
 
   const decodedName = decodeURIComponent(name);
   const formattedName = transformCategoryPath(decodedName);
 
-  const breadcrumbItems = useMemo(
-    () => buildCategoryBreadcrumbs(formattedName, categoryId),
-    [formattedName, categoryId]
-  );
-
   const { groupedResult, loading, error, currentPage, setCurrentPage } =
-    useGroupedProducts({ categoryId, pageSize: 10 });
+    useGroupedProducts({ typeId, pageSize: 10 });
+
+  const representativeProduct = useMemo(
+    () => groupedResult?.products?.[0]?.variants?.[0] || undefined,
+    [groupedResult]
+  );
+  const breadcrumbItems = useMemo(
+    () => buildTypeBreadcrumbs(formattedName, representativeProduct),
+    [formattedName, representativeProduct]
+  );
 
   const handleProductClick = (id) => {
     router.push(`/product/${id}`);
@@ -48,4 +52,4 @@ const CategoryProductsPage = () => {
   );
 };
 
-export default CategoryProductsPage;
+export default TypeProductsPage;

@@ -6,6 +6,7 @@ export default function useGroupedProducts({
   brandId,
   categoryId,
   subcategoryId,
+  typeId,
   query,
 }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -42,6 +43,14 @@ export default function useGroupedProducts({
       });
       return data;
     },
+    type: async (page) => {
+      const { data } = await getGroupedProducts("groupedType", {
+        id: typeId,
+        page,
+        size: pageSize,
+      });
+      return data;
+    },
     search: async (page) => {
       const { data } = await getGroupedProducts("groupedSearch", {
         q: query,
@@ -64,6 +73,7 @@ export default function useGroupedProducts({
     if (brandId) return "brand";
     if (categoryId) return "category";
     if (subcategoryId) return "subcategory";
+    if (typeId) return "type";
     return "all";
   };
 
@@ -86,7 +96,7 @@ export default function useGroupedProducts({
         setLoading(false);
       }
     },
-    [brandId, categoryId, query, pageSize]
+    [brandId, categoryId, subcategoryId, typeId, query, pageSize]
   );
 
   useEffect(() => {

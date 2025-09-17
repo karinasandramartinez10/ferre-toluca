@@ -1,32 +1,33 @@
 import React from "react";
 import { Breadcrumbs, Link, Typography } from "@mui/material";
-import { useRouter } from "next/navigation";
 import NextLink from "next/link";
 
 const BreadcrumbsNavigation = ({ items = [] }) => {
-  const router = useRouter();
-
-  const handleNavigation = (path) => {
-    if (path) {
-      router.push(path);
-    }
-  };
-
   return (
     <Breadcrumbs aria-label="breadcrumb">
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
-        return isLast ? (
-          <Typography key={item.label} color="text.primary">
-            {item.label}
-          </Typography>
-        ) : (
+        const hasPath = Boolean(item.path);
+        const key = `${item.label}-${item.path || index}`;
+
+        if (isLast || !hasPath) {
+          return (
+            <Typography
+              key={key}
+              color="text.primary"
+              aria-current={isLast ? "page" : undefined}
+            >
+              {item.label}
+            </Typography>
+          );
+        }
+
+        return (
           <Link
             href={item.path}
-            key={item.label}
+            key={key}
             component={NextLink}
             underline="hover"
-            onClick={() => handleNavigation(item.path)}
             sx={{ cursor: "pointer" }}
           >
             {item.label}
@@ -37,4 +38,4 @@ const BreadcrumbsNavigation = ({ items = [] }) => {
   );
 };
 
-export default BreadcrumbsNavigation;
+export default React.memo(BreadcrumbsNavigation);

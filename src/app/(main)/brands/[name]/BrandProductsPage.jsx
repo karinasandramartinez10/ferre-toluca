@@ -1,8 +1,10 @@
 "use client";
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { toCapitalizeFirstLetter, toSlug } from "../../../../utils/cases";
+import { useMemo } from "react";
+import { toCapitalizeFirstLetter } from "../../../../utils/cases";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
+import { buildBrandBreadcrumbs } from "../../../../helpers/breadcrumbs";
 import useGroupedProducts from "../../../../hooks/grouped/useGroupedProducts";
 import GroupedProductsList from "../../../../components/GroupedProductsList";
 
@@ -15,13 +17,10 @@ const BrandProductsPage = () => {
   const { groupedResult, loading, error, currentPage, setCurrentPage } =
     useGroupedProducts({ brandId, pageSize: 10 });
 
-  const breadcrumbItems = [
-    { label: "Inicio", path: "/" },
-    {
-      label: toCapitalizeFirstLetter(name),
-      path: `/brands/${toSlug(name)}?id=${brandId}`,
-    },
-  ];
+  const breadcrumbItems = useMemo(
+    () => buildBrandBreadcrumbs(name, brandId),
+    [name, brandId]
+  );
 
   return (
     <>

@@ -1,11 +1,12 @@
 import { Stack, Typography, Chip } from "@mui/material";
 import { toCapitalizeFirstLetter } from "../../../../utils/cases";
 
-export const ProductAttributes = ({ subCategory, model, type }) => {
+export const ProductAttributes = ({ subCategory, model, type, design }) => {
   const items = [
     { label: "Subcategoría", value: subCategory },
     { label: "Tipo", value: type },
     { label: "Modelo", value: model },
+    { label: "Propiedades", value: design },
   ].filter((i) => i.value);
 
   if (items.length === 0) return null;
