@@ -15,6 +15,7 @@ import { MainSpecs } from "./MainSpecs";
 import { ProductActions } from "./ProductActions";
 import { ProductFeatures } from "./ProductFeatures";
 import { VariantSelector } from "./VariantSelector/VariantSelector";
+import ProductDesignChip from "../../../../components/ProductDesignChip";
 
 const ProductPage = ({ product, role }) => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -78,6 +79,7 @@ const ProductPage = ({ product, role }) => {
               subCategory={product.subCategory?.name}
               model={product.productModel?.name}
               type={product.type?.name}
+              design={product.design?.name}
             />
           </Box>
           <VariantSelector variants={product.variants} initialId={product.id} />

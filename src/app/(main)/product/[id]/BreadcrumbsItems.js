@@ -19,10 +19,10 @@ export const getBreadcrumbsItems = (product) =>
       label: toCapitalizeWords(product?.brand.name),
       path: `/brands/${toSlug(product.brand.name)}?id=${product.brand.id}`,
     },
-    /*     product?.type && {
-          label: product?.type.name,
-          path: `/types/${toSlug(product.type.name)}?id=${product.type.id}`,
-        }, */
+    product?.type && {
+      label: toCapitalizeWords(product?.type.name),
+      path: `/types/${toSlug(product.type.name)}?id=${product.type.id}`,
+    },
     { label: product?.name }, // Último ítem sin `path`
   ].filter(Boolean);
 
