@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import { useOrderContext } from "../context/order/useOrderContext";
 import ProductImage from "../app/(main)/product/[id]/ProductImage";
 import { toCapitalizeWords } from "../utils/cases";
+import ProductDesignChip from "./ProductDesignChip";
 
 export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
   const [quantity] = useState(1);
@@ -26,12 +27,13 @@ export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
         flexDirection: "column",
         justifyContent: "space-between",
         minHeight: 350,
+        height: "432px",
         borderRadius: "12px",
         padding: "8px",
       }}
     >
       <Link href={`/product/${product.id}`} passHref>
-        <div style={{ position: "relative", height: 150, width: "100%" }}>
+        <div style={{ position: "relative", width: "100%" }}>
           {imagePublicId && (
             <ProductImage
               publicId={imagePublicId}
@@ -41,40 +43,61 @@ export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
           )}
         </div>
 
-        <CardContent sx={{ flexGrow: 1, paddingTop: 3 }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ fontWeight: "bold" }}
+        <CardContent
+          sx={{
+            flexGrow: 1,
+            paddingTop: 2,
+            paddingBottom: 0,
+            minHeight: "120px", // Fixed minimum height for content area
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box>
+            <Box
+              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
             >
-              {toCapitalizeWords(product?.brand?.name)}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              SKU {product.code}
-            </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                fontSize="14px"
+                sx={{ fontWeight: "bold" }}
+              >
+                {toCapitalizeWords(product?.brand?.name)}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                fontSize="14px"
+              >
+                SKU {product.code}
+              </Typography>
+            </Box>
+            <Tooltip title={toCapitalizeWords(product?.name)}>
+              <Typography
+                gutterBottom
+                variant="subtitle1"
+                component="div"
+                color="#13161b"
+                fontSize="16px"
+                sx={{
+                  WebkitLineClamp: 1,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  display: "-webkit-box",
+                }}
+              >
+                {toCapitalizeWords(product?.name)}
+              </Typography>
+            </Tooltip>
           </Box>
           <Tooltip title={toCapitalizeWords(product?.name)}>
             <Typography
-              gutterBottom
-              variant="subtitle1"
-              component="div"
-              color="#13161b"
-              sx={{
-                WebkitLineClamp: 1,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                display: "-webkit-box",
-              }}
-            >
-              {toCapitalizeWords(product?.name)}
-            </Typography>
-          </Tooltip>
-          <Tooltip title={toCapitalizeWords(product?.name)}>
-            <Typography
               variant="body2"
               color="text.secondary"
+              fontSize="14px"
               sx={{
                 display: "-webkit-box",
                 WebkitLineClamp: 3,
@@ -83,12 +106,15 @@ export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
                 textOverflow: "ellipsis",
                 mb: 1,
                 cursor: "pointer",
+                height: "4.5rem", // Fixed height for 3 lines (1.5rem per line)
+                lineHeight: "1.5rem",
               }}
             >
               {toCapitalizeWords(product?.description)}
             </Typography>
           </Tooltip>
         </CardContent>
+        <ProductDesignChip designName={product?.design?.name} />
       </Link>
       {showBtns && (
         <CardActions
