@@ -2,7 +2,7 @@
 
 import { Grid, Box, Stack } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useFavorites } from "../../../../hooks/favorites/useFavorites";
 import ConfirmDeleteFavorite from "./ConfirmDeleteFavorite";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
@@ -55,10 +55,15 @@ const ProductPage = ({ product, role }) => {
     }
   };
 
+  const breadcrumbItems = useMemo(
+    () => getBreadcrumbsItems(product),
+    [product]
+  );
+
   return (
     <Box width="100%">
       <Box sx={{ position: "relative", zIndex: 1, mb: 2 }}>
-        <BreadcrumbsNavigation items={getBreadcrumbsItems(product)} />
+        <BreadcrumbsNavigation items={breadcrumbItems} />
       </Box>
 
       <Grid container spacing={4}>

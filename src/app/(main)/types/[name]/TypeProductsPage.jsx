@@ -1,13 +1,13 @@
 "use client";
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 import {
   toCapitalizeFirstLetter,
-  toCapitalizeWords,
-  toSlug,
   transformCategoryPath,
 } from "../../../../utils/cases";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
+import { buildTypeBreadcrumbs } from "../../../../helpers/breadcrumbs";
 import useGroupedProducts from "../../../../hooks/grouped/useGroupedProducts";
 import GroupedProductsList from "../../../../components/GroupedProductsList";
 
@@ -23,23 +23,14 @@ const TypeProductsPage = () => {
   const { groupedResult, loading, error, currentPage, setCurrentPage } =
     useGroupedProducts({ typeId, pageSize: 10 });
 
-  const representativeProduct =
-    groupedResult?.products?.[0]?.variants?.[0] || undefined;
-  const parentSubcategoryName = representativeProduct?.subCategory?.name;
-  const parentSubcategoryId = representativeProduct?.subCategory?.id;
-
-  const breadcrumbItems = [
-    { label: "Inicio", path: "/" },
-    ...(parentSubcategoryName
-      ? [
-          {
-            label: toCapitalizeWords(parentSubcategoryName),
-            path: `/subcategories/${toSlug(parentSubcategoryName)}?id=${parentSubcategoryId}`,
-          },
-        ]
-      : []),
-    { label: toCapitalizeFirstLetter(formattedName) },
-  ];
+  const representativeProduct = useMemo(
+    () => groupedResult?.products?.[0]?.variants?.[0] || undefined,
+    [groupedResult]
+  );
+  const breadcrumbItems = useMemo(
+    () => buildTypeBreadcrumbs(formattedName, representativeProduct),
+    [formattedName, representativeProduct]
+  );
 
   const handleProductClick = (id) => {
     router.push(`/product/${id}`);
@@ -62,5 +53,3 @@ const TypeProductsPage = () => {
 };
 
 export default TypeProductsPage;
-
-

@@ -1,12 +1,13 @@
 "use client";
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useMemo } from "react";
 import {
   toCapitalizeFirstLetter,
-  toSlug,
   transformCategoryPath,
 } from "../../../../utils/cases";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
+import { buildCategoryBreadcrumbs } from "../../../../helpers/breadcrumbs";
 import useGroupedProducts from "../../../../hooks/grouped/useGroupedProducts";
 import GroupedProductsList from "../../../../components/GroupedProductsList";
 
@@ -19,13 +20,10 @@ const CategoryProductsPage = () => {
   const decodedName = decodeURIComponent(name);
   const formattedName = transformCategoryPath(decodedName);
 
-  const breadcrumbItems = [
-    { label: "Inicio", path: "/" },
-    {
-      label: toCapitalizeFirstLetter(formattedName),
-      path: `/categories/${toSlug(formattedName)}?id=${categoryId}`,
-    },
-  ];
+  const breadcrumbItems = useMemo(
+    () => buildCategoryBreadcrumbs(formattedName, categoryId),
+    [formattedName, categoryId]
+  );
 
   const { groupedResult, loading, error, currentPage, setCurrentPage } =
     useGroupedProducts({ categoryId, pageSize: 10 });
