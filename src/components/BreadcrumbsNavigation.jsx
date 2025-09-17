@@ -38,4 +38,4 @@ const BreadcrumbsNavigation = ({ items = [] }) => {
   );
 };
 
-export default BreadcrumbsNavigation;
+export default React.memo(BreadcrumbsNavigation);
