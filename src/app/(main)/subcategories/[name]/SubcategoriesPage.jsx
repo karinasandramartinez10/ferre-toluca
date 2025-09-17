@@ -3,6 +3,7 @@
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   toCapitalizeFirstLetter,
+  toCapitalizeWords,
   toSlug,
   transformCategoryPath,
 } from "../../../../utils/cases";
@@ -18,17 +19,26 @@ const SubcategoriesPage = () => {
 
   const decodedName = decodeURIComponent(name);
   const formattedName = transformCategoryPath(decodedName);
+  const { groupedResult, loading, error, currentPage, setCurrentPage } =
+    useGroupedProducts({ subcategoryId, pageSize: 10 });
+
+  const representativeProduct =
+    groupedResult?.products?.[0]?.variants?.[0] || undefined;
+  const parentCategoryName = representativeProduct?.category?.name;
+  const parentCategoryId = representativeProduct?.category?.id;
 
   const breadcrumbItems = [
     { label: "Inicio", path: "/" },
-    {
-      label: toCapitalizeFirstLetter(formattedName),
-      path: `/categories/${toSlug(formattedName)}?id=${subcategoryId}`,
-    },
+    ...(parentCategoryName
+      ? [
+          {
+            label: toCapitalizeWords(parentCategoryName),
+            path: `/categories/${toSlug(parentCategoryName)}?id=${parentCategoryId}`,
+          },
+        ]
+      : []),
+    { label: toCapitalizeFirstLetter(formattedName) },
   ];
-
-  const { groupedResult, loading, error, currentPage, setCurrentPage } =
-    useGroupedProducts({ subcategoryId, pageSize: 10 });
 
   const handleProductClick = (id) => {
     router.push(`/product/${id}`);
