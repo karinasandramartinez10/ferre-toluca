@@ -30,9 +30,7 @@ export function useVariantSelection(variants, initialId) {
     () =>
       filteredByColor.map((v) => ({
         id: v.id,
-        label:
-          `${v.measureValueDisplay} ${v.measure?.abbreviation || ""}`.trim() ||
-          `${v.measureValue} ${v.measure?.abbreviation || ""}`.trim(),
+        label: `${v.measureValue} ${v.measure?.abbreviation || ""}`.trim(),
       })),
     [filteredByColor]
   );
