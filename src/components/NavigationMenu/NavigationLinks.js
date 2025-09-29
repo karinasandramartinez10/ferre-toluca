@@ -1,5 +1,6 @@
 import { Box, Chip } from "@mui/material";
 import Link from "next/link";
+import { toCapitalizeWords } from "../../utils/cases";
 
 const NavigationLinks = ({ mainCategories = [] }) => {
   return (
@@ -11,7 +12,7 @@ const NavigationLinks = ({ mainCategories = [] }) => {
           passHref
         >
           <Chip
-            label={category.name}
+            label={ toCapitalizeWords(category.name)}
             clickable
             sx={(theme) => ({
               fontWeight: 600,
