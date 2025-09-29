@@ -16,6 +16,10 @@ const CSVUploadButton = ({ onCSVParsed }) => {
       skipEmptyLines: true,
       complete: (results) => {
         onCSVParsed(results.data);
+        // Permite volver a seleccionar el mismo archivo
+        if (event?.target) {
+          event.target.value = "";
+        }
       },
     });
   };
