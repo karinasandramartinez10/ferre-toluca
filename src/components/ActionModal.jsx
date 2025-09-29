@@ -10,20 +10,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import UploadingMessage from "../app/(admin)/admin/brands/UploadingMessage";
 import GroupedSelect from "./inputs/GroupedSelect";
 import { useGroupedMenuItems } from "../hooks/useGroupedMenuItems";
 
-const Schema = yup.object().shape({
-  name: yup.string().required("El nombre es requerido"),
-});
-
-const defaultValues = {
-  name: "",
-};
+const nameSchema = yup.string().required("El nombre es requerido");
 
 const ActionModal = ({
   title = "",
@@ -38,6 +32,26 @@ const ActionModal = ({
   option,
   groupBy, // optional: function(option) => group label
 }) => {
+  const dynamicSchema = useMemo(() => {
+    const shape = { name: nameSchema };
+    if (options?.length && option) {
+      shape[option] = yup
+        .mixed()
+        .test(
+          "required-related",
+          "Este campo es requerido",
+          (val) => val !== null && val !== undefined && val !== ""
+        );
+    }
+    return yup.object().shape(shape);
+  }, [options, option]);
+
+  const dynamicDefaultValues = useMemo(() => {
+    const base = { name: "" };
+    if (option) base[option] = "";
+    return base;
+  }, [option]);
+
   const {
     control,
     handleSubmit,
@@ -45,28 +59,30 @@ const ActionModal = ({
     reset,
     formState: { errors, isValid },
   } = useForm({
-    resolver: yupResolver(Schema),
+    resolver: yupResolver(dynamicSchema),
     mode: "onChange",
-    defaultValues,
+    defaultValues: dynamicDefaultValues,
   });
 
   useEffect(() => {
     if (mode === "edit" && selected) {
-      setValue("name", selected.name);
+      setValue("name", selected.name, { shouldValidate: true });
 
-      const getRelationKey = (option) => {
+      const getRelationKey = (opt) => {
         const map = {
           categoryId: "category",
           subcategoryId: "subCategory",
         };
-        return map[option] || null;
+        return map[opt] || null;
       };
 
       const relationKey = getRelationKey(option);
       const relatedObject = selected[relationKey];
-      setValue(option, relatedObject?.id || "");
+      if (option) {
+        setValue(option, relatedObject?.id || "", { shouldValidate: true });
+      }
     }
-  }, [mode, selected, option, setValue]);
+  }, [mode, selected, option, setValue, open]);
 
   const handleFormSubmit = (data) => {
     onSubmit(data);
@@ -74,7 +90,7 @@ const ActionModal = ({
   };
 
   const resetValues = () => {
-    reset(defaultValues);
+    reset(dynamicDefaultValues);
   };
 
   const handleCloseModal = () => {
@@ -89,62 +105,70 @@ const ActionModal = ({
       <DialogTitle sx={{ fontWeight: 600 }}>
         {mode === "create" ? `Agregar ${title}` : `Editar ${title}`}
       </DialogTitle>
-      <DialogContent>
-        <Box display="flex" flexDirection="column" gap={2} mt={1}>
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Nombre"
-                fullWidth
-                error={!!errors.name}
-                helperText={errors.name?.message}
-                disabled={loading}
-              />
+      <Box
+        component="form"
+        onSubmit={handleSubmit(handleFormSubmit)}
+        noValidate
+      >
+        <DialogContent sx={{ padding: "8px 24px" }}>
+          <Box display="flex" flexDirection="column" gap={2} mt={1}>
+            {options.length > 0 && (
+              <>
+                <Typography fontWeight={600}>
+                  {optionTitle}
+                </Typography>
+                <Controller
+                  control={control}
+                  name={option}
+                  render={({ field }) => (
+                    <GroupedSelect
+                      value={field.value}
+                      onChange={field.onChange}
+                      dense
+                      maxMenuHeight={360}
+                    >
+                      {groupedMenuItems}
+                    </GroupedSelect>
+                  )}
+                />
+              </>
             )}
-          />
-          {options.length > 0 && (
-            <>
-              <Typography fontWeight={600}>{optionTitle}</Typography>
-              <Controller
-                control={control}
-                name={option}
-                render={({ field }) => (
-                  <GroupedSelect
-                    value={field.value}
-                    onChange={field.onChange}
-                    dense
-                    maxMenuHeight={360}
-                  >
-                    {groupedMenuItems}
-                  </GroupedSelect>
-                )}
-              />
-            </>
-          )}
-          {loading && <UploadingMessage />}
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={handleCloseModal}
-          variant="outlined"
-          disabled={loading}
-        >
-          Cancelar
-        </Button>
-        <LoadingButton
-          onClick={handleSubmit(handleFormSubmit)}
-          loading={loading}
-          disabled={loading || !isValid}
-          variant="contained"
-          color="primary"
-        >
-          {mode === "create" ? "Agregar" : "Guardar Cambios"}
-        </LoadingButton>
-      </DialogActions>
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Nombre"
+                  fullWidth
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                  disabled={loading}
+                />
+              )}
+            />
+            {loading && <UploadingMessage />}
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ padding: "16px" }}>
+          <Button
+            onClick={handleCloseModal}
+            variant="outlined"
+            disabled={loading}
+          >
+            Cancelar
+          </Button>
+          <LoadingButton
+            type="submit"
+            loading={loading}
+            disabled={loading || !isValid}
+            variant="contained"
+            color="primary"
+          >
+            {mode === "create" ? "Agregar" : "Guardar Cambios"}
+          </LoadingButton>
+        </DialogActions>
+      </Box>
     </Dialog>
   );
 };
