@@ -89,7 +89,11 @@ const AddProduct = () => {
 
   useEffect(() => {
     const fetchModelsByBrand = async () => {
-      if (!brandId) return;
+      if (!brandId) {
+        // Limpia los modelos cuando no hay marca seleccionada
+        setProductModels([]);
+        return;
+      }
       try {
         const models = await getProductModels(brandId);
         setProductModels(models);
@@ -111,7 +115,14 @@ const AddProduct = () => {
   }, [brandId]);
 
   useEffect(() => {
-    if (!categoryId) return;
+    if (!categoryId) {
+      // Limpia dependencias cuando no hay categoría seleccionada
+      setSubcategories([]);
+      setTypes([]);
+      setValue("subCategoryId", "");
+      setValue("typeId", "");
+      return;
+    }
 
     const fetchSubcategories = async () => {
       try {
@@ -129,7 +140,12 @@ const AddProduct = () => {
   }, [categoryId]);
 
   useEffect(() => {
-    if (!subCategoryId || subCategoryId === "") return;
+    if (!subCategoryId || subCategoryId === "") {
+      // Limpia tipos si no hay subcategoría
+      setTypes([]);
+      setValue("typeId", "");
+      return;
+    }
 
     const fetchTypes = async () => {
       try {
@@ -207,7 +223,7 @@ const AddProduct = () => {
       requestBody.append("brandId", values.brandId);
       requestBody.append("categoryId", values.categoryId);
       requestBody.append("subCategoryId", values.subCategoryId);
-      if (values.hasType && values.typeId) {
+      if (values.hasType === "yes" && values.typeId) {
         requestBody.append("typeId", values.typeId);
       }
 
@@ -265,9 +281,13 @@ const AddProduct = () => {
           horizontal: "right",
         },
       });
-      reset();
+      reset(defaultFormValues);
       handleRemoveFile();
       setRows(initialRows);
+      setRowModesModel({});
+      setSubcategories([]);
+      setTypes([]);
+      setProductModels([]);
       setLoading(false);
 
       return;
