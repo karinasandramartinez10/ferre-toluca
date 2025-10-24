@@ -1,5 +1,6 @@
 import api from "../../config";
 import privateApi from "../../config/private";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 export const getBrands = async (params) => {
   try {
@@ -7,7 +8,7 @@ export const getBrands = async (params) => {
     return data.data;
   } catch (error) {
     console.log(error);
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -21,7 +22,7 @@ export const createBrand = async (formData) => {
     return resp;
   } catch (error) {
     console.log(error);
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -35,7 +36,7 @@ export const updateBrand = async (id, formData) => {
     return resp;
   } catch (error) {
     console.log(error);
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };
 

@@ -1,5 +1,6 @@
 import { api } from "../config";
 import privateApi from "../config/private";
+import { getApiErrorMessage } from "../utils/apiError";
 
 export const getCategories = async (params) => {
   try {
@@ -7,7 +8,7 @@ export const getCategories = async (params) => {
     return data.data;
   } catch (error) {
     console.log(error);
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -16,7 +17,7 @@ export const deleteCategory = async (id) => {
     const response = await privateApi.delete(`/category/${id}`);
     return response;
   } catch (error) {
-    throw new Error(error.response.data.message || "Error deleting category");
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -26,7 +27,7 @@ export const createCategory = async (body) => {
     return resp;
   } catch (error) {
     console.log(error);
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -36,6 +37,6 @@ export const updateCategory = async (id, body) => {
     return resp;
   } catch (error) {
     console.log(error);
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };

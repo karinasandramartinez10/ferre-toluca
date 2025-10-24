@@ -1,4 +1,5 @@
 import privateApi from "../../config/private";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 export const postStatusLogForQuote = async (quoteId, entry) => {
   try {
@@ -15,6 +16,6 @@ export const fetchStatusLogsForQuote = async (quoteId) => {
     return data.data;
   } catch (error) {
     console.log(error);
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };
