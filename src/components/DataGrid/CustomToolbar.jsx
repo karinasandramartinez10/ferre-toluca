@@ -1,8 +1,9 @@
 import { Box, Stack } from "@mui/material";
 import {
   GridToolbarColumnsButton,
-  GridToolbarExport,
   GridToolbarQuickFilter,
+  GridToolbarExportContainer,
+  GridCsvExportMenuItem,
 } from "@mui/x-data-grid";
 import useResponsive from "../../hooks/use-responsive";
 
@@ -31,10 +32,10 @@ export const CustomToolbar = () => {
               },
             }}
           />
-          <GridToolbarExport
-            printOptions={undefined}
-            csvOptions={{ fileName: "productos", delimiter: ";" }}
-          />
+          <GridToolbarExportContainer>
+            <GridCsvExportMenuItem options={{ fileName: "productos", delimiter: ";" }} />
+            {/* Intencionalmente omitimos la opción de impresión para evitar errores de runtime en producción */}
+          </GridToolbarExportContainer>
         </Stack>
       )}
       <GridToolbarQuickFilter

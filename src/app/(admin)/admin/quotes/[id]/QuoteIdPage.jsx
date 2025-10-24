@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Card, CardContent, CardHeader, Stack, Typography } from "@mui/material";
+import { Box, Card, CardContent, CardHeader, Stack, Typography, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fetchQuoteById, updateQuote } from "../../../../../api/quote";
 import { ErrorUI } from "../../../../../components/Error";
@@ -12,6 +12,7 @@ import { STEPS } from "../../../../../constants/quotes/status";
 import { StatusLogList } from "./StatusLogList";
 import { useStatusLogs } from "../../../../../hooks/logs/useStatusLogs";
 import QuoteMessages from "../../../../../components/QuoteMessages";
+import { buildTableHtml, openPrintWindow } from "../../../../../utils/print";
 
 export const QuoteId = ({ quoteId }) => {
   const [quote, setQuote] = useState(null);
@@ -61,6 +62,44 @@ export const QuoteId = ({ quoteId }) => {
     )}`;
   };
 
+  const handlePrint = () => {
+    if (!quote) return;
+
+    const headerRows = [
+      ["# Orden", quote.orderNumber ?? quote.order ?? ""],
+      ["Cliente", `${quote?.User?.firstName ?? ""} ${quote?.User?.lastName ?? ""}`.trim()],
+      ["Email", quote?.User?.email ?? ""],
+      ["Teléfono", quote?.User?.phoneNumber ?? ""],
+      ["Fecha", new Date(quote?.createdAt).toLocaleString("es-MX")],
+      ["Estado", quote?.status ?? ""],
+      ["Mensaje", quote?.message ?? ""],
+    ];
+
+    const headerTable = buildTableHtml({
+      caption: "Detalle de cotización",
+      headers: ["Campo", "Valor"],
+      rows: headerRows.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`),
+    });
+
+    const productHeaders = ["Producto", "Marca", "SKU", "Cantidad"];
+    const productRows = (quote?.Products ?? []).map((p) => (
+      `<tr>
+        <td>${p?.name ?? ""}</td>
+        <td>${p?.brand?.name ?? ""}</td>
+        <td>${p?.code ?? ""}</td>
+        <td>${p?.QuoteProduct?.quantity ?? ""}</td>
+      </tr>`
+    ));
+
+    const productsTable = buildTableHtml({
+      caption: "Productos",
+      headers: productHeaders,
+      rows: productRows,
+    });
+
+    openPrintWindow(`${headerTable}<br/>${productsTable}`, { title: `Cotización ${quote.orderNumber ?? ""}` });
+  };
+
   const handleSaveStatus = async (newStatus) => {
     const oldStatus = quote.status;
     try {
@@ -95,6 +134,9 @@ export const QuoteId = ({ quoteId }) => {
 
   return (
     <Stack gap={2}>
+      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button variant="outlined" onClick={handlePrint}>Imprimir</Button>
+      </Box>
       <QuoteDetails
         quote={quote}
         justSavedIdx={justSavedIdx}
