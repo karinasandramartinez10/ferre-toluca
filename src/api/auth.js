@@ -1,4 +1,5 @@
 import { api } from "../config";
+import { getApiErrorMessage } from "../utils/apiError";
 
 export const registerUser = async (body) => {
   try {
@@ -24,7 +25,7 @@ export const forgotPassword = async (body) => {
     });
     return resp;
   } catch (error) {
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -37,10 +38,11 @@ export const resetPassword = async (body) => {
     });
     return resp;
   } catch (error) {
-    if (error.response.data.message === "jwt expired") {
+    const msg = error?.response?.data?.message;
+    if (msg === "jwt expired") {
       throw new Error("Expiró el token");
     } else {
-      throw new Error("Error de conexión");
+      throw new Error(getApiErrorMessage(error));
     }
   }
 };

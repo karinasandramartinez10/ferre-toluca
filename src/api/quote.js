@@ -1,4 +1,5 @@
 import privateApi from "../config/private";
+import { getApiErrorMessage } from "../utils/apiError";
 
 export const createQuote = async (body) => {
   try {
@@ -10,7 +11,7 @@ export const createQuote = async (body) => {
     return resp;
   } catch (error) {
     console.log(error);
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -29,7 +30,7 @@ export const fetchQuotes = async (page = 1, size = 10) => {
     return data.data;
   } catch (error) {
     console.error("Error al obtener cotizaciones:", error);
-    throw new Error(error.response?.data?.message || "Error desconocido");
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -43,9 +44,7 @@ export const fetchQuoteById = async (quoteId) => {
     return data.data;
   } catch (error) {
     console.log(error);
-    throw new Error(
-      error.response?.data?.message || "Error fetching quote by ID"
-    );
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -60,7 +59,7 @@ export const updateQuote = async (id, body) => {
     return resp;
   } catch (error) {
     console.log(error);
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -94,7 +93,7 @@ export const fetchQuoteMessages = async (quoteId) => {
     return data.data;
   } catch (error) {
     console.error("Error al obtener mensajes:", error);
-    throw new Error(error.response?.data?.message || "Error al obtener mensajes");
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -112,7 +111,7 @@ export const sendQuoteMessage = async (quoteId, content) => {
     return data.data;
   } catch (error) {
     console.error("Error al enviar mensaje:", error);
-    throw new Error(error.response?.data?.message || "Error al enviar mensaje");
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -126,6 +125,6 @@ export const fetchUserQuoteById = async (quoteId) => {
     return data.data;
   } catch (error) {
     console.error("Error al obtener cotización de usuario:", error);
-    throw new Error(error.response?.data?.message || "Error al obtener cotización de usuario");
+    throw new Error(getApiErrorMessage(error));
   }
 };

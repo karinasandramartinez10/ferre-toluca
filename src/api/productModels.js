@@ -1,4 +1,5 @@
 import { api } from "../config";
+import { getApiErrorMessage } from "../utils/apiError";
 
 export const getProductModels = async (brandId) => {
   try {
@@ -7,6 +8,6 @@ export const getProductModels = async (brandId) => {
     });
     return data;
   } catch (error) {
-    throw new Error(error.response.data.message || "Error fetching models");
+    throw new Error(getApiErrorMessage(error));
   }
 };

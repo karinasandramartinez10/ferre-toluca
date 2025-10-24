@@ -1,4 +1,5 @@
 import privateApi from "../config/private";
+import { getApiErrorMessage } from "../utils/apiError";
 
 export const postProduct = async (formData) => {
   try {
@@ -10,6 +11,6 @@ export const postProduct = async (formData) => {
     return resp;
   } catch (error) {
     console.log("err", error);
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };

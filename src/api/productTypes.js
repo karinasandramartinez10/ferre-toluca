@@ -1,12 +1,13 @@
 import { api } from "../config";
 import privateApi from "../config/private";
+import { getApiErrorMessage } from "../utils/apiError";
 
 export const getProductTypes = async (params) => {
   try {
     const { data } = await api.get("/product-types", { params });
     return data.data
   } catch (error) {
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -16,7 +17,7 @@ export const createProductType = async (body) => {
     return resp;
   } catch (error) {
     console.error("Error creating product type:", error);
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };
 
@@ -26,6 +27,6 @@ export const updateProductType = async (id, body) => {
     return resp;
   } catch (error) {
     console.error("Error updating product type:", error);
-    throw new Error(error.response.data.message);
+    throw new Error(getApiErrorMessage(error));
   }
 };
