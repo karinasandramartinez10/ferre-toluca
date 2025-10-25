@@ -14,6 +14,7 @@ import { localeText } from "../../../../constants/x-datagrid/localeText";
 import { getQuoteColumns } from "./columns";
 import { useStatusLogs } from "../../../../hooks/logs/useStatusLogs";
 import { buildTableHtml, openPrintWindow } from "../../../../utils/print";
+import { statusLabelMap } from "../../../../helpers/quotes";
 
 export const Quotes = () => {
   const [quotes, setQuotes] = useState([]);
@@ -55,21 +56,39 @@ export const Quotes = () => {
   }, [paginationModel]);
 
   const handlePrint = useCallback(() => {
-    const headers = ["# Orden", "Cliente", "Email", "Teléfono", "Fecha", "Estado"];
+    const headers = [
+      "# Orden",
+      "Cliente",
+      "Email",
+      "Teléfono",
+      "Fecha",
+      "Estado",
+    ];
+
     const rows = (Array.isArray(quotes) ? quotes : []).map((q) => {
-      const dateStr = q?.createdAt ? new Date(q.createdAt).toLocaleString("es-MX") : "";
-      const name = q?.User ? `${q.User.firstName ?? ""} ${q.User.lastName ?? ""}`.trim() : "";
+      const dateStr = q?.createdAt
+        ? new Date(q.createdAt).toLocaleString("es-MX")
+        : "";
+      const name = q?.User
+        ? `${q.User.firstName ?? ""} ${q.User.lastName ?? ""}`.trim()
+        : "";
+      const statusLabel = statusLabelMap[q?.status] ?? q?.status ?? "";
       return `<tr>
-        <td>${q?.order ?? ""}</td>
+        <td>${q?.orderNumber ?? ""}</td>
         <td>${name}</td>
         <td>${q?.User?.email ?? ""}</td>
         <td>${q?.User?.phoneNumber ?? ""}</td>
         <td>${dateStr}</td>
-        <td>${q?.status ?? ""}</td>
+        <td>${statusLabel}</td>
       </tr>`;
     });
 
-    const html = buildTableHtml({ caption: "Listado de cotizaciones", headers, rows });
+    const html = buildTableHtml({
+      caption: "Listado de cotizaciones",
+      headers,
+      rows,
+    });
+
     openPrintWindow(html, { title: "Cotizaciones" });
   }, [quotes]);
 
@@ -114,56 +133,52 @@ export const Quotes = () => {
   if (error) return <ErrorUI />;
 
   return (
-    <>
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}>
-        <Button variant="outlined" onClick={handlePrint}>
-          Imprimir
-        </Button>
-      </Box>
-      <DataGrid
-        localeText={localeText}
-        rows={quotes}
-        columns={getQuoteColumns({
-          updatingId,
-          editingId,
-          handleStatusChange,
-          handleStatusChange,
-          setEditingId,
-          finishEdit,
-        })}
-        rowCount={totalCount}
-        paginationMode="server"
-        paginationModel={paginationModel}
-        onPaginationModelChange={setPaginationModel}
-        pageSizeOptions={[10, 25, 50]}
-        disableRowSelectionOnClick
-        sx={{
-          "& .MuiDataGrid-columnHeaderTitle": {
-            fontWeight: 700,
-          },
-          "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-            outline: "none !important",
-          },
-          "& .MuiDataGrid-row:hover": {
-            backgroundColor: (theme) => theme.palette.action.hover,
-          },
-          "& .statusCell:hover .editIcon": {
-            display: "block",
-          },
-          "& .MuiDataGrid-row:hover .statusCell .editIcon": {
-            display: "block",
-          },
-          // resaltar fila al hover
-          "& .MuiDataGrid-row:hover": {
-            backgroundColor: (theme) => theme.palette.action.hover,
-          },
-        }}
-        slots={{
-          noRowsOverlay: CustomNoRowsOverlay,
-          toolbar: CustomToolbar,
-          footer: CustomFooter,
-        }}
-      />
-    </>
+    <DataGrid
+      localeText={localeText}
+      rows={quotes}
+      columns={getQuoteColumns({
+        updatingId,
+        editingId,
+        handleStatusChange,
+        handleStatusChange,
+        setEditingId,
+        finishEdit,
+      })}
+      rowCount={totalCount}
+      paginationMode="server"
+      paginationModel={paginationModel}
+      onPaginationModelChange={setPaginationModel}
+      pageSizeOptions={[10, 25, 50]}
+      disableRowSelectionOnClick
+      sx={{
+        "& .MuiDataGrid-columnHeaderTitle": {
+          fontWeight: 700,
+        },
+        "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+          outline: "none !important",
+        },
+        "& .MuiDataGrid-row:hover": {
+          backgroundColor: (theme) => theme.palette.action.hover,
+        },
+        "& .statusCell:hover .editIcon": {
+          display: "block",
+        },
+        "& .MuiDataGrid-row:hover .statusCell .editIcon": {
+          display: "block",
+        },
+        // resaltar fila al hover
+        "& .MuiDataGrid-row:hover": {
+          backgroundColor: (theme) => theme.palette.action.hover,
+        },
+      }}
+      slots={{
+        noRowsOverlay: CustomNoRowsOverlay,
+        toolbar: CustomToolbar,
+        footer: CustomFooter,
+      }}
+      slotProps={{
+        toolbar: { onPrint: handlePrint },
+      }}
+    />
   );
 };

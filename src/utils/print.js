@@ -1,10 +1,7 @@
-export const openPrintWindow = (htmlString, {
-  title = "Documento",
-  width = 1100,
-  height = 800,
-  top = 80,
-  left = 80,
-} = {}) => {
+export const openPrintWindow = (
+  htmlString,
+  { title = "Documento", width = 1100, height = 800, top = 80, left = 80 } = {}
+) => {
   if (typeof window === "undefined") return;
   const features = `height=${height},width=${width},top=${top},left=${left}`;
   const w = window.open("", "PRINT", features);
@@ -15,8 +12,12 @@ export const openPrintWindow = (htmlString, {
   w.document.close();
   w.focus();
   setTimeout(() => {
-    try { w.print(); } catch {}
-    try { w.close(); } catch {}
+    try {
+      w.print();
+    } catch {}
+    try {
+      w.close();
+    } catch {}
   }, 100);
 };
 
@@ -30,7 +31,9 @@ export const buildTableHtml = ({
             th,td{border:1px solid #ddd;padding:6px;text-align:left;font-size:12px}
             th{background:#f5f5f5}`,
 } = {}) => {
-  const thead = `<thead><tr>${headers.map((h) => `<th>${h}</th>`).join("")}</tr></thead>`;
+  const thead = `<thead><tr>${headers
+    .map((h) => `<th>${h}</th>`)
+    .join("")}</tr></thead>`;
   const tbody = `<tbody>${rows.join("")}</tbody>`;
   const captionHtml = caption ? `<h2>${caption}</h2>` : "";
   return `
@@ -39,5 +42,3 @@ export const buildTableHtml = ({
     <table>${thead}${tbody}</table>
   `;
 };
-
-
