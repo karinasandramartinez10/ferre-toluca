@@ -4,6 +4,7 @@ import {
   Message,
   Person,
   Phone,
+  Print,
 } from "@mui/icons-material";
 import {
   Alert,
@@ -13,8 +14,8 @@ import {
   CardContent,
   CardHeader,
   Grid,
+  IconButton,
   Stack,
-  Typography,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { STEPS } from "../../../../../constants/quotes/status";
@@ -22,7 +23,14 @@ import { formatDateDayAbrev } from "../../../../../utils/date";
 import { EditableStatusStepper } from "./EditableStatusStepper";
 import InfoRow from "./InfoRow";
 
-const QuoteDetails = ({ quote, justSavedIdx, onCall, onEmail, onSave }) => {
+const QuoteDetails = ({
+  quote,
+  justSavedIdx,
+  onCall,
+  onEmail,
+  onSave,
+  onPrint,
+}) => {
   const [selected, setSelected] = useState(quote.status);
   const [activeIdx, setActiveIdx] = useState(
     STEPS.findIndex((s) => s.value === quote.status)
@@ -57,6 +65,9 @@ const QuoteDetails = ({ quote, justSavedIdx, onCall, onEmail, onSave }) => {
           Guardar estado
         </Button>
       )}
+      <IconButton onClick={onPrint}>
+        <Print color="primary" />
+      </IconButton>
     </Box>
   );
 
@@ -66,8 +77,20 @@ const QuoteDetails = ({ quote, justSavedIdx, onCall, onEmail, onSave }) => {
       label: "Cliente",
       value: `${quote.User.firstName} ${quote.User.lastName}`,
     },
-    { icon: <Email />, label: "Email", value: quote.User.email },
-    { icon: <Phone />, label: "Teléfono", value: quote.User.phoneNumber },
+    {
+      icon: <Email />,
+      label: "Email",
+      value: quote.User.email,
+      action: onEmail,
+      actionLabel: "Enviar correo",
+    },
+    {
+      icon: <Phone />,
+      label: "Teléfono",
+      value: quote.User.phoneNumber,
+      action: onCall,
+      actionLabel: "Llamar",
+    },
     {
       icon: <CalendarToday />,
       label: "Fecha",
@@ -105,45 +128,16 @@ const QuoteDetails = ({ quote, justSavedIdx, onCall, onEmail, onSave }) => {
           {/* 1. Columna izquierda: datos */}
           <Grid item xs={12} md={8}>
             <Stack spacing={1}>
-              {infoConfig.map(({ icon, label, value }) => (
-                <InfoRow key={label} icon={icon} label={label} value={value} />
+              {infoConfig.map(({ icon, label, value, action, actionLabel }) => (
+                <InfoRow
+                  key={label}
+                  icon={icon}
+                  label={label}
+                  value={value}
+                  action={action}
+                  actionLabel={actionLabel}
+                />
               ))}
-            </Stack>
-          </Grid>
-          {/* 2. Columna derecha: botones alineados verticalmente */}
-          <Grid item xs={12} md={4}>
-            <Stack
-              spacing={1}
-              justifyContent="center"
-              alignItems={{ xs: "center", md: "flex-start" }}
-              sx={{ height: "100%" }}
-            >
-              {/* En mobile: row + gap, en md+: column */}
-              <Box
-                component="div"
-                sx={{
-                  display: "flex",
-                  flexDirection: { xs: "row", md: "column" },
-                  gap: 1,
-                  width: "100%",
-                  justifyContent: "center", // centra en xs
-                  alignItems: "center",
-                }}
-              >
-                <Typography
-                  variant="h5"
-                  textAlign={{ xs: "center", md: "left" }}
-                >
-                  ¿Quieres contactar al cliente?
-                </Typography>
-
-                <Button startIcon={<Phone />} onClick={onCall} size="small">
-                  Llamar
-                </Button>
-                <Button startIcon={<Email />} onClick={onEmail} size="small">
-                  Correo
-                </Button>
-              </Box>
             </Stack>
           </Grid>
         </Grid>
