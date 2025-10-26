@@ -3,6 +3,7 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { useSnackbar } from "notistack";
 import React, { useCallback, useEffect, useState } from "react";
+import { Box, Button } from "@mui/material";
 import { fetchQuotes, updateQuote } from "../../../../api/quote";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
 import { CustomToolbar } from "../../../../components/DataGrid/CustomToolbar";
@@ -12,6 +13,8 @@ import { Loading } from "../../../../components/Loading";
 import { localeText } from "../../../../constants/x-datagrid/localeText";
 import { getQuoteColumns } from "./columns";
 import { useStatusLogs } from "../../../../hooks/logs/useStatusLogs";
+import { buildTableHtml, openPrintWindow } from "../../../../utils/print";
+import { statusLabelMap } from "../../../../helpers/quotes";
 
 export const Quotes = () => {
   const [quotes, setQuotes] = useState([]);
@@ -51,6 +54,43 @@ export const Quotes = () => {
       active = false;
     };
   }, [paginationModel]);
+
+  const handlePrint = useCallback(() => {
+    const headers = [
+      "# Orden",
+      "Cliente",
+      "Email",
+      "Teléfono",
+      "Fecha",
+      "Estado",
+    ];
+
+    const rows = (Array.isArray(quotes) ? quotes : []).map((q) => {
+      const dateStr = q?.createdAt
+        ? new Date(q.createdAt).toLocaleString("es-MX")
+        : "";
+      const name = q?.User
+        ? `${q.User.firstName ?? ""} ${q.User.lastName ?? ""}`.trim()
+        : "";
+      const statusLabel = statusLabelMap[q?.status] ?? q?.status ?? "";
+      return `<tr>
+        <td>${q?.orderNumber ?? ""}</td>
+        <td>${name}</td>
+        <td>${q?.User?.email ?? ""}</td>
+        <td>${q?.User?.phoneNumber ?? ""}</td>
+        <td>${dateStr}</td>
+        <td>${statusLabel}</td>
+      </tr>`;
+    });
+
+    const html = buildTableHtml({
+      caption: "Listado de cotizaciones",
+      headers,
+      rows,
+    });
+
+    openPrintWindow(html, { title: "Cotizaciones" });
+  }, [quotes]);
 
   const handleStatusChange = useCallback(
     async (id, oldStatus, newStatus) => {
@@ -135,6 +175,9 @@ export const Quotes = () => {
         noRowsOverlay: CustomNoRowsOverlay,
         toolbar: CustomToolbar,
         footer: CustomFooter,
+      }}
+      slotProps={{
+        toolbar: { onPrint: handlePrint },
       }}
     />
   );

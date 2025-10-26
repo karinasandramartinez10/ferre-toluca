@@ -1,12 +1,14 @@
-import { Box, Stack } from "@mui/material";
+import { Box, IconButton, Stack } from "@mui/material";
 import {
   GridToolbarColumnsButton,
-  GridToolbarExport,
   GridToolbarQuickFilter,
+  GridToolbarExportContainer,
+  GridCsvExportMenuItem,
 } from "@mui/x-data-grid";
 import useResponsive from "../../hooks/use-responsive";
+import { Print } from "@mui/icons-material";
 
-export const CustomToolbar = () => {
+export const CustomToolbar = ({ onPrint }) => {
   const isMobile = useResponsive("down", "sm");
 
   return (
@@ -14,8 +16,7 @@ export const CustomToolbar = () => {
       p={1}
       sx={{
         display: "flex",
-        flexDirection: isMobile ? "column" : "row", 
-        gap: 1,
+        gap: 2,
         justifyContent: "space-between",
         alignItems: "center",
         backgroundColor: "white",
@@ -23,7 +24,7 @@ export const CustomToolbar = () => {
       }}
     >
       {!isMobile && (
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={1} sx={{ flexShrink: 0 }}>
           <GridToolbarColumnsButton
             slotProps={{
               button: {
@@ -31,23 +32,29 @@ export const CustomToolbar = () => {
               },
             }}
           />
-          <GridToolbarExport
-            printOptions={undefined}
-            csvOptions={{ fileName: "productos", delimiter: ";" }}
-          />
+          <GridToolbarExportContainer>
+            <GridCsvExportMenuItem
+              options={{ fileName: "productos", delimiter: ";" }}
+            />
+          </GridToolbarExportContainer>
         </Stack>
       )}
       <GridToolbarQuickFilter
         debounceMs={500}
         placeholder="Buscar productos..."
         sx={{
-          width: isMobile ? "100%" : 250, // 👈 full width en mobile
+          flexGrow: 1,
+          minWidth: isMobile ? "100%" : 240,
+          maxWidth: isMobile ? "100%" : 560,
           "& .MuiInputBase-root": {
             fontSize: "0.875rem",
             padding: "4px 8px",
           },
         }}
       />
+      <IconButton onClick={onPrint} sx={{ flexShrink: 0 }}>
+        <Print color="primary" />
+      </IconButton>
     </Box>
   );
 };
