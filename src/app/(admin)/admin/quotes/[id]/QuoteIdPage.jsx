@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Stack,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Box, Card, CardContent, CardHeader, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { fetchQuoteById, updateQuote } from "../../../../../api/quote";
 import { ErrorUI } from "../../../../../components/Error";
@@ -80,11 +72,8 @@ export const QuoteId = ({ quoteId }) => {
         "Cliente",
         `${quote?.User?.firstName ?? ""} ${quote?.User?.lastName ?? ""}`.trim(),
       ],
-      ["Email", quote?.User?.email ?? ""],
-      ["Teléfono", quote?.User?.phoneNumber ?? ""],
       ["Fecha", new Date(quote?.createdAt).toLocaleString("es-MX")],
       ["Estado", statusLabelMap[quote?.status] ?? quote?.status ?? ""],
-      ["Mensaje", quote?.message ?? ""],
     ];
 
     const headerTable = buildTableHtml({
