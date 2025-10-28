@@ -56,14 +56,7 @@ export const Quotes = () => {
   }, [paginationModel]);
 
   const handlePrint = useCallback(() => {
-    const headers = [
-      "# Orden",
-      "Cliente",
-      "Email",
-      "Teléfono",
-      "Fecha",
-      "Estado",
-    ];
+    const headers = ["# Orden", "Cliente", "Fecha", "Estado"];
 
     const rows = (Array.isArray(quotes) ? quotes : []).map((q) => {
       const dateStr = q?.createdAt
@@ -76,8 +69,6 @@ export const Quotes = () => {
       return `<tr>
         <td>${q?.orderNumber ?? ""}</td>
         <td>${name}</td>
-        <td>${q?.User?.email ?? ""}</td>
-        <td>${q?.User?.phoneNumber ?? ""}</td>
         <td>${dateStr}</td>
         <td>${statusLabel}</td>
       </tr>`;
