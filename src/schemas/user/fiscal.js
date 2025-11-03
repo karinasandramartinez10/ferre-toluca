@@ -29,11 +29,11 @@ export const FiscalProfileSchema = yup
       .nullable(),
     isDefault: yup.boolean().nullable(),
   })
-  .test(
-    "tax-regime-required",
-    "Debe seleccionar un régimen fiscal",
-    (value) => Boolean(value?.taxRegimeId || value?.taxRegimeCode)
-  )
+  .test("tax-regime-required", function (value) {
+    const hasRegime = Boolean(value?.taxRegimeId || value?.taxRegimeCode);
+    if (hasRegime) return true;
+    return this.createError({ path: "taxRegimeId", message: "Debe seleccionar un régimen fiscal" });
+  })
   .test(
     "tax-regime-xor",
     "Envíe solo uno: TaxRegimeId o taxRegimeCode",
