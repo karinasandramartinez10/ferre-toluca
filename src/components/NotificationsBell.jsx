@@ -15,17 +15,16 @@ import {
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import { useSession } from "next-auth/react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useNotificationsContext } from "../context/notifications/useNotificationsContext";
 
 const MAX_NOTIFICATIONS = 10;
 
-export default function NotificationsBell() {
+export default function NotificationsBell({ color }) {
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
     useNotificationsContext();
   const { data: session } = useSession();
   const router = useRouter();
-  const pathname = usePathname();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -60,7 +59,7 @@ export default function NotificationsBell() {
       <Tooltip title="Notificaciones" arrow>
         <IconButton
           sx={{
-            color: pathname.includes("/admin") ? "primary.main" : "grey.light",
+            color: color || "grey.light",
           }}
           onClick={handleOpen}
         >

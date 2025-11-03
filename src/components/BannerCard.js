@@ -8,13 +8,13 @@ export const BannerCard = ({
   publicId,
   onClick,
   alt = "brand-card",
-  index
+  index,
 }) => {
   return (
     <Card
       onClick={onClick}
       sx={{
-        width: WIDTH,
+        width: { xs: "100%", md: WIDTH },
         height: HEIGHT,
         position: "relative",
         display: "flex",
