@@ -84,28 +84,28 @@ export default function UserQuoteIdPage({ quoteId }) {
                   <InfoRow
                     icon={<Business />}
                     label="Razón social"
-                    value={quote.fiscalProfile.fiscalName}
+                    value={quote.fiscalProfile?.fiscalName}
                   />
                 )}
-                {quote.fiscalProfile.rfc && (
+                {quote.fiscalProfile?.rfc && (
                   <InfoRow
                     icon={<Badge />}
                     label="RFC"
-                    value={quote.fiscalProfile.rfc}
+                    value={quote.fiscalProfile?.rfc}
                   />
                 )}
                 {quote.fiscalProfile?.TaxRegime && (
                   <InfoRow
                     icon={<Policy />}
                     label="Régimen fiscal"
-                    value={quote.fiscalProfile.TaxRegime.description}
+                    value={quote.fiscalProfile?.TaxRegime?.description}
                   />
                 )}
                 {quote.fiscalProfile?.defaultCfdiUse && (
                   <InfoRow
                     icon={<ReceiptLong />}
                     label="Uso CFDI"
-                    value={quote.fiscalProfile.defaultCfdiUse.description}
+                    value={quote.fiscalProfile?.defaultCfdiUse?.description}
                   />
                 )}
               </Stack>
