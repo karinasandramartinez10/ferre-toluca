@@ -18,8 +18,15 @@ import { fetchUserQuoteById } from "../../../../../../api/quote";
 import { Loading } from "../../../../../../components/Loading";
 import { ErrorUI } from "../../../../../../components/Error";
 import QuoteProductCard from "../../../../../(admin)/admin/quotes/[id]/QuoteProductCard";
-import { ExpandMore } from "@mui/icons-material";
+import {
+  Business,
+  Badge,
+  ExpandMore,
+  ReceiptLong,
+  Policy,
+} from "@mui/icons-material";
 import { QuoteStatusStepper } from "../QuoteStatusStepper";
+import InfoRow from "../../../../../(admin)/admin/quotes/[id]/InfoRow";
 
 export default function UserQuoteIdPage({ quoteId }) {
   const [quote, setQuote] = useState(null);
@@ -69,6 +76,40 @@ export default function UserQuoteIdPage({ quoteId }) {
             />
             <CardContent sx={{ paddingTop: 0 }}>
               <QuoteStatusStepper status={quote.status} />
+              <Typography variant="h6" fontWeight={700}>
+                Datos de facturación
+              </Typography>
+              <Stack spacing={1} mb={2}>
+                {quote.fiscalProfile && (
+                  <InfoRow
+                    icon={<Business />}
+                    label="Razón social"
+                    value={quote.fiscalProfile.fiscalName}
+                  />
+                )}
+                {quote.fiscalProfile.rfc && (
+                  <InfoRow
+                    icon={<Badge />}
+                    label="RFC"
+                    value={quote.fiscalProfile.rfc}
+                  />
+                )}
+                {quote.fiscalProfile?.TaxRegime && (
+                  <InfoRow
+                    icon={<Policy />}
+                    label="Régimen fiscal"
+                    value={quote.fiscalProfile.TaxRegime.description}
+                  />
+                )}
+                {quote.fiscalProfile?.defaultCfdiUse && (
+                  <InfoRow
+                    icon={<ReceiptLong />}
+                    label="Uso CFDI"
+                    value={quote.fiscalProfile.defaultCfdiUse.description}
+                  />
+                )}
+              </Stack>
+
               <Accordion
                 disableGutters
                 defaultExpanded
