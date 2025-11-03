@@ -40,6 +40,7 @@ export const MainLayout = ({
             flexGrow: 1,
             width: "100%",
             maxWidth: "100%",
+            overflowX: "hidden",
           }}
           className="main-layout"
         >

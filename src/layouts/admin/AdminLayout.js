@@ -187,7 +187,7 @@ export const AdminLayout = ({ children }) => {
                   )}
                   <Typography variant="h1">{title}</Typography>
                 </Box>
-                <NotificationsBell />
+               {!isMobile && <NotificationsBell color="primary.main" />}
               </Box>
               <Typography
                 sx={{ color: "#838383", fontWeight: 500 }}

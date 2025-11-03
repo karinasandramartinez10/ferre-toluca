@@ -1,5 +1,6 @@
 import {
   AdminPanelSettings,
+  FactCheck,
   Favorite,
   LoginOutlined,
   Person,
@@ -40,14 +41,19 @@ export const userSectionsMobile = [
   {
     items: [
       {
-        icon: <Favorite />,
-        text: "Favoritos",
-        href: `/favorites`,
+        icon: <FactCheck />,
+        text: "Datos de facturación",
+        href: `/user/profile/fiscal`,
       },
       {
         icon: <Receipt />,
-        text: "Historial de órdenes",
-        href: `/history`,
+        text: "Historial de cotizaciones",
+        href: `/user/profile/history`,
+      },
+      {
+        icon: <Favorite />,
+        text: "Favoritos",
+        href: `/user/profile/favorites`,
       },
     ],
   },

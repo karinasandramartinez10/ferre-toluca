@@ -69,32 +69,6 @@ export const MainNavbarDesktop = ({ session }) => {
         <SearchComponent />
       </Box>
       <Box display="flex" alignItems="center" gap={1}>
-        {isAuthenticated && !isAdmin && (
-          <>
-            <Tooltip title="Mis favoritos" arrow>
-              <IconButton
-                component={Link}
-                href="/favorites"
-                sx={(theme) => ({
-                  color: theme.palette.grey.light,
-                })}
-              >
-                <Favorite />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Historial de órdenes" arrow>
-              <IconButton
-                sx={(theme) => ({
-                  color: theme.palette.grey.light,
-                })}
-                component={Link}
-                href="/history"
-              >
-                <ReceiptLong />
-              </IconButton>
-            </Tooltip>
-          </>
-        )}
         {isAdmin && (
           <Tooltip title="Panel de administador" arrow>
             <IconButton
@@ -121,7 +95,17 @@ export const MainNavbarDesktop = ({ session }) => {
             horizontal: "center",
           }}
         >
-          <Stack sx={{ p: 2 }}>
+          <Stack sx={{ p: 2, gap: 1 }}>
+            {isAuthenticated && !isAdmin && (
+              <Button 
+                variant="contained"
+                component={Link}
+                href="/user/profile/fiscal"
+                fullWidth
+              >
+                Mi Cuenta
+              </Button>
+            )}
             {isAuthenticated ? (
               <Button
                 onClick={Logout}
