@@ -11,6 +11,7 @@ import { DescriptionOutlined, SettingsOutlined } from "@mui/icons-material";
 import { formatPhoneNumber } from "../../../../utils/phoneNumber";
 import { formatDateDayAbrev } from "../../../../utils/date";
 import { STEPS } from "../../../../constants/quotes/status";
+import { getDefaultFiscalProfile } from "../../../../utils/fiscal";
 
 export const getQuoteColumns = ({
   updatingId,
@@ -138,6 +139,26 @@ export const getQuoteColumns = ({
     headerName: "Teléfono",
     width: 140,
     valueGetter: (_, row) => formatPhoneNumber(row?.User?.phoneNumber) || "",
+  },
+  {
+    field: "fiscalName",
+    headerName: "Razón social",
+    width: 200,
+    sortable: false,
+    valueGetter: (_, row) => {
+      const chosen = getDefaultFiscalProfile(row?.User?.fiscalProfiles);
+      return chosen?.fiscalName || "";
+    },
+  },
+  {
+    field: "rfc",
+    headerName: "RFC",
+    width: 140,
+    sortable: false,
+    valueGetter: (_, row) => {
+      const chosen = getDefaultFiscalProfile(row?.User?.fiscalProfiles);
+      return chosen?.rfc || "";
+    },
   },
   {
     field: "createdAt",
