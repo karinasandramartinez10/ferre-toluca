@@ -1,11 +1,11 @@
 "use client";
 
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { ErrorUI } from "../../../components/Error";
-import { Loading } from "../../../components/Loading";
-import { ProductCard } from "../../../components/ProductCard";
-import { useFavorites } from "../../../hooks/favorites/useFavorites";
+import { ErrorUI } from "../../../../../components/Error";
+import { Loading } from "../../../../../components/Loading";
+import { ProductCard } from "../../../../../components/ProductCard";
+import { useFavorites } from "../../../../../hooks/favorites/useFavorites";
 
 const Favorites = () => {
   const { favorites, error, loading } = useFavorites();
@@ -40,9 +40,6 @@ const Favorites = () => {
   return (
     <Grid container>
       <Grid item xs={12}>
-        <Typography component="h1" variant="h1" mb={2}>
-          Favoritos
-        </Typography>
         {loading && <Loading />}
       </Grid>
       <Grid container spacing={{ xs: 2, md: 2 }} sx={{ minHeight: "500px" }}>

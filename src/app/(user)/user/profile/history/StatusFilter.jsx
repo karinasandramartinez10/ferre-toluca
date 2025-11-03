@@ -1,5 +1,5 @@
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { STEPS } from "../../../constants/quotes/status";
+import { STEPS } from "../../../../../constants/quotes/status";
 
 const USER_STEPS = [{ value: "", label: "Todas" }, ...STEPS];
 

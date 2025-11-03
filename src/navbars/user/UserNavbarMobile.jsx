@@ -1,6 +1,6 @@
 "use client";
 
-import { AppBar, Box, Drawer, IconButton, Toolbar } from "@mui/material";
+import { Box, Drawer, IconButton } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -9,9 +9,8 @@ import { Menu } from "@mui/icons-material";
 import Cart from "../../components/Cart";
 import NotificationsBell from "../../components/NotificationsBell";
 import { userSectionsMobile } from "../main/list-items";
-import { UserNavbarDesktop } from "./UserNavbarDesktop";
 
-const UserNavbarMobile = () => {
+export const UserNavbarMobile = () => {
   const [openNavbar, setOpenNavbar] = useState(false);
 
   const toggleDrawer = (open) => (event) => {
@@ -66,16 +65,5 @@ const UserNavbarMobile = () => {
         />
       </Drawer>
     </Box>
-  );
-};
-
-export const UserNavbar = () => {
-  return (
-    <AppBar sx={{ justifyContent: "center" }}>
-      <Toolbar>
-        <UserNavbarDesktop />
-        <UserNavbarMobile />
-      </Toolbar>
-    </AppBar>
   );
 };
