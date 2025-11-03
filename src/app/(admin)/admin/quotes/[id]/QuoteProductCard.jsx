@@ -20,7 +20,7 @@ const QuoteProductCard = ({ product }) => (
         {toCapitalizeWords(product.name)}
       </Typography>
       <Typography variant="body" color="primary.main">
-        {toCapitalizeWords(product.brand.name)}
+        {toCapitalizeWords(product.brand?.name)}
       </Typography>
       <Typography variant="body2" color="text.secondary">
         SKU {product.code}
