@@ -1,4 +1,4 @@
-import UserLayout from "../../layouts/user/UserLayout";
+import UserProfileLayout from "../../layouts/user/UserProfileLayout";
 
 export const metadata = {
   title: "Ferreteria Texcoco",
@@ -9,6 +9,5 @@ export const metadata = {
 };
 
 export default async function Layout({ children }) {
-
-  return <UserLayout>{children}</UserLayout>;
+  return <UserProfileLayout>{children}</UserProfileLayout>;
 }

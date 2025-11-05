@@ -4,27 +4,96 @@ import {
   Box,
   Typography,
   Button,
-  TextField,
-  IconButton,
   Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
 } from "@mui/material";
-
-import { Delete as DeleteIcon } from "@mui/icons-material";
-import Image from "next/image";
 import { signIn, useSession } from "next-auth/react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 import { createQuote } from "../../../api/quote";
 import { LoadingButton } from "@mui/lab";
-import { useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import LoginContainer from "../../auth/login/LoginContainer";
 import LoginForm from "../../auth/login/LoginForm";
 import { useRouter } from "next/navigation";
-import { QuantityField } from "../../../components/QuantityField";
 import { useOrderContext } from "../../../context/order/useOrderContext";
 import Link from "next/link";
+import { useUserFiscals } from "../../../hooks/user/fiscal/useUserFiscals";
+import { useFiscalMutations } from "../../../hooks/user/fiscal/useFiscalMutations";
+
+
+import { useFiscalCatalogs } from "../../../hooks/user/fiscal/useFiscalCatalogs";
+import { FiscalProfileSchema } from "../../../schemas/user/fiscal";
+import FiscalForm from "../../(user)/user/profile/fiscal/FiscalForm";
+import { getDefaultFiscalProfile } from "../../../utils/fiscal";
+import OrderItemRow from "./OrderItemRow";
+import BillingSelect from "./BillingSelect";
+import MessageSection from "./MessageSection";
+
+const TotalRow = ({ totalItems }) => (
+  <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+    <Typography
+      variant="body"
+      fontWeight={600}
+    >{`Total de productos: ${totalItems}`}</Typography>
+  </Box>
+);
+
+const ActionsRow = ({ onClear, onSubmit, disabled, loading }) => (
+  <Box
+    sx={{
+      display: "flex",
+      justifyContent: "space-between",
+      mt: 4,
+      flexDirection: { xs: "column", md: "row" },
+    }}
+    gap={1}
+  >
+    <Button variant="outlined" color="primary" onClick={onClear}>
+      Vaciar Carrito
+    </Button>
+
+    <LoadingButton
+      disabled={disabled}
+      loading={loading}
+      variant="contained"
+      onClick={onSubmit}
+    >
+      Solicitar cotización
+    </LoadingButton>
+  </Box>
+);
+
+const FiscalDialog = ({
+  open,
+  onClose,
+  defaults,
+  taxRegimes,
+  cfdiUses,
+  onSubmit,
+  submitting,
+  hideIsDefault,
+}) => (
+  <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+    <DialogTitle>Nuevos datos de facturación</DialogTitle>
+    <DialogContent sx={{ paddingTop: "16px !important" }}>
+      <FiscalForm
+        defaults={defaults}
+        schema={FiscalProfileSchema}
+        taxRegimes={taxRegimes}
+        cfdiUses={cfdiUses}
+        onSubmit={onSubmit}
+        submitting={submitting}
+        onCancel={onClose}
+        hideIsDefault={hideIsDefault}
+      />
+    </DialogContent>
+  </Dialog>
+);
 
 const QuoteSchema = yup.object().shape({
   message: yup.string().required("El mensaje es requerido"),
@@ -32,6 +101,11 @@ const QuoteSchema = yup.object().shape({
 
 const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
+  const [openFiscalModal, setOpenFiscalModal] = useState(false);
+  const [selectedFiscalId, setSelectedFiscalId] = useState(null);
+  const { profiles, loading: loadingFiscals, refetch } = useUserFiscals();
+  const { create, loading: savingFiscal } = useFiscalMutations();
+  const { taxRegimes, cfdiUses } = useFiscalCatalogs();
 
   const router = useRouter();
 
@@ -57,62 +131,106 @@ const CheckoutPage = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleCheckout = async (values) => {
-    setLoading(true);
-    try {
-      const products = orderItems.map((item) => ({
-        ProductId: item.product.id,
-        quantity: item.quantity,
-      }));
+  const handleCheckout = useCallback(
+    async (values) => {
+      setLoading(true);
+      try {
+        const products = orderItems.map((item) => ({
+          ProductId: item.product.id,
+          quantity: item.quantity,
+        }));
 
-      const requestBody = {
-        message: values.message,
-        products,
-      };
+        const requestBody = {
+          message: values.message,
+          products,
+          userFiscalProfileId: selectedFiscalId || undefined,
+        };
 
-      await createQuote(requestBody);
-      enqueueSnackbar("Solicitud de orden enviada correctamente.", {
-        variant: "success",
-        autoHideDuration: 5000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "right",
-        },
-      });
-      clearOrder();
-      reset();
-    } catch (error) {
-      console.log(error);
-      enqueueSnackbar("Hubo un error al procesar la orden", {
-        variant: "error",
-        autoHideDuration: 5000,
-        anchorOrigin: {
-          vertical: "top",
-          horizontal: "right",
-        },
-      });
-    } finally {
-      setLoading(false);
+        await createQuote(requestBody);
+        enqueueSnackbar("Solicitud de orden enviada correctamente.", {
+          variant: "success",
+          autoHideDuration: 5000,
+          anchorOrigin: {
+            vertical: "top",
+            horizontal: "right",
+          },
+        });
+        clearOrder();
+        reset();
+      } catch (error) {
+        console.log(error);
+        enqueueSnackbar(
+          error?.message || "Hubo un error al procesar la orden",
+          {
+            variant: "error",
+            autoHideDuration: 5000,
+            anchorOrigin: {
+              vertical: "top",
+              horizontal: "right",
+            },
+          }
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [orderItems, selectedFiscalId, enqueueSnackbar, clearOrder, reset]
+  );
+
+  // Default selected fiscal profile
+  useEffect(() => {
+    if (profiles && profiles.length > 0) {
+      const chosen = getDefaultFiscalProfile(profiles);
+      setSelectedFiscalId(chosen?.id ?? profiles[0].id);
+    } else {
+      setSelectedFiscalId(null);
     }
-  };
+  }, [profiles]);
 
-  const onSignIn = async ({ email, password }) => {
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+  const sortedProfiles = useMemo(() => {
+    if (!Array.isArray(profiles)) return [];
+    const chosen = getDefaultFiscalProfile(profiles);
+    if (!chosen) return profiles;
+    return [chosen, ...profiles.filter((p) => p.id !== chosen.id)];
+  }, [profiles]);
 
-    if (res?.error) {
-      enqueueSnackbar("Correo o contraseña incorrectos", {
-        variant: "error",
+  const handleCreateFiscal = useCallback(
+    async (values) => {
+      try {
+        const created = await create(values, "id");
+        await refetch();
+        if (created?.id) setSelectedFiscalId(created.id);
+        setOpenFiscalModal(false);
+        enqueueSnackbar("Datos de facturación creados", { variant: "success" });
+      } catch (e) {
+        enqueueSnackbar(e?.message || "No se pudo crear el registro", {
+          variant: "error",
+        });
+      }
+    },
+    [create, refetch, setSelectedFiscalId, setOpenFiscalModal, enqueueSnackbar]
+  );
+
+  const onSignIn = useCallback(
+    async ({ email, password }) => {
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
-      return;
-    }
 
-    enqueueSnackbar("¡Sesión iniciada!", { variant: "success" });
-    router.refresh();
-  };
+      if (res?.error) {
+        enqueueSnackbar("Correo o contraseña incorrectos", {
+          variant: "error",
+        });
+        return;
+      }
+
+      enqueueSnackbar("¡Sesión iniciada!", { variant: "success" });
+      router.refresh();
+    },
+    [enqueueSnackbar, router]
+  );
 
   if (orderItems.length === 0) {
     return (
@@ -132,118 +250,54 @@ const CheckoutPage = () => {
   return (
     <Box width="100%">
       <Typography variant="h4" sx={{ mb: 2 }}>
-        Checkout
+        Productos a cotizar
       </Typography>
 
       {orderItems.map(({ product, quantity }) => (
-        <Box
+        <OrderItemRow
           key={product.id}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            mb: 2,
-            borderBottom: "1px solid #ddd",
-            pb: 2,
-          }}
-          gap={2}
-        >
-          <Image
-            src={product.Files?.[0]?.path ?? "/images/placeholder.png"}
-            alt={product.name}
-            width={80}
-            height={80}
-            style={{ marginRight: 8, objectFit: "contain" }}
-          />
-
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="subtitle1">{product.name}</Typography>
-            <Typography variant="body3" color="text.secondary">
-              {product.code}
-            </Typography>
-
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                mt: 1,
-              }}
-            >
-              <QuantityField productId={product.id} quantity={quantity} />
-            </Box>
-          </Box>
-
-          <IconButton
-            color="primary" //#13161b
-            onClick={() => removeFromOrder(product.id)}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Box>
+          product={product}
+          quantity={quantity}
+          onRemove={() => removeFromOrder(product.id)}
+        />
       ))}
 
       {isAuthenticated ? (
         <>
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-            <Typography variant="h6">
-              Total de productos: {totalItems}
-            </Typography>
-          </Box>
-
-          <Box mt={2}>
-            <Typography id="quote-modal-description">Agrega un mensaje</Typography>
-            <Controller
-              control={control}
-              name="message"
-              render={({ field, fieldState: { invalid, error } }) => (
-                <TextField
-                  label=""
-                  multiline
-                  fullWidth
-                  placeholder="Quisiera saber si..."
-                  error={invalid}
-                  helperText={error?.message && error.message}
-                  variant="outlined"
-                  rows={4}
-                  inputProps={{
-                    form: {
-                      autocomplete: "off",
-                    },
-                  }}
-                  InputProps={{
-                    sx: {
-                      borderRadius: "8px",
-                      background: "#FFF",
-                    },
-                  }}
-                  {...field}
-                />
-              )}
-            />
-
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                mt: 4,
-                flexDirection: { xs: "column", md: "row" },
-              }}
-              gap={1}
-            >
-              {/* #13161b */}
-              <Button variant="outlined" color="primary" onClick={clearOrder}>
-                Vaciar Carrito
-              </Button>
-
-              <LoadingButton
-                disabled={!isValid}
-                loading={loading}
-                variant="contained"
-                onClick={handleSubmit(handleCheckout)}
-              >
-                Solicitar cotización
-              </LoadingButton>
-            </Box>
-          </Box>
+          <TotalRow totalItems={totalItems} />
+          <BillingSelect
+            loading={loadingFiscals}
+            profiles={sortedProfiles}
+            selectedId={selectedFiscalId}
+            onChange={setSelectedFiscalId}
+            onOpenCreate={() => setOpenFiscalModal(true)}
+          />
+          <MessageSection control={control} />
+          <ActionsRow
+            onClear={clearOrder}
+            onSubmit={handleSubmit(handleCheckout)}
+            disabled={!isValid || !selectedFiscalId}
+            loading={loading}
+          />
+          <FiscalDialog
+            open={openFiscalModal}
+            onClose={() => setOpenFiscalModal(false)}
+            defaults={{
+              fiscalName: "",
+              rfc: "",
+              taxZipCode: "",
+              taxRegimeId: null,
+              taxRegimeCode: "",
+              defaultCfdiUseId: null,
+              cfdiUseCode: "",
+              isDefault: profiles.length === 0,
+            }}
+            taxRegimes={taxRegimes}
+            cfdiUses={cfdiUses}
+            onSubmit={handleCreateFiscal}
+            submitting={savingFiscal}
+            hideIsDefault={false}
+          />
         </>
       ) : (
         <LoginContainer>

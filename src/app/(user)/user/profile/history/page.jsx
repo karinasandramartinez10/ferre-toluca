@@ -1,10 +1,10 @@
 "use client";
 
-import { Box, Grid, Typography } from "@mui/material";
-import { ErrorUI } from "../../../components/Error";
-import { Loading } from "../../../components/Loading";
-import Pagination from "../../../components/Pagination";
-import { useOrderHistory } from "../../../hooks/order/useOrderHistory";
+import { Box, Grid } from "@mui/material";
+import { ErrorUI } from "../../../../../components/Error";
+import { Loading } from "../../../../../components/Loading";
+import Pagination from "../../../../../components/Pagination";
+import { useOrderHistory } from "../../../../../hooks/order/useOrderHistory";
 import HistoryList from "./HistoryList";
 import EmptyQuotes from "./EmptyQuotes";
 import { StatusFilter } from "./StatusFilter";
@@ -46,11 +46,7 @@ export default function HistoryPage() {
   return (
     <Grid container>
       <Grid item xs={12}>
-        <Typography component="h1" variant="h1" mb={2}>
-          Historial de órdenes
-        </Typography>
-
-        <Box display="flex" gap={2} flexDirection={{ xs: "column", md: "row" }}>
+        <Box display="flex" gap={2} mt={2} flexDirection={{ xs: "column", md: "row" }}>
           <StatusFilter
             value={status}
             onChange={(e) => {

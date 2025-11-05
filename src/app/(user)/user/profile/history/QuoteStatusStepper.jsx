@@ -1,12 +1,12 @@
 import { Stepper, Step, StepLabel, Box } from "@mui/material";
-import { STEPS } from "../../../constants/quotes/status";
+import { STEPS } from "../../../../../constants/quotes/status";
 
 export const QuoteStatusStepper = ({ status }) => {
   const activeIndex = STEPS.findIndex((step) => step.value === status);
   const idx0 = activeIndex >= 0 ? activeIndex : 0;
 
   return (
-    <Box sx={{ width: "100%", mb: 2 }}>
+    <Box sx={{ width: "100%", mb: 2, mt: 2 }}>
       <Stepper activeStep={activeIndex} alternativeLabel>
         {STEPS.map(({ label, Icon }, idx) => (
           <Step key={label} completed={idx < idx0}>
@@ -21,8 +21,8 @@ export const QuoteStatusStepper = ({ status }) => {
               }
               sx={{
                 "& .MuiStepLabel-label": {
-                  typography: "body3",
-                  mt: 0.5,
+                  fontSize: "0.875rem",
+                  mt: 0,
                   color: idx === idx0 ? "secondary.hover" : "grey.400",
                 },
               }}

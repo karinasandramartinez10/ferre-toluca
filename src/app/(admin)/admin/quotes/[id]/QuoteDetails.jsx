@@ -5,6 +5,10 @@ import {
   Person,
   Phone,
   Print,
+  Business,
+  Badge,
+  ReceiptLong,
+  Policy,
 } from "@mui/icons-material";
 import {
   Alert,
@@ -16,6 +20,7 @@ import {
   Grid,
   IconButton,
   Stack,
+  Typography,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { STEPS } from "../../../../../constants/quotes/status";
@@ -71,7 +76,7 @@ const QuoteDetails = ({
     </Box>
   );
 
-  const infoConfig = [
+  const userInfoRows = [
     {
       icon: <Person />,
       label: "Cliente",
@@ -103,6 +108,43 @@ const QuoteDetails = ({
     },
   ];
 
+  const fiscalProfile = quote?.fiscalProfile;
+
+  const fiscalInfoRows = [
+    ...(fiscalProfile
+      ? [
+          {
+            icon: <Business />,
+            label: "Razón social",
+            value: fiscalProfile?.fiscalName,
+          },
+          {
+            icon: <Badge />,
+            label: "RFC",
+            value: fiscalProfile?.rfc,
+          },
+        ]
+      : []),
+    ...(fiscalProfile?.TaxRegime
+      ? [
+          {
+            icon: <Policy />,
+            label: "Régimen fiscal",
+            value: fiscalProfile?.TaxRegime?.description,
+          },
+        ]
+      : []),
+    ...(fiscalProfile?.defaultCfdiUse
+      ? [
+          {
+            icon: <ReceiptLong />,
+            label: "Uso CFDI",
+            value: fiscalProfile?.defaultCfdiUse?.description,
+          },
+        ]
+      : []),
+  ];
+
   return (
     <Card variant="outlined" sx={{ p: 2 }}>
       <CardHeader
@@ -125,21 +167,51 @@ const QuoteDetails = ({
             )}
           </Grid>
 
-          {/* 1. Columna izquierda: datos */}
-          <Grid item xs={12} md={8}>
+          {/* Datos del usuario y datos fiscales */}
+          <Grid item xs={12} md={fiscalInfoRows.length ? 6 : 12}>
+            <Typography
+              variant="subtitle2"
+              fontWeight={700}
+              sx={{ display: { xs: "none", md: "block" }, mb: 1 }}
+            >
+              Información del cliente
+            </Typography>
             <Stack spacing={1}>
-              {infoConfig.map(({ icon, label, value, action, actionLabel }) => (
-                <InfoRow
-                  key={label}
-                  icon={icon}
-                  label={label}
-                  value={value}
-                  action={action}
-                  actionLabel={actionLabel}
-                />
-              ))}
+              {userInfoRows.map(
+                ({ icon, label, value, action, actionLabel }) => (
+                  <InfoRow
+                    key={label}
+                    icon={icon}
+                    label={label}
+                    value={value}
+                    action={action}
+                    actionLabel={actionLabel}
+                  />
+                )
+              )}
             </Stack>
           </Grid>
+          {fiscalInfoRows.length > 0 && (
+            <Grid item xs={12} md={6}>
+              <Typography
+                variant="subtitle2"
+                fontWeight={700}
+                sx={{ display: { xs: "none", md: "block" }, mb: 1 }}
+              >
+                Datos de facturación
+              </Typography>
+              <Stack spacing={1}>
+                {fiscalInfoRows.map(({ icon, label, value }) => (
+                  <InfoRow
+                    key={label}
+                    icon={icon}
+                    label={label}
+                    value={value}
+                  />
+                ))}
+              </Stack>
+            </Grid>
+          )}
         </Grid>
       </CardContent>
     </Card>

@@ -16,20 +16,38 @@ export const PAGE_METADATA = {
   },
   "/admin/brands": {
     title: "Marcas",
-    subtitle: "Gestiona las marcas disponibles en la tienda. Puedes crear nuevas o editar las existentes"
+    subtitle:
+      "Gestiona las marcas disponibles en la tienda. Puedes crear nuevas o editar las existentes",
   },
   "/admin/categories": {
     title: "Categorías",
-    subtitle: "Crea y actualiza las categorías disponibles para organizar tus productos."
+    subtitle:
+      "Crea y actualiza las categorías disponibles para organizar tus productos.",
   },
   "/admin/subcategories": {
     title: "Subcategorías",
-    subtitle: "Asocia subcategorías a una categoría principal y edítalas cuando sea necesario."
+    subtitle:
+      "Asocia subcategorías a una categoría principal y edítalas cuando sea necesario.",
   },
   "/admin/product-type": {
     title: "Tipos de Producto",
-    subtitle: "Añade detalles como acabados, colores u otras variantes. Los tipos son opcionales."
-  }
+    subtitle:
+      "Añade detalles como acabados, colores u otras variantes. Los tipos son opcionales.",
+  },
+  "/user/profile/fiscal": {
+    title: "Datos de facturación",
+    subtitle:
+      "Administra tus datos de facturación para emitir facturas y agilizar tus compras.",
+  },
+  "/user/profile/history": {
+    title: "Historial de cotizaciones",
+    subtitle:
+      "Revisa tus cotizaciones anteriores y sigue el proceso de compra.",
+  },
+  "/user/profile/favorites": {
+    title: "Favoritos",
+    subtitle: "Revisa tus productos favoritos.",
+  },
 };
 
 export const getPageMetadata = (pathname) => {
@@ -38,6 +56,14 @@ export const getPageMetadata = (pathname) => {
       title: "Detalles de la cotización",
       subtitle:
         "Revisa y da seguimiento a la solicitud del cliente. Usa los botones de contacto y marca la cotización como leída una vez atendida.",
+    };
+  }
+
+  if (pathname.startsWith("/user/profile/history/")) {
+    return {
+      title: "Detalles de la cotización",
+      subtitle:
+        "Revisa los detalles de la cotización.",
     };
   }
 

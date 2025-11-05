@@ -14,7 +14,7 @@ import {
 import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 import { format } from "date-fns";
 import { ProductItem } from "./ProductItem";
-import { QuoteStatusStepper } from "./QuoteStatusStepper";
+import StatusChipCompact from "./StatusChipCompact";
 import { useRouter } from "next/navigation";
 
 const QuoteCard = ({ order, expanded, onToggle }) => {
@@ -62,17 +62,20 @@ const QuoteCard = ({ order, expanded, onToggle }) => {
         />
       </Box>
 
-      <QuoteStatusStepper status={order.status} />
+      {/* Estado compacto para evitar overflow en cards con sidebar */}
+      <Box display="flex" justifyContent="flex-start" px={1} pb={2}>
+        <StatusChipCompact status={order.status} />
+      </Box>
       <Divider />
       <CardContent sx={{ p: 1, flexGrow: 1, pb: "0px !important" }}>
         <Typography variant="body2" gutterBottom noWrap>
           <strong>Mensaje:</strong> {order.message || "Sin mensaje"}
         </Typography>
-        <Box display="flex" justifyContent="flex-end" mb={1}>
+        <Box display="flex" justifyContent="flex-start" pt={1} mb={1}>
           <Button
             size="small"
             variant="outlined"
-            onClick={() => router.push(`/history/${order.id}`)}
+            onClick={() => router.push(`/user/profile/history/${order.id}`)}
           >
             Ver detalle
           </Button>

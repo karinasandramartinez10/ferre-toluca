@@ -1,43 +1,41 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+import { useMemo, useState } from "react";
 import {
-  AppBar,
   Box,
-  Button,
-  Divider,
-  Drawer,
-  Grid,
-  List,
-  ListItem,
-  ListItemButton,
-  Stack,
-  Toolbar,
   Typography,
+  List,
+  ListItemButton,
+  Drawer,
+  Divider,
+  Grid,
+  AppBar,
+  Toolbar,
+  Button,
+  Stack,
+  ListItem,
   IconButton,
 } from "@mui/material";
-import { ArrowBackIosNewRounded } from "@mui/icons-material";
-import Image from "next/image";
-import { useMemo, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import NextLink from "next/link";
 import useResponsive from "../../hooks/use-responsive";
-import AdminNavbarMobile from "../../navbars/admin/AdminNavbarMobile";
-import { getPageMetadata } from "./routes-metadata";
-import { drawerItems } from "./drawerItems";
-import { useSession } from "next-auth/react";
-import { logout } from "../../actions/logout";
+import { getPageMetadata } from "../admin/routes-metadata";
 import NotificationsBell from "../../components/NotificationsBell";
+import { UserNavbarMobile } from "../../navbars/user/UserNavbarMobile";
+import { logout } from "../../actions/logout";
+import { useSession } from "next-auth/react";
+import NextLink from "next/link";
+import { userDrawerItems } from "./userDrawerItems";
+import Image from "next/image";
+import { ArrowBackIosNewRounded } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 const drawerWidth = 200;
 
-export const AdminLayout = ({ children }) => {
+export default function UserProfileLayout({ children }) {
   const [_, setIsClosing] = useState(false);
-
-  const isMobile = useResponsive("down", "sm");
   const pathname = usePathname();
   const router = useRouter();
-
-  const { title, subtitle } = getPageMetadata(pathname);
+  const isMobile = useResponsive("down", "sm");
 
   const { data: session } = useSession();
 
@@ -66,8 +64,10 @@ export const AdminLayout = ({ children }) => {
               </NextLink>
             </Box>
             <Stack gap={1}>
-              {drawerItems
-                .filter((item) => item.visibleFor.includes(session?.user?.role))
+              {userDrawerItems
+                .filter((item) =>
+                  item.visibleFor?.includes(session?.user?.role)
+                )
                 .map((item) => (
                   <NextLink key={item.text} href={item.pathname}>
                     <ListItem disablePadding>
@@ -105,10 +105,7 @@ export const AdminLayout = ({ children }) => {
             </Stack>
           </List>
         </Box>
-        {/* Separador */}
         <Divider sx={{ mx: 2 }} />
-
-        {/* Botón de logout */}
         <Box sx={{ p: 2 }}>
           <Button
             variant="outlined"
@@ -126,7 +123,9 @@ export const AdminLayout = ({ children }) => {
 
   const pathSegments = pathname.split("/").filter(Boolean);
   // por ejemplo: si hay más de 2 segmentos (p.ej. /admin/quotes/123)
-  const showBackButton = pathSegments.length > 2;
+  const showBackButton = pathSegments.length > 3;
+
+  const { title, subtitle } = getPageMetadata(pathname);
 
   return (
     <Box
@@ -139,11 +138,26 @@ export const AdminLayout = ({ children }) => {
       <Box component="nav" sx={{ display: { xs: "block", sm: "none" } }}>
         <AppBar>
           <Toolbar sx={{ paddingRight: "8px" }}>
-            <AdminNavbarMobile role={session?.user?.role} />
+            <UserNavbarMobile />
             <Box flexGrow={1} />
           </Toolbar>
         </AppBar>
       </Box>
+
+      <Drawer
+        variant="permanent"
+        sx={{
+          display: { xs: "none", sm: "block" },
+          width: "100%",
+          flexShrink: 0,
+          [`& .MuiDrawer-paper`]: {
+            width: drawerWidth,
+            boxSizing: "border-box",
+          },
+        }}
+      >
+        {drawer}
+      </Drawer>
       <main
         style={{
           width: isMobile ? "100%" : `calc(100% - ${drawerWidth}px)`,
@@ -151,21 +165,6 @@ export const AdminLayout = ({ children }) => {
           padding: isMobile ? "16px" : "24px",
         }}
       >
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: "none", sm: "block" },
-            width: "100%",
-            flexShrink: 0,
-            [`& .MuiDrawer-paper`]: {
-              width: drawerWidth,
-              boxSizing: "border-box",
-            },
-          }}
-        >
-          {drawer}
-        </Drawer>
-
         <Grid
           sx={{ marginTop: { xs: "50px", md: "0px" } }}
           display="flex"
@@ -176,7 +175,7 @@ export const AdminLayout = ({ children }) => {
             <Box width="100%">
               <Box display="flex" gap={1.5} justifyContent="space-between">
                 <Box display="flex" gap={1}>
-                  {showBackButton && (
+                {showBackButton && (
                     <IconButton onClick={() => router.back()}>
                       <ArrowBackIosNewRounded
                         sx={{
@@ -187,7 +186,7 @@ export const AdminLayout = ({ children }) => {
                   )}
                   <Typography variant="h1">{title}</Typography>
                 </Box>
-               {!isMobile && <NotificationsBell color="primary.main" />}
+                {!isMobile && <NotificationsBell color="primary.main" />}
               </Box>
               <Typography
                 sx={{ color: "#838383", fontWeight: 500 }}
@@ -202,7 +201,6 @@ export const AdminLayout = ({ children }) => {
           </Grid>
         </Grid>
       </main>
-      <footer></footer>
     </Box>
   );
-};
+}
