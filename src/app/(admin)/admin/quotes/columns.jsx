@@ -19,18 +19,19 @@ export const getQuoteColumns = ({
   editingId,
   setEditingId,
   finishEdit,
+  basePath = "/admin/quotes",
 }) => [
   {
     field: "actions",
     headerName: "Ver detalle",
     width: 110,
-    align: "center", // Centra el contenido dentro de la celda
+    align: "center",
     sortable: false,
     renderCell: (params) => (
-      <Link href={`/admin/quotes/${params.row.id}`} passHref>
+      <Link href={`${basePath}/${params.row.id}`} passHref>
         <IconButton
           sx={{
-            mx: "auto", // Centra horizontalmente si fuera necesario
+            mx: "auto",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -88,7 +89,6 @@ export const getQuoteColumns = ({
             position: "relative",
             width: "100%",
             alignItems: "center",
-            // justifyContent: "center",
             height: "100%",
             px: 1,
             display: "flex",
