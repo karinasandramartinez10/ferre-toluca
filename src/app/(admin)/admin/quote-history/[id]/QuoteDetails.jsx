@@ -162,7 +162,7 @@ const QuoteDetails = ({
             />
             {showAlert && (
               <Alert severity="info">
-                Haz clic en otro paso para habilitar "Guardar estado"
+                Haz clic en otro paso para habilitar &quot;Guardar estado&quot;
               </Alert>
             )}
           </Grid>
