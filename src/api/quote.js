@@ -15,16 +15,31 @@ export const createQuote = async (body) => {
   }
 };
 
-export const fetchQuotes = async (page = 1, size = 10) => {
+export const fetchQuotes = async (
+  page = 1,
+  size = 10,
+  status = null,
+  excludedStatus = null
+) => {
   try {
+    const params = {
+      page,
+      size,
+    };
+
+    if (status) {
+      params.status = status;
+    }
+
+    if (excludedStatus) {
+      params.excludedStatus = excludedStatus;
+    }
+
     const { data } = await privateApi.get("/quote", {
       headers: {
         "Content-Type": "application/json",
       },
-      params: {
-        page,
-        size,
-      },
+      params,
     });
 
     return data.data;
