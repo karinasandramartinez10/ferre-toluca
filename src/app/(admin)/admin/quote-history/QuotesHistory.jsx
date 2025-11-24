@@ -11,24 +11,12 @@ import { CustomFooter } from "../../../../components/DataGrid/CustomFooter";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
 import { localeText } from "../../../../constants/x-datagrid/localeText";
-import { getQuoteColumns } from "./columns";
+import { getQuoteHistoryColumns } from "./columns";
 import { useStatusLogs } from "../../../../hooks/logs/useStatusLogs";
 import { buildTableHtml, openPrintWindow } from "../../../../utils/print";
 import { statusLabelMap } from "../../../../helpers/quotes";
 
-export const Quotes = ({
-  statusFilter = null,
-  excludeStatus = null,
-  printTitle = "Listado de cotizaciones",
-  printWindowTitle = "Cotizaciones",
-  basePath = "/admin/quotes",
-}) => {
-  // Si no hay statusFilter y basePath es la ruta de quotes, excluir DISPATCHED por defecto
-  const finalExcludeStatus =
-    excludeStatus ??
-    (statusFilter === null && basePath === "/admin/quotes"
-      ? "DISPATCHED"
-      : null);
+export const QuotesHistory = () => {
   const [quotes, setQuotes] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [paginationModel, setPaginationModel] = useState({
@@ -51,13 +39,11 @@ export const Quotes = ({
         const { quotes, totalCount } = await fetchQuotes(
           paginationModel.page + 1,
           paginationModel.pageSize,
-          statusFilter,
-          finalExcludeStatus
+          "DISPATCHED"
         );
         if (active) {
           setQuotes(quotes);
           setTotalCount(totalCount);
-          setError(false);
         }
       } catch {
         if (active) setError(true);
@@ -68,12 +54,7 @@ export const Quotes = ({
     return () => {
       active = false;
     };
-  }, [
-    paginationModel.page,
-    paginationModel.pageSize,
-    statusFilter,
-    finalExcludeStatus,
-  ]);
+  }, [paginationModel]);
 
   const handlePrint = useCallback(() => {
     const headers = ["# Orden", "Cliente", "Fecha", "Estado"];
@@ -95,48 +76,28 @@ export const Quotes = ({
     });
 
     const html = buildTableHtml({
-      caption: printTitle,
+      caption: "Cotizaciones enviadas",
       headers,
       rows,
     });
 
-    openPrintWindow(html, { title: printWindowTitle });
-  }, [quotes, printTitle, printWindowTitle]);
+    openPrintWindow(html, { title: "Historial de cotizaciones" });
+  }, [quotes]);
 
   const handleStatusChange = useCallback(
     async (id, oldStatus, newStatus) => {
       setUpdatingId(id);
       try {
         await updateQuote(id, { status: newStatus });
+        setQuotes((prev) =>
+          prev.map((q) => (q.id === id ? { ...q, status: newStatus } : q))
+        );
 
         await appendLog(id, {
           oldStatus,
           newStatus,
           changedAt: new Date().toISOString(),
         });
-
-        if (finalExcludeStatus && newStatus === finalExcludeStatus) {
-          setQuotes((prev) => prev.filter((q) => q.id !== id));
-          setTotalCount((prev) => Math.max(0, prev - 1));
-
-          try {
-            const { quotes: refreshedQuotes, totalCount: refreshedTotalCount } =
-              await fetchQuotes(
-                paginationModel.page + 1,
-                paginationModel.pageSize,
-                statusFilter,
-                finalExcludeStatus
-              );
-            setQuotes(refreshedQuotes);
-            setTotalCount(refreshedTotalCount);
-          } catch (refreshErr) {
-            console.error("Error al refrescar cotizaciones:", refreshErr);
-          }
-        } else {
-          setQuotes((prev) =>
-            prev.map((q) => (q.id === id ? { ...q, status: newStatus } : q))
-          );
-        }
 
         enqueueSnackbar("Estado actualizado correctamente", {
           variant: "success",
@@ -150,14 +111,7 @@ export const Quotes = ({
         setUpdatingId(null);
       }
     },
-    [
-      appendLog,
-      enqueueSnackbar,
-      finalExcludeStatus,
-      paginationModel.page,
-      paginationModel.pageSize,
-      statusFilter,
-    ]
+    [appendLog, enqueueSnackbar]
   );
 
   const finishEdit = useCallback(() => {
@@ -174,14 +128,13 @@ export const Quotes = ({
     <DataGrid
       localeText={localeText}
       rows={quotes}
-      columns={getQuoteColumns({
+      columns={getQuoteHistoryColumns({
         updatingId,
         editingId,
         handleStatusChange,
         handleStatusChange,
         setEditingId,
         finishEdit,
-        basePath,
       })}
       rowCount={totalCount}
       paginationMode="server"
@@ -204,6 +157,10 @@ export const Quotes = ({
         },
         "& .MuiDataGrid-row:hover .statusCell .editIcon": {
           display: "block",
+        },
+        // resaltar fila al hover
+        "& .MuiDataGrid-row:hover": {
+          backgroundColor: (theme) => theme.palette.action.hover,
         },
       }}
       slots={{

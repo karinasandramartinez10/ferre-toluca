@@ -13,13 +13,12 @@ import { formatDateDayAbrev } from "../../../../utils/date";
 import { STEPS } from "../../../../constants/quotes/status";
 import { getDefaultFiscalProfile } from "../../../../utils/fiscal";
 
-export const getQuoteColumns = ({
+export const getQuoteHistoryColumns = ({
   updatingId,
   handleStatusChange,
   editingId,
   setEditingId,
   finishEdit,
-  basePath = "/admin/quotes",
 }) => [
   {
     field: "actions",
@@ -28,7 +27,7 @@ export const getQuoteColumns = ({
     align: "center",
     sortable: false,
     renderCell: (params) => (
-      <Link href={`${basePath}/${params.row.id}`} passHref>
+      <Link href={`/admin/quote-history/${params.row.id}`} passHref>
         <IconButton
           sx={{
             mx: "auto",
@@ -95,8 +94,8 @@ export const getQuoteColumns = ({
           }}
         >
           <Chip
-            label={STEPS.find((o) => o.value === status).label}
-            color={colorMap[status]}
+            label={STEPS.find((o) => o.value === status)?.label || status}
+            color={colorMap[status] || "default"}
             onClick={() => setEditingId(id)}
             sx={{ cursor: "pointer" }}
           />
@@ -172,3 +171,4 @@ export const getQuoteColumns = ({
     },
   },
 ];
+

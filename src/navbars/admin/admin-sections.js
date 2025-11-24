@@ -5,6 +5,7 @@ import {
   Home,
   Inventory,
   Storefront,
+  History,
 } from "@mui/icons-material";
 
 export const adminSections = [
@@ -21,6 +22,12 @@ export const adminSections = [
           icon: <Storefront />,
           text: "Cotizaciones",
           href: `/admin/quotes`,
+          visibleFor: ["admin", "superadmin"],
+        },
+        {
+          icon: <History />,
+          text: "Cotizaciones enviadas",
+          href: `/admin/quote-history`,
           visibleFor: ["admin", "superadmin"],
         },
         {
