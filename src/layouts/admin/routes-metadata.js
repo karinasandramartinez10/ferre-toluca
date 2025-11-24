@@ -14,6 +14,11 @@ export const PAGE_METADATA = {
     subtitle:
       "Visualiza todas las órdenes de cotización enviadas por los clientes. Consulta los detalles, productos y datos de contacto.",
   },
+  "/admin/quote-history": {
+    title: "Cotizaciones enviadas",
+    subtitle:
+      "Visualiza todas las cotizaciones enviadas. Consulta los detalles, productos y datos de contacto de las cotizaciones enviadas.",
+  },
   "/admin/brands": {
     title: "Marcas",
     subtitle:
@@ -56,6 +61,14 @@ export const getPageMetadata = (pathname) => {
       title: "Detalles de la cotización",
       subtitle:
         "Revisa y da seguimiento a la solicitud del cliente. Usa los botones de contacto y marca la cotización como leída una vez atendida.",
+    };
+  }
+
+  if (pathname.startsWith("/admin/quote-history/")) {
+    return {
+      title: "Detalles de la cotización enviada",
+      subtitle:
+        "Revisa los detalles de la cotización enviada.",
     };
   }
 

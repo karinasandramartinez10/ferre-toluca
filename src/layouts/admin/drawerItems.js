@@ -5,6 +5,7 @@ import {
   Storefront,
   Category,
   Inventory,
+  History,
 } from "@mui/icons-material";
 
 export const drawerItems = [
@@ -18,6 +19,13 @@ export const drawerItems = [
     text: "Cotizaciones",
     pathname: "/admin/quotes",
     icon: <Storefront sx={{ fontSize: 20 }} />,
+    isDynamic: true,
+    visibleFor: ["admin", "superadmin"],
+  },
+  {
+    text: "Cotizaciones enviadas",
+    pathname: "/admin/quote-history",
+    icon: <History sx={{ fontSize: 20 }} />,
     isDynamic: true,
     visibleFor: ["admin", "superadmin"],
   },
