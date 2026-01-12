@@ -11,14 +11,15 @@ const MessageSection = ({ control }) => (
       name="message"
       render={({ field, fieldState: { invalid, error } }) => (
         <TextField
-          label=""
+          label="Mensaje *"
           multiline
           fullWidth
           placeholder="Quisiera saber si..."
           error={invalid}
-          helperText={error?.message && error.message}
+          helperText={error?.message || ""}
           variant="outlined"
           rows={4}
+          required
           inputProps={{
             form: { autocomplete: "off" },
           }}
