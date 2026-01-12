@@ -25,7 +25,6 @@ import Link from "next/link";
 import { useUserFiscals } from "../../../hooks/user/fiscal/useUserFiscals";
 import { useFiscalMutations } from "../../../hooks/user/fiscal/useFiscalMutations";
 
-
 import { useFiscalCatalogs } from "../../../hooks/user/fiscal/useFiscalCatalogs";
 import { FiscalProfileSchema } from "../../../schemas/user/fiscal";
 import FiscalForm from "../../(user)/user/profile/fiscal/FiscalForm";
@@ -276,7 +275,7 @@ const CheckoutPage = () => {
           <ActionsRow
             onClear={clearOrder}
             onSubmit={handleSubmit(handleCheckout)}
-            disabled={!isValid || !selectedFiscalId}
+            disabled={!isValid}
             loading={loading}
           />
           <FiscalDialog
