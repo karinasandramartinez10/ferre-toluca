@@ -26,9 +26,7 @@ const LoadingState = () => (
 
 const EmptyState = ({ onCreate }) => (
   <Stack gap={1} mt={2}>
-    <Typography variant="h4">
-      Datos de facturación
-    </Typography>
+    <Typography variant="h4">Datos de facturación</Typography>
     <Paper
       variant="outlined"
       sx={{
@@ -49,7 +47,7 @@ const EmptyState = ({ onCreate }) => (
       variant="caption"
       sx={{ mt: 1, color: "text.secondary", display: "block" }}
     >
-      Aún no has agregado datos de facturación. Crea uno para continuar.
+      Opcional: Puedes agregar datos de facturación o continuar sin ellos.
     </Typography>
   </Stack>
 );
@@ -101,11 +99,9 @@ const SelectState = ({ profiles, selectedId, onChange, onOpenCreate }) => (
         + Agregar nuevo
       </MenuItem>
     </Select>
-    {!selectedId && (
-      <FormHelperText error>
-        Selecciona un registro o crea uno para continuar.
-      </FormHelperText>
-    )}
+    <FormHelperText>
+      Opcional: Selecciona un registro de facturación o crea uno nuevo.
+    </FormHelperText>
   </FormControl>
 );
 
