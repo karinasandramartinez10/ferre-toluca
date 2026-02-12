@@ -4,6 +4,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleFavorites, getFavorites } from "../../api/favorites";
 import { queryKeys } from "../../constants/queryKeys";
 import { staleTimes } from "../../constants/queryConfig";
+import type { Product } from "../../types/product";
+import type { FavoriteEntry } from "../../types/favorites";
+
+interface ToggleResponse {
+  isFavorite?: boolean;
+}
 
 export const useFavorites = () => {
   const { status } = useSession();
@@ -13,7 +19,7 @@ export const useFavorites = () => {
     data: favorites = [],
     isLoading: loading,
     error,
-  } = useQuery({
+  } = useQuery<FavoriteEntry[]>({
     queryKey: queryKeys.favorites,
     queryFn: async () => {
       const response = await getFavorites();
@@ -24,22 +30,33 @@ export const useFavorites = () => {
   });
 
   const favoritesMap = useMemo(() => {
-    const map = new Map();
+    const map = new Map<string, FavoriteEntry>();
     favorites.forEach((fav) => map.set(fav.productId, fav));
     return map;
   }, [favorites]);
 
-  const isFavorite = useMemo(() => (productId) => favoritesMap.has(productId), [favoritesMap]);
+  const isFavorite = useMemo(
+    () => (productId: string) => favoritesMap.has(productId),
+    [favoritesMap]
+  );
 
-  const { mutateAsync: toggleFavorite } = useMutation({
-    mutationFn: (product) => toggleFavorites(product.id),
+  const { mutateAsync: toggleFavorite } = useMutation<
+    ToggleResponse,
+    Error,
+    Product,
+    { previous: FavoriteEntry[] | undefined }
+  >({
+    mutationFn: async (product) => {
+      const response = await toggleFavorites(product.id);
+      return response.data;
+    },
     onMutate: async (product) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.favorites });
 
-      const previous = queryClient.getQueryData(queryKeys.favorites);
+      const previous = queryClient.getQueryData<FavoriteEntry[]>(queryKeys.favorites);
 
       // Optimistic update
-      queryClient.setQueryData(queryKeys.favorites, (old = []) => {
+      queryClient.setQueryData<FavoriteEntry[]>(queryKeys.favorites, (old = []) => {
         const exists = old.some((fav) => fav.productId === product.id);
         if (exists) {
           return old.filter((fav) => fav.productId !== product.id);
@@ -51,7 +68,7 @@ export const useFavorites = () => {
     },
     onSuccess: (data, product) => {
       if (typeof data?.isFavorite === "boolean") {
-        queryClient.setQueryData(queryKeys.favorites, (old = []) => {
+        queryClient.setQueryData<FavoriteEntry[]>(queryKeys.favorites, (old = []) => {
           const exists = old.some((fav) => fav.productId === product.id);
           if (data.isFavorite && !exists) {
             return [...old, { productId: product.id, product }];
@@ -64,7 +81,7 @@ export const useFavorites = () => {
       }
     },
     onError: (_err, _product, context) => {
-      queryClient.setQueryData(queryKeys.favorites, context.previous);
+      queryClient.setQueryData(queryKeys.favorites, context?.previous);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.favorites });

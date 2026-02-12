@@ -1,28 +1,20 @@
 "use client";
 
-import {
-  Box,
-  Typography,
-  Button,
-  Divider,
-  Skeleton,
-  Stack,
-} from "@mui/material";
+import { Box, Typography, Button, Divider, Skeleton, Stack } from "@mui/material";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 import FilterSection from "./FilterSection";
+import type { FilterOptions, SelectedFilters } from "../../types/filters";
 
-/**
- * Sidebar de filtros para productos.
- *
- * @param {Object} props
- * @param {Object} props.options - Opciones de filtros desde useFilterOptions.
- * @param {Object} props.selectedFilters - Filtros seleccionados (urlFilters).
- * @param {Object} props.fixedFilters - Filtros fijos del contexto.
- * @param {Function} props.onToggle - Callback para toggle de filtro.
- * @param {Function} props.onClear - Callback para limpiar filtros.
- * @param {boolean} props.hasActiveFilters - Si hay filtros activos.
- * @param {boolean} props.loading - Estado de carga.
- */
+interface FilterSidebarProps {
+  options?: FilterOptions;
+  selectedFilters?: SelectedFilters;
+  fixedFilters?: SelectedFilters;
+  onToggle: (filterKey: string, id: number | string) => void;
+  onClear: () => void;
+  hasActiveFilters: boolean;
+  loading?: boolean;
+}
+
 const FilterSidebar = ({
   options = {},
   selectedFilters = {},
@@ -31,7 +23,7 @@ const FilterSidebar = ({
   onClear,
   hasActiveFilters,
   loading = false,
-}) => {
+}: FilterSidebarProps) => {
   // Determinar qué filtros mostrar basado en los filtros fijos
   const showBrands = !fixedFilters.brandIds?.length;
   const showCategories = !fixedFilters.categoryIds?.length;
@@ -86,67 +78,67 @@ const FilterSidebar = ({
 
       <Divider sx={{ mb: 1 }} />
 
-      {showBrands && options.brands?.length > 0 && (
+      {showBrands && (options.brands?.length ?? 0) > 0 && (
         <FilterSection
           title="Marca"
           options={options.brands}
           selectedIds={selectedFilters.brandIds || []}
           onToggle={(id) => onToggle("brandIds", id)}
-          showSearch={options.brands.length > 5}
+          showSearch={(options.brands?.length ?? 0) > 5}
           defaultExpanded
         />
       )}
 
-      {showCategories && options.categories?.length > 0 && (
+      {showCategories && (options.categories?.length ?? 0) > 0 && (
         <FilterSection
           title="Categoría"
           options={options.categories}
           selectedIds={selectedFilters.categoryIds || []}
           onToggle={(id) => onToggle("categoryIds", id)}
-          showSearch={options.categories.length > 5}
+          showSearch={(options.categories?.length ?? 0) > 5}
           defaultExpanded
         />
       )}
 
-      {showSubcategories && options.subcategories?.length > 0 && (
+      {showSubcategories && (options.subcategories?.length ?? 0) > 0 && (
         <FilterSection
           title="Subcategoría"
           options={options.subcategories}
           selectedIds={selectedFilters.subcategoryIds || []}
           onToggle={(id) => onToggle("subcategoryIds", id)}
-          showSearch={options.subcategories.length > 5}
+          showSearch={(options.subcategories?.length ?? 0) > 5}
           defaultExpanded={false}
         />
       )}
 
-      {showTypes && options.types?.length > 0 && (
+      {showTypes && (options.types?.length ?? 0) > 0 && (
         <FilterSection
           title="Tipo"
           options={options.types}
           selectedIds={selectedFilters.typeIds || []}
           onToggle={(id) => onToggle("typeIds", id)}
-          showSearch={options.types.length > 5}
+          showSearch={(options.types?.length ?? 0) > 5}
           defaultExpanded={false}
         />
       )}
 
-      {showModels && options.models?.length > 0 && (
+      {showModels && (options.models?.length ?? 0) > 0 && (
         <FilterSection
           title="Modelo"
           options={options.models}
           selectedIds={selectedFilters.modelIds || []}
           onToggle={(id) => onToggle("modelIds", id)}
-          showSearch={options.models.length > 5}
+          showSearch={(options.models?.length ?? 0) > 5}
           defaultExpanded={false}
         />
       )}
 
-      {showMeasures && options.measures?.length > 0 && (
+      {showMeasures && (options.measures?.length ?? 0) > 0 && (
         <FilterSection
           title="Medida"
-          options={options.measures.map((m) => ({
+          options={options.measures!.map((m) => ({
             ...m,
-            name: m.name || m.abbreviation,
+            name: m.name || m.abbreviation || "",
           }))}
           selectedIds={selectedFilters.measureIds || []}
           onToggle={(id) => onToggle("measureIds", id)}
@@ -154,7 +146,7 @@ const FilterSidebar = ({
         />
       )}
 
-      {showDesigns && options.designs?.length > 0 && (
+      {showDesigns && (options.designs?.length ?? 0) > 0 && (
         <FilterSection
           title="Diseño"
           options={options.designs}

@@ -1,7 +1,13 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 
-export const ErrorUI = ({ onRetry, message, href }) => {
+interface ErrorUIProps {
+  onRetry?: () => void;
+  message?: string;
+  href?: string;
+}
+
+export const ErrorUI = ({ onRetry, message, href }: ErrorUIProps) => {
   return (
     <Box
       display="flex"

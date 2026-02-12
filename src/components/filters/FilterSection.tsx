@@ -16,19 +16,18 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import { toCapitalizeWords } from "../../utils/cases";
+import type { FilterOption } from "../../types/filters";
 
-/**
- * Sección de filtro con checkboxes colapsable.
- *
- * @param {Object} props
- * @param {string} props.title - Título de la sección.
- * @param {Array} props.options - Opciones disponibles [{id, name, count}].
- * @param {Array} props.selectedIds - IDs seleccionados.
- * @param {Function} props.onToggle - Callback al toggle un ID.
- * @param {boolean} props.defaultExpanded - Si está expandido por defecto.
- * @param {boolean} props.showSearch - Mostrar campo de búsqueda.
- * @param {boolean} props.disabled - Deshabilitar la sección.
- */
+interface FilterSectionProps {
+  title: string;
+  options?: FilterOption[];
+  selectedIds?: (number | string)[];
+  onToggle: (id: number | string) => void;
+  defaultExpanded?: boolean;
+  showSearch?: boolean;
+  disabled?: boolean;
+}
+
 const FilterSection = ({
   title,
   options = [],
@@ -37,13 +36,11 @@ const FilterSection = ({
   defaultExpanded = true,
   showSearch = false,
   disabled = false,
-}) => {
+}: FilterSectionProps) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredOptions = showSearch
-    ? options.filter((opt) =>
-        opt.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+    ? options.filter((opt) => opt.name.toLowerCase().includes(searchTerm.toLowerCase()))
     : options;
 
   const selectedCount = selectedIds.length;
@@ -89,7 +86,7 @@ const FilterSection = ({
           )}
         </Typography>
       </AccordionSummary>
-      <AccordionDetails sx={{ p: 0}}>
+      <AccordionDetails sx={{ p: 0 }}>
         {showSearch && options.length > 5 && (
           <TextField
             size="small"
