@@ -1,64 +1,57 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { fetchOrderHistory } from "../../api/quote";
+import { queryKeys } from "../../constants/queryKeys";
+import { staleTimes } from "../../constants/queryConfig";
 import { format } from "date-fns";
 
 export const useOrderHistory = (size = 10) => {
-  const [orders, setOrders] = useState(null);
-  const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-
   const [status, setStatus] = useState("IN_REVIEW");
   const [search, setSearch] = useState("");
   const [dateFrom, setDateFrom] = useState(null);
   const [dateTo, setDateTo] = useState(null);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const formattedDateFrom = dateFrom ? format(dateFrom, "yyyy-MM-dd") : "";
+  const formattedDateTo = dateTo ? format(dateTo, "yyyy-MM-dd") : "";
 
-  const getOrderHistory = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const params = {
+  // Reset a página 1 cuando cambian los filtros
+  const filtersKey = `${status}-${search}-${formattedDateFrom}-${formattedDateTo}`;
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filtersKey]);
+
+  const { data, isLoading: loading, error } = useQuery({
+    queryKey: queryKeys.orderHistory({
+      page: currentPage,
+      size,
+      status,
+      search,
+      dateFrom: formattedDateFrom,
+      dateTo: formattedDateTo,
+    }),
+    queryFn: async () => {
+      const response = await fetchOrderHistory({
         page: currentPage,
         size,
         status,
         search,
-      };
-
-      if (dateFrom) {
-        // por ej: "2025-06-11"
-        params.dateFrom = format(dateFrom, "yyyy-MM-dd");
-      }
-      if (dateTo) {
-        // por ej: "2025-06-13"
-        params.dateTo = format(dateTo, "yyyy-MM-dd");
-      }
-
-      const response = await fetchOrderHistory(params);
-      const {
-        data: { orders, totalPages },
-      } = response;
-      setOrders(orders);
-      setTotalPages(totalPages);
-    } catch (err) {
-      setError("Error al obtener el historial de órdenes");
-    } finally {
-      setLoading(false);
-    }
-  }, [currentPage, size, status, search, dateFrom, dateTo]);
-
-  useEffect(() => {
-    getOrderHistory();
-  }, [getOrderHistory]);
+        dateFrom: formattedDateFrom,
+        dateTo: formattedDateTo,
+      });
+      return response.data;
+    },
+    placeholderData: keepPreviousData,
+    staleTime: staleTimes.FREQUENT,
+  });
 
   return {
-    orders,
-    totalPages,
+    orders: data?.orders ?? null,
+    totalPages: data?.totalPages ?? 0,
     currentPage,
     setCurrentPage,
     loading,
-    error,
+    error: error?.message || null,
 
     status,
     setStatus,

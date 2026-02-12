@@ -23,7 +23,7 @@ export const QuoteId = ({ quoteId }) => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { logsMap, loadingMap, fetchLogs, appendLog } = useStatusLogs();
+  const { logs: statusLogs, loading: logsLoading, appendLog } = useStatusLogs(quoteId);
 
   useEffect(() => {
     if (!quoteId) return;
@@ -45,10 +45,6 @@ export const QuoteId = ({ quoteId }) => {
     };
 
     fetchData();
-  }, [quoteId]);
-
-  useEffect(() => {
-    fetchLogs(quoteId);
   }, [quoteId]);
 
   const handleCall = () => {
@@ -147,8 +143,8 @@ export const QuoteId = ({ quoteId }) => {
         onPrint={handlePrint}
       />
       <StatusLogList
-        logs={logsMap[quoteId] || []}
-        loading={loadingMap[quoteId]}
+        logs={statusLogs}
+        loading={logsLoading}
       />
 
       <Card variant="outlined" sx={{ p: 1 }}>

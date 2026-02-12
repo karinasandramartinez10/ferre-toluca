@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-
+import { useQuery } from "@tanstack/react-query";
 import {
   adaptFiscalDtoToDomain,
   adaptFiscalListDtoToDomain,
@@ -10,39 +9,31 @@ import {
   getUserFiscals,
   getDefaultUserFiscal,
 } from "../../../api/userFiscals";
+import { queryKeys } from "../../../constants/queryKeys";
+import { staleTimes } from "../../../constants/queryConfig";
 
 export function useUserFiscals() {
-  const [profiles, setProfiles] = useState([]);
-  const [defaultProfile, setDefaultProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const load = useCallback(async (signal) => {
-    setLoading(true);
-    setError(null);
-    try {
+  const { data, isLoading: loading, error } = useQuery({
+    queryKey: queryKeys.userFiscals,
+    queryFn: async () => {
       const [list, def] = await Promise.all([
-        getUserFiscals({ signal }),
-        getDefaultUserFiscal({ signal }),
+        getUserFiscals(),
+        getDefaultUserFiscal(),
       ]);
-      if (signal?.aborted) return;
-      setProfiles(adaptFiscalListDtoToDomain(list));
-      setDefaultProfile(adaptFiscalDtoToDomain(def));
-    } catch (e) {
-      if (e?.code === "ERR_CANCELED") return;
-      setError(e);
-    } finally {
-      if (!signal?.aborted) setLoading(false);
-    }
-  }, []);
+      return {
+        profiles: adaptFiscalListDtoToDomain(list),
+        defaultProfile: adaptFiscalDtoToDomain(def),
+      };
+    },
+    staleTime: staleTimes.DYNAMIC,
+  });
 
-  useEffect(() => {
-    const controller = new AbortController();
-    load(controller.signal);
-    return () => controller.abort();
-  }, [load]);
-
-  return { profiles, defaultProfile, loading, error, refetch: load };
+  return {
+    profiles: data?.profiles ?? [],
+    defaultProfile: data?.defaultProfile ?? null,
+    loading,
+    error: error?.message || null,
+  };
 }
 
 export default useUserFiscals;
