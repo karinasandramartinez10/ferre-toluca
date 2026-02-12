@@ -9,6 +9,9 @@
 # testing
 /coverage
 
+# audit
+/audit
+
 # next.js
 /.next/
 /out/
@@ -31,3 +34,5 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+CLAUDE.md

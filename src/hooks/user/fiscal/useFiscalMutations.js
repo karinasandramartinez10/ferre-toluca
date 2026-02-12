@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adaptFiscalCreateFormToPayload,
   adaptFiscalFormToPayload,
@@ -11,47 +11,56 @@ import {
   deleteUserFiscal,
   setDefaultUserFiscal,
 } from "../../../api/userFiscals";
+import { queryKeys } from "../../../constants/queryKeys";
 
 export function useFiscalMutations() {
-  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
 
-  const create = useCallback(async (formValues, mode = "id") => {
-    setLoading(true);
-    try {
+  const invalidateFiscals = () =>
+    queryClient.invalidateQueries({ queryKey: queryKeys.userFiscals });
+
+  const createMutation = useMutation({
+    mutationFn: ({ formValues, mode }) => {
       const payload = adaptFiscalCreateFormToPayload(formValues, { mode });
-      return await createUserFiscal(payload);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      return createUserFiscal(payload);
+    },
+    onSettled: invalidateFiscals,
+  });
 
-  const update = useCallback(async (id, formValues) => {
-    setLoading(true);
-    try {
+  const updateMutation = useMutation({
+    mutationFn: ({ id, formValues }) => {
       const payload = adaptFiscalFormToPayload(formValues);
-      return await updateUserFiscal(id, payload);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      return updateUserFiscal(id, payload);
+    },
+    onSettled: invalidateFiscals,
+  });
 
-  const setDefault = useCallback(async (id) => {
-    setLoading(true);
-    try {
-      return await setDefaultUserFiscal(id);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const setDefaultMutation = useMutation({
+    mutationFn: (id) => setDefaultUserFiscal(id),
+    onSettled: invalidateFiscals,
+  });
 
-  const remove = useCallback(async (id) => {
-    setLoading(true);
-    try {
-      return await deleteUserFiscal(id);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const removeMutation = useMutation({
+    mutationFn: (id) => deleteUserFiscal(id),
+    onSettled: invalidateFiscals,
+  });
+
+  // Wrappers para mantener la misma interfaz de llamada
+  const create = (formValues, mode = "id") =>
+    createMutation.mutateAsync({ formValues, mode });
+
+  const update = (id, formValues) =>
+    updateMutation.mutateAsync({ id, formValues });
+
+  const setDefault = (id) => setDefaultMutation.mutateAsync(id);
+
+  const remove = (id) => removeMutation.mutateAsync(id);
+
+  const loading =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    setDefaultMutation.isPending ||
+    removeMutation.isPending;
 
   return { create, update, setDefault, remove, loading };
 }

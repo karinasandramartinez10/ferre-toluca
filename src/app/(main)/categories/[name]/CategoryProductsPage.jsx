@@ -1,21 +1,20 @@
 "use client";
 
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import {
   toCapitalizeFirstLetter,
   transformCategoryPath,
 } from "../../../../utils/cases";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
 import { buildCategoryBreadcrumbs } from "../../../../helpers/breadcrumbs";
-import useGroupedProducts from "../../../../hooks/grouped/useGroupedProducts";
-import GroupedProductsList from "../../../../components/GroupedProductsList";
+import { ProductsWithFilters } from "../../../../components/filters";
+import { Loading } from "../../../../components/Loading";
 
-const CategoryProductsPage = () => {
+const CategoryProductsPageContent = () => {
   const { name } = useParams();
   const searchParams = useSearchParams();
   const categoryId = searchParams.get("id");
-  const router = useRouter();
 
   const decodedName = decodeURIComponent(name);
   const formattedName = transformCategoryPath(decodedName);
@@ -25,26 +24,28 @@ const CategoryProductsPage = () => {
     [formattedName, categoryId]
   );
 
-  const { groupedResult, loading, error, currentPage, setCurrentPage } =
-    useGroupedProducts({ categoryId, pageSize: 10 });
-
-  const handleProductClick = (id) => {
-    router.push(`/product/${id}`);
-  };
+  const fixedFilters = useMemo(
+    () => ({ categoryIds: categoryId ? [Number(categoryId)] : [] }),
+    [categoryId]
+  );
 
   return (
     <>
       <BreadcrumbsNavigation items={breadcrumbItems} />
-      <GroupedProductsList
+      <ProductsWithFilters
         title={toCapitalizeFirstLetter(formattedName)}
-        groupedResult={groupedResult}
-        loading={loading}
-        error={error}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-        onProductClick={handleProductClick}
+        fixedFilters={fixedFilters}
+        pageSize={10}
       />
     </>
+  );
+};
+
+const CategoryProductsPage = () => {
+  return (
+    <Suspense fallback={<Loading />}>
+      <CategoryProductsPageContent />
+    </Suspense>
   );
 };
 

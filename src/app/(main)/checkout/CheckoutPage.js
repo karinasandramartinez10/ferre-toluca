@@ -102,7 +102,7 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const [openFiscalModal, setOpenFiscalModal] = useState(false);
   const [selectedFiscalId, setSelectedFiscalId] = useState(null);
-  const { profiles, loading: loadingFiscals, refetch } = useUserFiscals();
+  const { profiles, loading: loadingFiscals } = useUserFiscals();
   const { create, loading: savingFiscal } = useFiscalMutations();
   const { taxRegimes, cfdiUses } = useFiscalCatalogs();
 
@@ -197,7 +197,6 @@ const CheckoutPage = () => {
     async (values) => {
       try {
         const created = await create(values, "id");
-        await refetch();
         if (created?.id) setSelectedFiscalId(created.id);
         setOpenFiscalModal(false);
         enqueueSnackbar("Datos de facturación creados", { variant: "success" });
@@ -207,7 +206,7 @@ const CheckoutPage = () => {
         });
       }
     },
-    [create, refetch, setSelectedFiscalId, setOpenFiscalModal, enqueueSnackbar]
+    [create, setSelectedFiscalId, setOpenFiscalModal, enqueueSnackbar]
   );
 
   const onSignIn = useCallback(

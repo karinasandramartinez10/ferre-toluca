@@ -1,36 +1,33 @@
 "use client";
 
-import { Grid, Typography } from "@mui/material";
-import { useRouter, useSearchParams } from "next/navigation";
-import GroupedProductsList from "../../../components/GroupedProductsList";
-import useGroupedProducts from "../../../hooks/grouped/useGroupedProducts";
+import { Suspense, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { ProductsWithFilters } from "../../../components/filters";
+import { Loading } from "../../../components/Loading";
 
-const SearchProductsPage = () => {
+const SearchProductsPageContent = () => {
   const searchParams = useSearchParams();
-  const query = searchParams.get("q");
-  const router = useRouter();
+  const query = searchParams.get("q") || "";
 
-  const { groupedResult, loading, error, currentPage, setCurrentPage } =
-    useGroupedProducts({ query, pageSize: 10 });
-
-  const handleProductClick = (id) => {
-    router.push(`/product/${id}`);
-  };
+  const fixedFilters = useMemo(
+    () => ({ q: query }),
+    [query]
+  );
 
   return (
-    <Grid container>
-      <Typography component="h1" variant="h1" mb={2}>
-        Resultados para {query}
-      </Typography>
-      <GroupedProductsList
-        groupedResult={groupedResult}
-        loading={loading}
-        error={error}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-        onProductClick={handleProductClick}
-      />
-    </Grid>
+    <ProductsWithFilters
+      title={`Resultados para "${query}"`}
+      fixedFilters={fixedFilters}
+      pageSize={10}
+    />
+  );
+};
+
+const SearchProductsPage = () => {
+  return (
+    <Suspense fallback={<Loading />}>
+      <SearchProductsPageContent />
+    </Suspense>
   );
 };
 

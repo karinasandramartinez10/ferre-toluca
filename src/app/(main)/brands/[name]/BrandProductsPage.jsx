@@ -1,40 +1,45 @@
 "use client";
 
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { toCapitalizeFirstLetter } from "../../../../utils/cases";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
 import { buildBrandBreadcrumbs } from "../../../../helpers/breadcrumbs";
-import useGroupedProducts from "../../../../hooks/grouped/useGroupedProducts";
-import GroupedProductsList from "../../../../components/GroupedProductsList";
+import { ProductsWithFilters } from "../../../../components/filters";
+import { Loading } from "../../../../components/Loading";
 
-const BrandProductsPage = () => {
+const BrandProductsPageContent = () => {
   const { name } = useParams();
   const searchParams = useSearchParams();
   const brandId = searchParams.get("id");
-  const router = useRouter();
-
-  const { groupedResult, loading, error, currentPage, setCurrentPage } =
-    useGroupedProducts({ brandId, pageSize: 10 });
 
   const breadcrumbItems = useMemo(
     () => buildBrandBreadcrumbs(name, brandId),
     [name, brandId]
   );
 
+  const fixedFilters = useMemo(
+    () => ({ brandIds: brandId ? [Number(brandId)] : [] }),
+    [brandId]
+  );
+
   return (
     <>
       <BreadcrumbsNavigation items={breadcrumbItems} />
-      <GroupedProductsList
+      <ProductsWithFilters
         title={`Productos ${toCapitalizeFirstLetter(name)}`}
-        groupedResult={groupedResult}
-        loading={loading}
-        error={error}
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-        onProductClick={(id) => router.push(`/product/${id}`)}
+        fixedFilters={fixedFilters}
+        pageSize={10}
       />
     </>
+  );
+};
+
+const BrandProductsPage = () => {
+  return (
+    <Suspense fallback={<Loading />}>
+      <BrandProductsPageContent />
+    </Suspense>
   );
 };
 

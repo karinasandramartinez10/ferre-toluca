@@ -35,7 +35,6 @@ export default function FiscalProfilePage() {
     profiles,
     loading: loadingList,
     error: errorList,
-    refetch,
   } = useUserFiscals();
   const {
     create,
@@ -72,7 +71,6 @@ export default function FiscalProfilePage() {
         enqueueSnackbar("Registro creado", { variant: "success" });
       }
       setOpen(false);
-      await refetch();
     } catch (e) {
       enqueueSnackbar(e.message || "Error al guardar", { variant: "error" });
     }
@@ -84,7 +82,6 @@ export default function FiscalProfilePage() {
       enqueueSnackbar("Registro marcado como predeterminado", {
         variant: "success",
       });
-      await refetch();
     } catch (e) {
       enqueueSnackbar(e.message || "No se pudo actualizar el predeterminado", {
         variant: "error",
@@ -102,7 +99,6 @@ export default function FiscalProfilePage() {
       await remove(deleteTarget.id);
       enqueueSnackbar("Registro eliminado", { variant: "success" });
       setDeleteTarget(null);
-      await refetch();
     } catch (e) {
       enqueueSnackbar(e.message || "No se pudo eliminar", { variant: "error" });
     }

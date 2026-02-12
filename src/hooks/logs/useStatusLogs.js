@@ -1,38 +1,39 @@
-import { useState, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchStatusLogsForQuote,
   postStatusLogForQuote,
 } from "../../api/admin/logs";
+import { queryKeys } from "../../constants/queryKeys";
+import { staleTimes } from "../../constants/queryConfig";
 
-export function useStatusLogs() {
-  const [logsMap, setLogsMap] = useState({});
-  const [loadingMap, setLoadingMap] = useState({});
+/**
+ * Hook para logs de status de una cotización.
+ *
+ * @param {string|number} [quoteId] - ID de la cotización. Si se pasa, auto-fetch logs.
+ */
+export function useStatusLogs(quoteId) {
+  const queryClient = useQueryClient();
 
-  // 1) Cargar logs de una cotización
-  const fetchLogs = useCallback(async (quoteId) => {
-    setLoadingMap((m) => ({ ...m, [quoteId]: true }));
-    try {
-      const resp = await fetchStatusLogsForQuote(quoteId);
-      setLogsMap((m) => ({ ...m, [quoteId]: resp }));
-    } catch {
-      setLogsMap((m) => ({ ...m, [quoteId]: [] }));
-    } finally {
-      setLoadingMap((m) => ({ ...m, [quoteId]: false }));
-    }
-  }, []);
+  const { data: logs = [], isLoading: loading } = useQuery({
+    queryKey: queryKeys.statusLogs(quoteId),
+    queryFn: () => fetchStatusLogsForQuote(quoteId),
+    enabled: !!quoteId,
+    staleTime: staleTimes.DYNAMIC,
+  });
 
-  const appendLog = useCallback(async (quoteId, entry) => {
-    const newLog = await postStatusLogForQuote(quoteId, entry);
-    setLogsMap((m) => {
-      const prev = m[quoteId] || [];
-      return { ...m, [quoteId]: [newLog, ...prev] };
-    });
-  }, []);
+  const { mutateAsync: appendLog } = useMutation({
+    mutationFn: ({ quoteId: qId, entry }) => postStatusLogForQuote(qId, entry),
+    onSettled: (_data, _error, { quoteId: qId }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.statusLogs(qId) });
+    },
+  });
+
+  // Wrapper para mantener la interfaz: appendLog(quoteId, entry)
+  const append = (qId, entry) => appendLog({ quoteId: qId, entry });
 
   return {
-    logsMap,
-    loadingMap,
-    fetchLogs,
-    appendLog,
+    logs,
+    loading,
+    appendLog: append,
   };
 }

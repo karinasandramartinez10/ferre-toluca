@@ -1,29 +1,24 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import GroupedProductsList from "../../../components/GroupedProductsList";
-import useGroupedProducts from "../../../hooks/grouped/useGroupedProducts";
+import { Suspense } from "react";
+import { ProductsWithFilters } from "../../../components/filters";
+import { Loading } from "../../../components/Loading";
+
+const AllProductsPageContent = () => {
+  return (
+    <ProductsWithFilters
+      title="Todos los productos"
+      fixedFilters={{}}
+      pageSize={10}
+    />
+  );
+};
 
 const AllProductsPage = () => {
-  const router = useRouter();
-  const { data: session } = useSession();
-  const isAdmin =
-    session?.user?.role === "admin" || session?.user?.role === "superadmin";
-  const { groupedResult, loading, error, currentPage, setCurrentPage } =
-    useGroupedProducts({});
-
   return (
-    <GroupedProductsList
-      title="Todos los productos"
-      groupedResult={groupedResult}
-      loading={loading}
-      error={error}
-      currentPage={currentPage}
-      onPageChange={setCurrentPage}
-      onProductClick={(id) => router.push(`/product/${id}`)}
-      showBtns={!isAdmin}
-    />
+    <Suspense fallback={<Loading />}>
+      <AllProductsPageContent />
+    </Suspense>
   );
 };
 
