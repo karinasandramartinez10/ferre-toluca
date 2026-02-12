@@ -64,10 +64,7 @@ export const QuoteId = ({ quoteId }) => {
 
     const headerRows = [
       ["# Orden", quote.orderNumber ?? quote.order ?? ""],
-      [
-        "Cliente",
-        `${quote?.User?.firstName ?? ""} ${quote?.User?.lastName ?? ""}`.trim(),
-      ],
+      ["Cliente", `${quote?.User?.firstName ?? ""} ${quote?.User?.lastName ?? ""}`.trim()],
       ["Fecha", new Date(quote?.createdAt).toLocaleString("es-MX")],
       ["Estado", statusLabelMap[quote?.status] ?? quote?.status ?? ""],
     ];
@@ -100,11 +97,27 @@ export const QuoteId = ({ quoteId }) => {
     });
   };
 
+  const refetchQuote = async () => {
+    try {
+      const updated = await fetchQuoteById(quoteId);
+      setQuote(updated);
+    } catch {
+      /* silent */
+    }
+  };
+
   const handleSaveStatus = async (newStatus) => {
     const oldStatus = quote.status;
     try {
-      await updateQuote(quoteId, { status: newStatus });
-      setQuote((q) => ({ ...q, status: newStatus }));
+      const resp = await updateQuote(quoteId, {
+        status: newStatus,
+        updatedAt: quote.updatedAt,
+      });
+      setQuote((q) => ({
+        ...q,
+        status: newStatus,
+        updatedAt: resp.data?.data?.updatedAt ?? q.updatedAt,
+      }));
 
       const idx = STEPS.findIndex((s) => s.value === newStatus);
       setJustSavedIdx(idx);
@@ -117,8 +130,15 @@ export const QuoteId = ({ quoteId }) => {
 
       enqueueSnackbar("Estado actualizado", { variant: "success" });
       setTimeout(() => setJustSavedIdx(null), 800);
-    } catch {
-      enqueueSnackbar("Error al actualizar estado", { variant: "error" });
+    } catch (err) {
+      if (err?.response?.status === 409) {
+        enqueueSnackbar("La cotización fue modificada por otro usuario. Recargando datos...", {
+          variant: "warning",
+        });
+        await refetchQuote();
+      } else {
+        enqueueSnackbar("Error al actualizar estado", { variant: "error" });
+      }
     }
   };
 
@@ -142,10 +162,7 @@ export const QuoteId = ({ quoteId }) => {
         onSave={handleSaveStatus}
         onPrint={handlePrint}
       />
-      <StatusLogList
-        logs={statusLogs}
-        loading={logsLoading}
-      />
+      <StatusLogList logs={statusLogs} loading={logsLoading} />
 
       <Card variant="outlined" sx={{ p: 1 }}>
         <CardHeader title="Productos Cotizados" />
