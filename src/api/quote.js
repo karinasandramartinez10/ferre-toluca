@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import privateApi from "../config/private";
 import { getApiErrorMessage } from "../utils/apiError";
 
@@ -6,11 +7,12 @@ export const createQuote = async (body) => {
     const resp = await privateApi.post("/quote", body, {
       headers: {
         "Content-Type": "application/json",
+        "X-Idempotency-Key": uuidv4(),
       },
     });
     return resp;
   } catch (error) {
-    console.log(error);
+    console.error("Error creating quote:", error);
     throw new Error(getApiErrorMessage(error));
   }
 };
@@ -115,12 +117,13 @@ export const sendQuoteMessage = async (quoteId, content) => {
       {
         headers: {
           "Content-Type": "application/json",
+          "X-Idempotency-Key": uuidv4(),
         },
       }
     );
     return data.data;
   } catch (error) {
-    console.error("Error al enviar mensaje:", error);
+    console.error("Error sending quote message:", error);
     throw new Error(getApiErrorMessage(error));
   }
 };
