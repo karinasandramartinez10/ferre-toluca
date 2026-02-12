@@ -65,10 +65,16 @@ const ProductsPage = () => {
           variant: "success",
         });
       }
-      // recargar
       await loadPage(data.page, data.pageSize);
-    } catch (e) {
-      enqueueSnackbar("Error al actualizar producto", { variant: "error" });
+    } catch (err) {
+      if (err?.response?.status === 409) {
+        enqueueSnackbar("El producto fue modificado por otro usuario. Recargando datos...", {
+          variant: "warning",
+        });
+        await loadPage(data.page, data.pageSize);
+      } else {
+        enqueueSnackbar("Error al actualizar producto", { variant: "error" });
+      }
     } finally {
       setLoading(false);
       setIsModalOpen(false);
