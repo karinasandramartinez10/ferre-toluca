@@ -11,7 +11,8 @@ export const getFavorites = async () => {
 
 export const toggleFavorites = async (productId) => {
   try {
-    return await api.post(`/favorite/toggle`, { productId });
+    const { data } = await api.post(`/favorite/toggle`, { productId });
+    return data;
   } catch (error) {
     console.error(`Error toggling favorite ${error.message}`);
     throw new Error("Error trying to toggle favorites");

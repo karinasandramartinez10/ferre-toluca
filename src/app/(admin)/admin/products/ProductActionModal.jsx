@@ -26,13 +26,7 @@ import { getSubcategories } from "../../../../api/subcategories";
 import { Dropzone } from "../../../../components/Dropzone";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
-import UploadingMessage from "../brands/UploadingMessage";
-import {
-  getSelectOptions,
-  multiLineFields,
-  selectFields,
-  textFields,
-} from "./constants";
+import { getSelectOptions, multiLineFields, selectFields, textFields } from "./constants";
 import { sectionTitleSx, twoColumnGrid } from "./styles";
 import { toCapitalizeWords } from "../../../../utils/cases";
 
@@ -231,8 +225,7 @@ const ProductActionModal = ({
         }));
 
         const preserveInitial =
-          isInitialCategoryRunRef.current &&
-          selected?.category?.id === categoryId;
+          isInitialCategoryRunRef.current && selected?.category?.id === categoryId;
         if (!preserveInitial) {
           setValue("subCategoryId", "", {
             shouldValidate: true,
@@ -270,8 +263,7 @@ const ProductActionModal = ({
         }));
 
         const preserveInitial =
-          isInitialSubcategoryRunRef.current &&
-          selected?.subCategory?.id === subCategoryId;
+          isInitialSubcategoryRunRef.current && selected?.subCategory?.id === subCategoryId;
         if (!preserveInitial) {
           setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
         }
@@ -309,13 +301,11 @@ const ProductActionModal = ({
     if (data.color) formData.append("color", data.color);
     if (data.size) formData.append("size", data.size);
     if (data.description) formData.append("description", data.description);
-    if (data.specifications)
-      formData.append("specifications", data.specifications);
+    if (data.specifications) formData.append("specifications", data.specifications);
 
     if (data.brandId) formData.append("brandId", data.brandId);
     if (data.categoryId) formData.append("categoryId", data.categoryId);
-    if (data.subCategoryId)
-      formData.append("subCategoryId", data.subCategoryId);
+    if (data.subCategoryId) formData.append("subCategoryId", data.subCategoryId);
     if (data.typeId) formData.append("typeId", data.typeId);
 
     if (data.measureValue) formData.append("measureValue", data.measureValue);
@@ -323,6 +313,10 @@ const ProductActionModal = ({
 
     if (photo) {
       formData.append("image", photo);
+    }
+
+    if (selected?.updatedAt) {
+      formData.append("updatedAt", selected.updatedAt);
     }
 
     await onSubmit(formData);
@@ -461,13 +455,8 @@ const ProductActionModal = ({
                 freeSolo
                 disableClearable
                 options={productModels}
-                getOptionLabel={(opt) =>
-                  typeof opt === "string" ? opt : opt.name
-                }
-                value={
-                  productModels.find((m) => m.name === field.value) ||
-                  field.value
-                }
+                getOptionLabel={(opt) => (typeof opt === "string" ? opt : opt.name)}
+                value={productModels.find((m) => m.name === field.value) || field.value}
                 onChange={(_, newVal) => {
                   const isCustom = typeof newVal === "string";
                   const newName = isCustom ? newVal : newVal.name;
@@ -555,11 +544,7 @@ const ProductActionModal = ({
       <DialogTitle sx={{ fontWeight: 600 }}>{`Editar ${title}`}</DialogTitle>
       <DialogContent>{content}</DialogContent>
       <DialogActions>
-        <Button
-          onClick={handleCloseModal}
-          variant="outlined"
-          disabled={loading}
-        >
+        <Button onClick={handleCloseModal} variant="outlined" disabled={loading}>
           Cancelar
         </Button>
         <LoadingButton
