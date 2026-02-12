@@ -11,9 +11,7 @@ export const getProductsByBrand = async (id, page = 1, size = 10) => {
     });
     return data.data;
   } catch (error) {
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch products by brand"
-    );
+    throw new Error(error.response?.data?.message || "Failed to fetch products by brand");
   }
 };
 
@@ -27,10 +25,7 @@ export const getProductsByBrand = async (id, page = 1, size = 10) => {
  * @returns {Promise<Object>} - Datos de productos agrupados.
  */
 
-export const getGroupedProducts = async (
-  endpoint,
-  { page = 1, size = 10, id, q } = {}
-) => {
+export const getGroupedProducts = async (endpoint, { page = 1, size = 10, id, q } = {}) => {
   try {
     const params = {
       page,
@@ -54,9 +49,7 @@ export const getGroupedProducts = async (
     };
   } catch (error) {
     console.log("er", error);
-    throw new Error(
-      error.response?.data?.message || `Failed to fetch from ${endpoint}`
-    );
+    throw new Error(error.response?.data?.message || `Failed to fetch from ${endpoint}`);
   }
 };
 
@@ -70,9 +63,7 @@ export const getProductsByCategory = async (id, page = 1, size = 10) => {
     });
     return data.data;
   } catch (error) {
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch products by categories"
-    );
+    throw new Error(error.response?.data?.message || "Failed to fetch products by categories");
   }
 };
 
@@ -83,9 +74,7 @@ export const getProductsByQuery = async (query) => {
     });
     return data.data;
   } catch (error) {
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch products by query"
-    );
+    throw new Error(error.response?.data?.message || "Failed to fetch products by query");
   }
 };
 
@@ -93,7 +82,7 @@ export const getProductById = async (id) => {
   try {
     const response = await api.get(`/product/${id}`);
 
-    return response.data.data
+    return response.data.data;
   } catch (error) {
     return {};
   }
@@ -107,7 +96,7 @@ export const updateProduct = async (id, body) => {
     return data;
   } catch (error) {
     console.error("Error updating product:", error);
-    throw new Error(error.response?.data?.message || "Error updating product");
+    throw error;
   }
 };
 
@@ -177,9 +166,7 @@ export const getFilteredProducts = async (filters = {}) => {
     };
   } catch (error) {
     console.error("Error fetching filtered products:", error);
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch filtered products"
-    );
+    throw new Error(error.response?.data?.message || "Failed to fetch filtered products");
   }
 };
 
@@ -199,23 +186,14 @@ export const getMenuTree = async () => {
     return data.data;
   } catch (error) {
     console.error("Error fetching menu tree:", error);
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch menu tree"
-    );
+    throw new Error(error.response?.data?.message || "Failed to fetch menu tree");
   }
 };
 
 export const getFilterOptions = async (currentFilters = {}) => {
   try {
-    const {
-      brandIds,
-      categoryIds,
-      subcategoryIds,
-      typeIds,
-      modelIds,
-      measureIds,
-      designIds,
-    } = currentFilters;
+    const { brandIds, categoryIds, subcategoryIds, typeIds, modelIds, measureIds, designIds } =
+      currentFilters;
 
     const params = {};
 
@@ -232,8 +210,6 @@ export const getFilterOptions = async (currentFilters = {}) => {
     return data.data;
   } catch (error) {
     console.error("Error fetching filter options:", error);
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch filter options"
-    );
+    throw new Error(error.response?.data?.message || "Failed to fetch filter options");
   }
 };
