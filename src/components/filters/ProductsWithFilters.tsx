@@ -3,58 +3,38 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import {
-  Box,
-  Grid,
-  Button,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  Chip,
-  Stack,
-} from "@mui/material";
+import { Box, Grid, Button, Typography, useMediaQuery, useTheme, Chip, Stack } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
-import {
-  useFilterOptions,
-  useProductFilters,
-  useFilteredProducts,
-} from "../../hooks/filters";
+import { useFilterOptions, useProductFilters, useFilteredProducts } from "../../hooks/filters";
 import FilterSidebar from "./FilterSidebar";
 import MobileFilterDrawer from "./MobileFilterDrawer";
 import GroupedProductsList from "../GroupedProductsList";
 import { toCapitalizeWords } from "../../utils/cases";
+import type { SelectedFilters } from "../../types/filters";
 
-/**
- * Componente principal que integra filtros con lista de productos.
- * Diseñado para ser reutilizable en todas las páginas de productos.
- *
- * @param {Object} props
- * @param {string} props.title - Título de la página.
- * @param {Object} props.fixedFilters - Filtros fijos del contexto (ej: brandId en /brands/[name]).
- * @param {number} props.pageSize - Tamaño de página.
- */
+interface ProductsWithFiltersProps {
+  title?: string;
+  fixedFilters?: SelectedFilters;
+  pageSize?: number;
+}
+
 const ProductsWithFilters = ({
   title = "Productos",
   fixedFilters = {},
   pageSize = 10,
-}) => {
+}: ProductsWithFiltersProps) => {
   const router = useRouter();
   const { data: session } = useSession();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const isAdmin =
-    session?.user?.role === "admin" || session?.user?.role === "superadmin";
+  const user = session?.user as { role?: string } | undefined;
+  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
 
   // Hooks de filtros
-  const {
-    filters,
-    urlFilters,
-    toggleFilter,
-    clearFilters,
-    hasActiveFilters,
-  } = useProductFilters(fixedFilters);
+  const { filters, urlFilters, toggleFilter, clearFilters, hasActiveFilters } =
+    useProductFilters(fixedFilters);
 
   // Opciones de filtros contextuales
   const { options, loading: optionsLoading } = useFilterOptions(filters);
@@ -75,10 +55,14 @@ const ProductsWithFilters = ({
 
   // Chips de filtros activos
   const renderActiveFilters = () => {
-    const chips = [];
+    const chips: React.ReactElement[] = [];
 
-    const addChips = (key, label, optionsArray) => {
-      const ids = urlFilters[key] || [];
+    const addChips = (
+      key: string,
+      label: string,
+      optionsArray?: { id: number | string; name: string }[]
+    ) => {
+      const ids = (urlFilters[key as keyof typeof urlFilters] || []) as (number | string)[];
       ids.forEach((id) => {
         const option = optionsArray?.find((o) => o.id === id);
         if (option) {
@@ -132,7 +116,8 @@ const ProductsWithFilters = ({
             {title}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {count} producto{count !== 1 ? "s" : ""} encontrado{count !== 1 ? "s" : ""}
+            {count} producto{count !== 1 ? "s" : ""} encontrado
+            {count !== 1 ? "s" : ""}
           </Typography>
         </Box>
 
@@ -212,7 +197,7 @@ const ProductsWithFilters = ({
             error={error}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
-            onProductClick={(id) => router.push(`/product/${id}`)}
+            onProductClick={(id: string) => router.push(`/product/${id}`)}
             showBtns={!isAdmin}
           />
         </Grid>

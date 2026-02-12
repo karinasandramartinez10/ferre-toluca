@@ -1,6 +1,14 @@
+interface PrintWindowOptions {
+  title?: string;
+  width?: number;
+  height?: number;
+  top?: number;
+  left?: number;
+}
+
 export const openPrintWindow = (
-  htmlString,
-  { title = "Documento", width = 1100, height = 800, top = 80, left = 80 } = {}
+  htmlString: string,
+  { title = "Documento", width = 1100, height = 800, top = 80, left = 80 }: PrintWindowOptions = {}
 ) => {
   if (typeof window === "undefined") return;
   const features = `height=${height},width=${width},top=${top},left=${left}`;
@@ -21,6 +29,13 @@ export const openPrintWindow = (
   }, 100);
 };
 
+interface BuildTableHtmlOptions {
+  caption?: string;
+  headers?: string[];
+  rows?: string[];
+  styles?: string;
+}
+
 export const buildTableHtml = ({
   caption,
   headers = [],
@@ -30,10 +45,8 @@ export const buildTableHtml = ({
             table{width:100%;border-collapse:collapse}
             th,td{border:1px solid #ddd;padding:6px;text-align:left;font-size:12px}
             th{background:#f5f5f5}`,
-} = {}) => {
-  const thead = `<thead><tr>${headers
-    .map((h) => `<th>${h}</th>`)
-    .join("")}</tr></thead>`;
+}: BuildTableHtmlOptions = {}) => {
+  const thead = `<thead><tr>${headers.map((h) => `<th>${h}</th>`).join("")}</tr></thead>`;
   const tbody = `<tbody>${rows.join("")}</tbody>`;
   const captionHtml = caption ? `<h2>${caption}</h2>` : "";
   return `
