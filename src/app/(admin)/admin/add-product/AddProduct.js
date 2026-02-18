@@ -1,7 +1,7 @@
 "use client";
 
 import { LoadingButton } from "@mui/lab";
-import { Grid } from "@mui/material";
+import { Box, Chip, Divider, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
 
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -23,6 +23,7 @@ import { ProductTable } from "./table/ProductTable";
 import { AddProductBanner } from "./AddProductBanner";
 import CSVUploadButton from "./CSVUploadButton";
 import { useCSVParser } from "./useCSVParser";
+import BulkCSVUpload from "./BulkCSVUpload";
 
 const defaultFormValues = {
   brandId: "",
@@ -52,6 +53,7 @@ const initialRows = [
 ];
 
 const AddProduct = () => {
+  const [activeTab, setActiveTab] = useState(0);
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
@@ -70,7 +72,6 @@ const AddProduct = () => {
     formState: { isValid },
     setValue,
     unregister,
-    register,
     reset,
   } = useForm({
     resolver: yupResolver(ProductSchema),
@@ -90,7 +91,6 @@ const AddProduct = () => {
   useEffect(() => {
     const fetchModelsByBrand = async () => {
       if (!brandId) {
-        // Limpia los modelos cuando no hay marca seleccionada
         setProductModels([]);
         return;
       }
@@ -98,7 +98,6 @@ const AddProduct = () => {
         const models = await getProductModels(brandId);
         setProductModels(models);
 
-        // Limpia los modelos previos si cambió de marca
         setRows((prevRows) =>
           prevRows.map((row) => ({
             ...row,
@@ -116,7 +115,6 @@ const AddProduct = () => {
 
   useEffect(() => {
     if (!categoryId) {
-      // Limpia dependencias cuando no hay categoría seleccionada
       setSubcategories([]);
       setTypes([]);
       setValue("subCategoryId", "");
@@ -141,7 +139,6 @@ const AddProduct = () => {
 
   useEffect(() => {
     if (!subCategoryId || subCategoryId === "") {
-      // Limpia tipos si no hay subcategoría
       setTypes([]);
       setValue("typeId", "");
       return;
@@ -192,21 +189,7 @@ const AddProduct = () => {
 
   const onSubmit = async (values) => {
     if (!validateRows(rows)) {
-      enqueueSnackbar(
-        "Debes completar al menos el nombre, codigo, descripción, valor y unidad",
-        {
-          variant: "error",
-          anchorOrigin: {
-            vertical: "top",
-            horizontal: "right",
-          },
-        }
-      );
-      return;
-    }
-
-    if (!values.image || values.image.length === 0) {
-      enqueueSnackbar("Debes agregar una imagen", {
+      enqueueSnackbar("Debes completar al menos el nombre, codigo, descripción, valor y unidad", {
         variant: "error",
         anchorOrigin: {
           vertical: "top",
@@ -219,7 +202,9 @@ const AddProduct = () => {
     setLoading(true);
     try {
       const requestBody = new FormData();
-      requestBody.append("image", values.image);
+      if (values.image) {
+        requestBody.append("image", values.image);
+      }
       requestBody.append("brandId", values.brandId);
       requestBody.append("categoryId", values.categoryId);
       requestBody.append("subCategoryId", values.subCategoryId);
@@ -228,10 +213,7 @@ const AddProduct = () => {
       }
 
       rows.forEach((product, index) => {
-        requestBody.append(
-          `products[${index}][name]`,
-          product.name ? product.name.trim() : ""
-        );
+        requestBody.append(`products[${index}][name]`, product.name ? product.name.trim() : "");
         requestBody.append(
           `products[${index}][description]`,
           product.description ? product.description.trim() : ""
@@ -244,32 +226,17 @@ const AddProduct = () => {
           `products[${index}][specifications]`,
           product.specifications ? product.specifications.trim() : ""
         );
-        requestBody.append(
-          `products[${index}][color]`,
-          product.color ? product.color.trim() : ""
-        );
-        requestBody.append(
-          `products[${index}][size]`,
-          product.size ? product.size : ""
-        );
+        requestBody.append(`products[${index}][color]`, product.color ? product.color.trim() : "");
+        requestBody.append(`products[${index}][size]`, product.size ? product.size : "");
 
         if (product.modelId) {
           requestBody.append(`products[${index}][modelId]`, product.modelId);
         } else if (product.modelName) {
-          requestBody.append(
-            `products[${index}][modelName]`,
-            product.modelName.trim()
-          );
+          requestBody.append(`products[${index}][modelName]`, product.modelName.trim());
         }
 
-        requestBody.append(
-          `products[${index}][measureId]`,
-          product.measureId || ""
-        );
-        requestBody.append(
-          `products[${index}][measureValue]`,
-          product.measureValue || ""
-        );
+        requestBody.append(`products[${index}][measureId]`, product.measureId || "");
+        requestBody.append(`products[${index}][measureValue]`, product.measureValue || "");
       });
 
       await postProduct(requestBody);
@@ -317,93 +284,135 @@ const AddProduct = () => {
   };
 
   return (
-    <Grid
-      container
-      width="100%"
-      gap={2}
-      flexDirection="row"
-      sx={{
-        flexDirection: { xs: "column", sm: "row" },
-        alignItems: { xs: "center", sm: "flex-start" },
-      }}
-    >
-      <AddProductBanner />
-      <AddProductFields
-        brands={brands}
-        categories={categories}
-        subcategories={subcategories}
-        types={types}
-        control={control}
-        hasType={hasType}
-      />
+    <Box sx={{ width: "100%" }}>
+      <Tabs
+        value={activeTab}
+        onChange={(_, newValue) => setActiveTab(newValue)}
+        variant="scrollable"
+        scrollButtons="auto"
+        allowScrollButtonsMobile
+        sx={{ mb: 3, borderBottom: 1, borderColor: "divider" }}
+      >
+        <Tab label="Lote con misma marca y categoría" sx={{ textTransform: "none" }} />
+        <Tab
+          label="Importar CSV (marcas y categorías independientes)"
+          sx={{ textTransform: "none" }}
+        />
+      </Tabs>
 
-      <CSVUploadButton
-        onCSVParsed={(parsedData) => {
-          const {
-            rows: parsedRows,
-            errors,
-            acceptedAbbreviations,
-          } = transformCSVToRows(parsedData, measures);
+      {activeTab === 0 && (
+        <Stack spacing={3} sx={{ width: "100%" }}>
+          <AddProductBanner variant="batch" />
 
-          if (errors.length > 0) {
-            const message = errors
-              .map(
-                (err) =>
-                  `Fila ${err.index + 2}: "${
-                    err.value
-                  }" no es una unidad válida.`
-              )
-              .join("\n");
+          {/* Paso 1 — Datos generales */}
+          <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+              <Chip label="1" size="small" color="primary" sx={{ fontWeight: 700, minWidth: 28 }} />
+              <Typography variant="subtitle1" fontWeight={600}>
+                Datos generales del lote
+              </Typography>
+            </Stack>
+            <AddProductFields
+              brands={brands}
+              categories={categories}
+              subcategories={subcategories}
+              types={types}
+              control={control}
+              hasType={hasType}
+            />
+          </Paper>
 
-            enqueueSnackbar(
-              `${message}\nUnidades aceptadas: ${acceptedAbbreviations.join(
-                ", "
-              )}`,
-              {
-                variant: "error",
-                autoHideDuration: 10000,
-                anchorOrigin: { vertical: "top", horizontal: "right" },
-              }
-            );
-            return;
-          }
-          setRows(parsedRows);
-        }}
-      />
+          {/* Paso 2 — Productos */}
+          <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+              <Chip label="2" size="small" color="primary" sx={{ fontWeight: 700, minWidth: 28 }} />
+              <Typography variant="subtitle1" fontWeight={600}>
+                Productos
+              </Typography>
+            </Stack>
 
-      <ProductTable
-        rows={rows}
-        setRows={setRows}
-        rowModesModel={rowModesModel}
-        setRowModesModel={setRowModesModel}
-        handleDeleteClick={handleDeleteClick}
-        processRowUpdate={processRowUpdate}
-        handleRowModesModelChange={handleRowModesModelChange}
-        measures={measures}
-        productModels={productModels}
-      />
+            <CSVUploadButton
+              onCSVParsed={(parsedData) => {
+                const {
+                  rows: parsedRows,
+                  errors,
+                  acceptedAbbreviations,
+                } = transformCSVToRows(parsedData, measures);
 
-      <Dropzone
-        register={register}
-        preview
-        setValue={setValue}
-        text="Arrastra o escoge un archivo"
-        photo={photo}
-        setPhoto={setPhoto}
-        onRemove={handleRemoveFile}
-      />
+                if (errors.length > 0) {
+                  const message = errors
+                    .map((err) => `Fila ${err.index + 2}: "${err.value}" no es una unidad válida.`)
+                    .join("\n");
 
-      <Grid item xs={12} textAlign="end">
-        <LoadingButton
-          loading={loading}
-          disabled={loading || !isValid}
-          onClick={handleSubmit(onSubmit)}
-          variant="contained"
-        >
-          Añadir Productos
-        </LoadingButton>
-      </Grid>
-    </Grid>
+                  enqueueSnackbar(
+                    `${message}\nUnidades aceptadas: ${acceptedAbbreviations.join(", ")}`,
+                    {
+                      variant: "error",
+                      autoHideDuration: 10000,
+                      anchorOrigin: { vertical: "top", horizontal: "right" },
+                    }
+                  );
+                  return;
+                }
+                setRows(parsedRows);
+              }}
+            />
+
+            <Box sx={{ mt: 2 }}>
+              <ProductTable
+                rows={rows}
+                setRows={setRows}
+                rowModesModel={rowModesModel}
+                setRowModesModel={setRowModesModel}
+                handleDeleteClick={handleDeleteClick}
+                processRowUpdate={processRowUpdate}
+                handleRowModesModelChange={handleRowModesModelChange}
+                measures={measures}
+                productModels={productModels}
+              />
+            </Box>
+          </Paper>
+
+          {/* Paso 3 — Imagen */}
+          <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+              <Chip label="3" size="small" color="primary" sx={{ fontWeight: 700, minWidth: 28 }} />
+              <Typography variant="subtitle1" fontWeight={600}>
+                Imagen del lote
+              </Typography>
+            </Stack>
+            <Dropzone
+              preview
+              setValue={setValue}
+              photo={photo}
+              setPhoto={setPhoto}
+              onRemove={handleRemoveFile}
+            />
+          </Paper>
+
+          {/* Acciones */}
+          <Divider />
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <LoadingButton
+              loading={loading}
+              disabled={loading || !isValid}
+              onClick={handleSubmit(onSubmit)}
+              variant="contained"
+              size="large"
+            >
+              Añadir Productos
+            </LoadingButton>
+          </Box>
+        </Stack>
+      )}
+
+      {activeTab === 1 && (
+        <Stack spacing={3} sx={{ width: "100%" }}>
+          <AddProductBanner variant="csv" />
+          <BulkCSVUpload />
+        </Stack>
+      )}
+    </Box>
   );
 };
 

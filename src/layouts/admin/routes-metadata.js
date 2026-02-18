@@ -5,9 +5,8 @@ export const PAGE_METADATA = {
       "Revisa y edita los productos agregados. Puedes actualizar nombre, código, especificaciones o cambiar su imagen.",
   },
   "/admin/add-product": {
-    title: "Productos",
-    subtitle:
-      "Agrega varios productos a la vez. Todos compartirán la misma marca, categoría, subcategoría y subtipo.",
+    title: "Agregar productos",
+    subtitle: "Agrega productos por lote o importa masivamente desde un archivo CSV.",
   },
   "/admin/quotes": {
     title: "Todas las cotizaciones",
@@ -26,28 +25,23 @@ export const PAGE_METADATA = {
   },
   "/admin/categories": {
     title: "Categorías",
-    subtitle:
-      "Crea y actualiza las categorías disponibles para organizar tus productos.",
+    subtitle: "Crea y actualiza las categorías disponibles para organizar tus productos.",
   },
   "/admin/subcategories": {
     title: "Subcategorías",
-    subtitle:
-      "Asocia subcategorías a una categoría principal y edítalas cuando sea necesario.",
+    subtitle: "Asocia subcategorías a una categoría principal y edítalas cuando sea necesario.",
   },
   "/admin/product-type": {
     title: "Tipos de Producto",
-    subtitle:
-      "Añade detalles como acabados, colores u otras variantes. Los tipos son opcionales.",
+    subtitle: "Añade detalles como acabados, colores u otras variantes. Los tipos son opcionales.",
   },
   "/user/profile/fiscal": {
     title: "Datos de facturación",
-    subtitle:
-      "Administra tus datos de facturación para emitir facturas y agilizar tus compras.",
+    subtitle: "Administra tus datos de facturación para emitir facturas y agilizar tus compras.",
   },
   "/user/profile/history": {
     title: "Historial de cotizaciones",
-    subtitle:
-      "Revisa tus cotizaciones anteriores y sigue el proceso de compra.",
+    subtitle: "Revisa tus cotizaciones anteriores y sigue el proceso de compra.",
   },
   "/user/profile/favorites": {
     title: "Favoritos",
@@ -67,16 +61,14 @@ export const getPageMetadata = (pathname) => {
   if (pathname.startsWith("/admin/quote-history/")) {
     return {
       title: "Detalles de la cotización enviada",
-      subtitle:
-        "Revisa los detalles de la cotización enviada.",
+      subtitle: "Revisa los detalles de la cotización enviada.",
     };
   }
 
   if (pathname.startsWith("/user/profile/history/")) {
     return {
       title: "Detalles de la cotización",
-      subtitle:
-        "Revisa los detalles de la cotización.",
+      subtitle: "Revisa los detalles de la cotización.",
     };
   }
 
