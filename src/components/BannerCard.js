@@ -1,15 +1,10 @@
 import { Card } from "@mui/material";
-import { CldImage } from "next-cloudinary";
+import { CloudinaryImage } from "./CloudinaryImage";
 
 const WIDTH = 175;
 const HEIGHT = 120;
 
-export const BannerCard = ({
-  publicId,
-  onClick,
-  alt = "brand-card",
-  index,
-}) => {
+export const BannerCard = ({ publicId, onClick, alt = "brand-card", index }) => {
   return (
     <Card
       onClick={onClick}
@@ -28,14 +23,11 @@ export const BannerCard = ({
       }}
       key={index}
     >
-      <CldImage
-        src={publicId}
+      <CloudinaryImage
+        publicId={publicId}
         alt={alt}
         width={WIDTH}
         height={HEIGHT}
-        crop="pad"
-        quality="auto"
-        format="auto"
         priority={index < 6}
         fetchPriority={index < 6 ? "high" : "auto"}
         loading={index < 6 ? "eager" : "lazy"}
@@ -48,11 +40,11 @@ export const BannerCard = ({
           height: "auto",
         }}
         sizes="
-            (max-width: 600px) 50vw,
-            (max-width: 960px) 33vw,
-            (max-width: 1280px) 25vw,
-            175px
-          "
+          (max-width: 600px) 50vw,
+          (max-width: 960px) 33vw,
+          (max-width: 1280px) 25vw,
+          175px
+        "
       />
     </Card>
   );

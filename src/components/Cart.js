@@ -1,19 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  IconButton,
-  Badge,
-  Typography,
-  Popover,
-  Button,
-  Tooltip,
-} from "@mui/material";
-import {
-  ShoppingCart as ShoppingCartIcon,
-  Delete as DeleteIcon,
-} from "@mui/icons-material";
+import { Box, IconButton, Badge, Typography, Popover, Button, Tooltip } from "@mui/material";
+import { ShoppingCart as ShoppingCartIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import Link from "next/link";
 import Image from "next/image";
 import { QuantityField } from "./QuantityField";
@@ -89,7 +78,7 @@ const Cart = () => {
                   }}
                 >
                   <Image
-                    src={product.Files?.[0]?.path || "/placeholder.jpg"}
+                    src={product.Files?.[0]?.path || "/images/placeholder.png"}
                     alt={product.name}
                     width={50}
                     height={50}
@@ -99,16 +88,10 @@ const Cart = () => {
                   <Box sx={{ flexGrow: 1 }}>
                     <Typography variant="body2">{product.name}</Typography>
                     <Box sx={{ mt: 1 }}>
-                      <QuantityField
-                        productId={product.id}
-                        quantity={quantity}
-                      />
+                      <QuantityField productId={product.id} quantity={quantity} />
                     </Box>
                   </Box>
-                  <IconButton
-                    color="primary"
-                    onClick={() => removeFromOrder(product.id)}
-                  >
+                  <IconButton color="primary" onClick={() => removeFromOrder(product.id)}>
                     <DeleteIcon />
                   </IconButton>
                 </Box>

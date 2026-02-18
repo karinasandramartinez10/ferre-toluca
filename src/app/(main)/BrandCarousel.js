@@ -123,11 +123,7 @@ const BrandCarousel = ({ brands }) => {
           },
         }}
       >
-        <Typography
-          component="h1"
-          variant="h1"
-          sx={{ color: "#FFF", marginBottom: "16px" }}
-        >
+        <Typography component="h1" variant="h1" sx={{ color: "#FFF", marginBottom: "16px" }}>
           Marcas
         </Typography>
         <Slider {...settings(handleBeforeChange, handleAfterChange)}>
@@ -135,7 +131,7 @@ const BrandCarousel = ({ brands }) => {
             <Box key={index} mt={1} mb={2} px={1}>
               <BannerCard
                 height="120px"
-                publicId={brand?.File.publicId}
+                publicId={brand?.File?.publicId}
                 onClick={() => handleBrandClick(brand.codeName, brand.id)}
                 alt={brand.name}
                 index={index}

@@ -12,7 +12,7 @@ import { STEPS } from "../../../../../constants/quotes/status";
 import { StatusLogList } from "./StatusLogList";
 import { useStatusLogs } from "../../../../../hooks/logs/useStatusLogs";
 import QuoteMessages from "../../../../../components/QuoteMessages";
-import { buildTableHtml, openPrintWindow } from "../../../../../utils/print";
+import { buildTableHtml, escapeHtml, openPrintWindow } from "../../../../../utils/print";
 import { statusLabelMap } from "../../../../../helpers/quotes";
 
 export const QuoteId = ({ quoteId }) => {
@@ -72,17 +72,19 @@ export const QuoteId = ({ quoteId }) => {
     const headerTable = buildTableHtml({
       caption: "Detalle de cotización",
       headers: ["Campo", "Valor"],
-      rows: headerRows.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`),
+      rows: headerRows.map(
+        ([k, v]) => `<tr><td>${escapeHtml(k)}</td><td>${escapeHtml(v)}</td></tr>`
+      ),
     });
 
     const productHeaders = ["Producto", "Marca", "SKU", "Cantidad"];
     const productRows = (quote?.Products ?? []).map(
       (p) =>
         `<tr>
-        <td>${p?.name ?? ""}</td>
-        <td>${p?.brand?.name ?? ""}</td>
-        <td>${p?.code ?? ""}</td>
-        <td>${p?.QuoteProduct?.quantity ?? ""}</td>
+        <td>${escapeHtml(p?.name)}</td>
+        <td>${escapeHtml(p?.brand?.name)}</td>
+        <td>${escapeHtml(p?.code)}</td>
+        <td>${escapeHtml(p?.QuoteProduct?.quantity)}</td>
       </tr>`
     );
 

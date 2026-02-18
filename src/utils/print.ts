@@ -29,6 +29,16 @@ export const openPrintWindow = (
   }, 100);
 };
 
+export const escapeHtml = (value: unknown): string => {
+  const str = String(value ?? "");
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+};
+
 interface BuildTableHtmlOptions {
   caption?: string;
   headers?: string[];
@@ -46,9 +56,9 @@ export const buildTableHtml = ({
             th,td{border:1px solid #ddd;padding:6px;text-align:left;font-size:12px}
             th{background:#f5f5f5}`,
 }: BuildTableHtmlOptions = {}) => {
-  const thead = `<thead><tr>${headers.map((h) => `<th>${h}</th>`).join("")}</tr></thead>`;
+  const thead = `<thead><tr>${headers.map((h) => `<th>${escapeHtml(h)}</th>`).join("")}</tr></thead>`;
   const tbody = `<tbody>${rows.join("")}</tbody>`;
-  const captionHtml = caption ? `<h2>${caption}</h2>` : "";
+  const captionHtml = caption ? `<h2>${escapeHtml(caption)}</h2>` : "";
   return `
     <style>${styles}</style>
     ${captionHtml}

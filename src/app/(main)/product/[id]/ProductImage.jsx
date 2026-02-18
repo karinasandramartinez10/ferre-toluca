@@ -1,16 +1,14 @@
-import { CldImage } from "next-cloudinary";
+import { CloudinaryImage } from "../../../../components/CloudinaryImage";
 
 const ProductImage = ({ name, publicId, width = 300, heightFactor = 4 }) => {
   const HEIGHT = Math.round((width * heightFactor) / 4);
+
   return (
-    <CldImage
-      src={publicId}
+    <CloudinaryImage
+      publicId={publicId}
       alt={name}
       width={width}
       height={HEIGHT}
-      crop="pad"
-      quality="auto"
-      format="auto"
       priority
       fetchPriority="high"
       decoding="async"

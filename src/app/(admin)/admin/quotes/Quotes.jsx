@@ -3,7 +3,6 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { useSnackbar } from "notistack";
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Button } from "@mui/material";
 import { fetchQuotes, updateQuote } from "../../../../api/quote";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
 import { CustomToolbar } from "../../../../components/DataGrid/CustomToolbar";
@@ -13,7 +12,7 @@ import { Loading } from "../../../../components/Loading";
 import { localeText } from "../../../../constants/x-datagrid/localeText";
 import { getQuoteColumns } from "./columns";
 import { useStatusLogs } from "../../../../hooks/logs/useStatusLogs";
-import { buildTableHtml, openPrintWindow } from "../../../../utils/print";
+import { buildTableHtml, escapeHtml, openPrintWindow } from "../../../../utils/print";
 import { statusLabelMap } from "../../../../helpers/quotes";
 
 export const Quotes = ({
@@ -25,10 +24,7 @@ export const Quotes = ({
 }) => {
   // Si no hay statusFilter y basePath es la ruta de quotes, excluir DISPATCHED por defecto
   const finalExcludeStatus =
-    excludeStatus ??
-    (statusFilter === null && basePath === "/admin/quotes"
-      ? "DISPATCHED"
-      : null);
+    excludeStatus ?? (statusFilter === null && basePath === "/admin/quotes" ? "DISPATCHED" : null);
   const [quotes, setQuotes] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [paginationModel, setPaginationModel] = useState({
@@ -68,29 +64,20 @@ export const Quotes = ({
     return () => {
       active = false;
     };
-  }, [
-    paginationModel.page,
-    paginationModel.pageSize,
-    statusFilter,
-    finalExcludeStatus,
-  ]);
+  }, [paginationModel.page, paginationModel.pageSize, statusFilter, finalExcludeStatus]);
 
   const handlePrint = useCallback(() => {
     const headers = ["# Orden", "Cliente", "Fecha", "Estado"];
 
     const rows = (Array.isArray(quotes) ? quotes : []).map((q) => {
-      const dateStr = q?.createdAt
-        ? new Date(q.createdAt).toLocaleString("es-MX")
-        : "";
-      const name = q?.User
-        ? `${q.User.firstName ?? ""} ${q.User.lastName ?? ""}`.trim()
-        : "";
+      const dateStr = q?.createdAt ? new Date(q.createdAt).toLocaleString("es-MX") : "";
+      const name = q?.User ? `${q.User.firstName ?? ""} ${q.User.lastName ?? ""}`.trim() : "";
       const statusLabel = statusLabelMap[q?.status] ?? q?.status ?? "";
       return `<tr>
-        <td>${q?.orderNumber ?? ""}</td>
-        <td>${name}</td>
-        <td>${dateStr}</td>
-        <td>${statusLabel}</td>
+        <td>${escapeHtml(q?.orderNumber)}</td>
+        <td>${escapeHtml(name)}</td>
+        <td>${escapeHtml(dateStr)}</td>
+        <td>${escapeHtml(statusLabel)}</td>
       </tr>`;
     });
 
@@ -120,22 +107,19 @@ export const Quotes = ({
           setTotalCount((prev) => Math.max(0, prev - 1));
 
           try {
-            const { quotes: refreshedQuotes, totalCount: refreshedTotalCount } =
-              await fetchQuotes(
-                paginationModel.page + 1,
-                paginationModel.pageSize,
-                statusFilter,
-                finalExcludeStatus
-              );
+            const { quotes: refreshedQuotes, totalCount: refreshedTotalCount } = await fetchQuotes(
+              paginationModel.page + 1,
+              paginationModel.pageSize,
+              statusFilter,
+              finalExcludeStatus
+            );
             setQuotes(refreshedQuotes);
             setTotalCount(refreshedTotalCount);
           } catch (refreshErr) {
             console.error("Error al refrescar cotizaciones:", refreshErr);
           }
         } else {
-          setQuotes((prev) =>
-            prev.map((q) => (q.id === id ? { ...q, status: newStatus } : q))
-          );
+          setQuotes((prev) => prev.map((q) => (q.id === id ? { ...q, status: newStatus } : q)));
         }
 
         enqueueSnackbar("Estado actualizado correctamente", {

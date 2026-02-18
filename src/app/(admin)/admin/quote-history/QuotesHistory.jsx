@@ -3,7 +3,6 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { useSnackbar } from "notistack";
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Button } from "@mui/material";
 import { fetchQuotes, updateQuote } from "../../../../api/quote";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
 import { CustomToolbar } from "../../../../components/DataGrid/CustomToolbar";
@@ -13,7 +12,7 @@ import { Loading } from "../../../../components/Loading";
 import { localeText } from "../../../../constants/x-datagrid/localeText";
 import { getQuoteHistoryColumns } from "./columns";
 import { useStatusLogs } from "../../../../hooks/logs/useStatusLogs";
-import { buildTableHtml, openPrintWindow } from "../../../../utils/print";
+import { buildTableHtml, escapeHtml, openPrintWindow } from "../../../../utils/print";
 import { statusLabelMap } from "../../../../helpers/quotes";
 
 export const QuotesHistory = () => {
@@ -60,18 +59,14 @@ export const QuotesHistory = () => {
     const headers = ["# Orden", "Cliente", "Fecha", "Estado"];
 
     const rows = (Array.isArray(quotes) ? quotes : []).map((q) => {
-      const dateStr = q?.createdAt
-        ? new Date(q.createdAt).toLocaleString("es-MX")
-        : "";
-      const name = q?.User
-        ? `${q.User.firstName ?? ""} ${q.User.lastName ?? ""}`.trim()
-        : "";
+      const dateStr = q?.createdAt ? new Date(q.createdAt).toLocaleString("es-MX") : "";
+      const name = q?.User ? `${q.User.firstName ?? ""} ${q.User.lastName ?? ""}`.trim() : "";
       const statusLabel = statusLabelMap[q?.status] ?? q?.status ?? "";
       return `<tr>
-        <td>${q?.orderNumber ?? ""}</td>
-        <td>${name}</td>
-        <td>${dateStr}</td>
-        <td>${statusLabel}</td>
+        <td>${escapeHtml(q?.orderNumber)}</td>
+        <td>${escapeHtml(name)}</td>
+        <td>${escapeHtml(dateStr)}</td>
+        <td>${escapeHtml(statusLabel)}</td>
       </tr>`;
     });
 
@@ -89,9 +84,7 @@ export const QuotesHistory = () => {
       setUpdatingId(id);
       try {
         await updateQuote(id, { status: newStatus });
-        setQuotes((prev) =>
-          prev.map((q) => (q.id === id ? { ...q, status: newStatus } : q))
-        );
+        setQuotes((prev) => prev.map((q) => (q.id === id ? { ...q, status: newStatus } : q)));
 
         await appendLog(id, {
           oldStatus,
