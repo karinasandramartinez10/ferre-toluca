@@ -100,7 +100,7 @@ const ProductsPage = () => {
         paginationMode="server"
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
-        pageSizeOptions={[10, 25, 50]}
+        pageSizeOptions={[10, 25, 50, 100]}
         disableRowSelectionOnClick
         sx={{
           height: 900,
