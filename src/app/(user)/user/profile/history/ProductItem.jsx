@@ -1,5 +1,5 @@
 import { Box, Card, Typography, Tooltip, Chip, Stack } from "@mui/material";
-import { CldImage } from 'next-cloudinary';
+import { CloudinaryImage } from "../../../../../components/CloudinaryImage";
 
 export const ProductItem = ({ product }) => {
   const name = product.name;
@@ -16,16 +16,15 @@ export const ProductItem = ({ product }) => {
         boxShadow: "none",
       }}
     >
-        <CldImage
-          src={product.Files[0].publicId}
-          alt={name}
-          width={40}
-          height={40}
-          style={{ objectFit: "contain", borderRadius: 4 }}
-          crop="fill"
-          quality="auto:best"
-          format="auto"
-        />
+      <CloudinaryImage
+        publicId={product.Files?.[0]?.publicId}
+        alt={name}
+        width={40}
+        height={40}
+        crop="fill"
+        quality="auto:best"
+        style={{ objectFit: "contain", borderRadius: 4 }}
+      />
       <Box
         sx={{
           flexGrow: 1,
@@ -40,7 +39,7 @@ export const ProductItem = ({ product }) => {
             </Typography>
           </Tooltip>
           <Box>
-            <Chip label={`x${qty}`} size="small"  />
+            <Chip label={`x${qty}`} size="small" />
           </Box>
         </Stack>
       </Box>

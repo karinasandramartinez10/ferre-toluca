@@ -15,7 +15,6 @@ import { MainSpecs } from "./MainSpecs";
 import { ProductActions } from "./ProductActions";
 import { ProductFeatures } from "./ProductFeatures";
 import { VariantSelector } from "./VariantSelector/VariantSelector";
-import ProductDesignChip from "../../../../components/ProductDesignChip";
 
 const ProductPage = ({ product, role }) => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -55,10 +54,7 @@ const ProductPage = ({ product, role }) => {
     }
   };
 
-  const breadcrumbItems = useMemo(
-    () => getBreadcrumbsItems(product),
-    [product]
-  );
+  const breadcrumbItems = useMemo(() => getBreadcrumbsItems(product), [product]);
 
   return (
     <Box width="100%">
@@ -68,17 +64,10 @@ const ProductPage = ({ product, role }) => {
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
-          <ProductImage
-            name={product.name}
-            publicId={product.Files[0]?.publicId}
-          />
+          <ProductImage name={product.name} publicId={product.Files?.[0]?.publicId} />
         </Grid>
         <Grid item xs={12} md={8}>
-          <ProductOverview
-            brand={product.brand?.name}
-            name={product.name}
-            code={product.code}
-          />
+          <ProductOverview brand={product.brand?.name} name={product.name} code={product.code} />
           <Box display="flex" width="100%" gap={2}>
             <ProductAttributes
               subCategory={product.subCategory?.name}
@@ -105,16 +94,10 @@ const ProductPage = ({ product, role }) => {
         onConfirm={handleConfirm}
       />
 
-      <ProductFeatures
-        title="Acerca de este producto"
-        description={product.description}
-      />
+      <ProductFeatures title="Acerca de este producto" description={product.description} />
 
       {product.specifications && (
-        <ProductFeatures
-          title="Características"
-          description={product.specifications}
-        />
+        <ProductFeatures title="Características" description={product.specifications} />
       )}
 
       <MainSpecs
