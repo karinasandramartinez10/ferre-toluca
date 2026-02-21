@@ -3,8 +3,6 @@ import { getSession } from "next-auth/react";
 import { authEvents } from "../lib/authEvents";
 import { EVENTS_EMITERS } from "../lib/events";
 
-let inMemoryToken;
-
 export const privateApi = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1`,
 });
@@ -12,12 +10,10 @@ export const privateApi = axios.create({
 privateApi.interceptors.request.use(
   async (config) => {
     try {
-      if (!inMemoryToken) {
-        const session = await getSession();
-        inMemoryToken = session?.user?.access_token ?? null;
-      }
-      if (inMemoryToken) {
-        config.headers.Authorization = `Bearer ${inMemoryToken}`;
+      const session = await getSession();
+      const token = session?.user?.access_token ?? null;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
       }
     } catch (error) {
       console.error(`Error setting token in request header ${error}`);
