@@ -14,11 +14,7 @@ export const getBrands = async (params) => {
 
 export const createBrand = async (formData) => {
   try {
-    const resp = await privateApi.post("/brands", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const resp = await privateApi.post("/brands", formData);
     return resp;
   } catch (error) {
     console.log(error);
@@ -28,15 +24,10 @@ export const createBrand = async (formData) => {
 
 export const updateBrand = async (id, formData) => {
   try {
-    const resp = await privateApi.put(`/brands/${id}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const resp = await privateApi.put(`/brands/${id}`, formData);
     return resp;
   } catch (error) {
     console.log(error);
     throw new Error(getApiErrorMessage(error));
   }
 };
-

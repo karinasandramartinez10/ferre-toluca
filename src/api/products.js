@@ -90,9 +90,7 @@ export const getProductById = async (id) => {
 
 export const updateProduct = async (id, body) => {
   try {
-    const data = await privateApi.patch(`/product/${id}`, body, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const data = await privateApi.patch(`/product/${id}`, body);
     return data;
   } catch (error) {
     console.error("Error updating product:", error);
