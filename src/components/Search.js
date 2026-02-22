@@ -2,15 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useDebounce } from "../hooks/use-debounce";
-import { getGroupedProducts } from "../api/products";
-import {
-  Box,
-  Paper,
-  Popper,
-  ClickAwayListener,
-  Typography,
-  IconButton,
-} from "@mui/material";
+import { getProductsByQuery } from "../api/products";
+import { Box, Paper, Popper, ClickAwayListener, Typography, IconButton } from "@mui/material";
 import { useRouter } from "next/navigation";
 import {
   ErrorSearch,
@@ -37,11 +30,7 @@ export default function SearchComponent() {
       if (debouncedSearchQuery.length >= 3) {
         setLoading(true);
         try {
-          const { data } = await getGroupedProducts("groupedSearch", {
-            q: debouncedSearchQuery,
-            page: 1,
-            size: 10,
-          });
+          const data = await getProductsByQuery(debouncedSearchQuery);
           setProducts(data.products);
           setLoading(false);
         } catch (err) {
@@ -117,13 +106,10 @@ export default function SearchComponent() {
         <Popper
           open={Boolean(
             anchorEl &&
-              (loading ||
-                error ||
-                products.length > 0 ||
-                (!loading &&
-                  !error &&
-                  products.length === 0 &&
-                  debouncedSearchQuery.length >= 3))
+            (loading ||
+              error ||
+              products.length > 0 ||
+              (!loading && !error && products.length === 0 && debouncedSearchQuery.length >= 3))
           )}
           anchorEl={anchorEl}
           placement="bottom-start"
@@ -147,19 +133,13 @@ export default function SearchComponent() {
             {loading && <LoadingIndicatorSearch />}
             {error && <ErrorSearch error={error} />}
             {!loading && !error && products.length > 0 && (
-              <SearchList
-                products={products}
-                handleProductClick={handleProductClick}
-              />
+              <SearchList products={products} handleProductClick={handleProductClick} />
             )}
-            {!loading &&
-              !error &&
-              products.length === 0 &&
-              debouncedSearchQuery.length >= 3 && (
-                <Box sx={{ p: 2, textAlign: "center" }}>
-                  <Typography>No se encontraron productos</Typography>
-                </Box>
-              )}
+            {!loading && !error && products.length === 0 && debouncedSearchQuery.length >= 3 && (
+              <Box sx={{ p: 2, textAlign: "center" }}>
+                <Typography>No se encontraron productos</Typography>
+              </Box>
+            )}
           </Paper>
         </Popper>
       </Box>
