@@ -30,6 +30,9 @@ export const useCSVParser = () => {
       measureId: resolveMeasureId(row["Unidad"], index),
       modelName: row["Modelo"] || "",
       color: row["Color"] || "",
+      qualifier: row["Cualificador"] || row["Qualifier"] || "",
+      secondaryMeasureValue: row["Valor2"] || "",
+      secondaryMeasureId: resolveMeasureId(row["Unidad2"], index),
       isNew: true,
     }));
 
