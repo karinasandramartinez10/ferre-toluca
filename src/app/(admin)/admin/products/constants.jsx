@@ -6,7 +6,7 @@ export const textFields = [
   { name: "name", label: "Nombre", required: true },
   { name: "code", label: "Código", required: true },
   { name: "color", label: "Color" },
-  // { name: "size", label: "Tamaño" },
+  { name: "qualifier", label: "Cualificador" },
 ];
 
 export const multiLineFields = [
@@ -21,13 +21,7 @@ export const selectFields = [
   { label: "Tipo", name: "typeId" },
 ];
 
-export const getSelectOptions = (
-  name,
-  brands,
-  categories,
-  subcategories,
-  types
-) => {
+export const getSelectOptions = (name, brands, categories, subcategories, types) => {
   const optionsMap = {
     brandId: brands,
     categoryId: categories,
@@ -65,13 +59,11 @@ export const getProductColumns = (onEdit) => [
     field: "brandName",
     headerName: "Marca",
     width: 160,
-    valueGetter: (_, row) =>
-      row?.brand?.name ? toCapitalizeWords(row?.brand?.name) : "",
+    valueGetter: (_, row) => (row?.brand?.name ? toCapitalizeWords(row?.brand?.name) : ""),
   },
   {
     field: "categoryName",
-    valueGetter: (_, row) =>
-      row?.category?.name ? toCapitalizeWords(row?.category?.name) : "",
+    valueGetter: (_, row) => (row?.category?.name ? toCapitalizeWords(row?.category?.name) : ""),
     headerName: "Categoría",
     width: 220,
   },
@@ -84,8 +76,7 @@ export const getProductColumns = (onEdit) => [
   },
   {
     field: "typeName",
-    valueGetter: (_, row) =>
-      row?.type?.name ? toCapitalizeWords(row?.type?.name) : "",
+    valueGetter: (_, row) => (row?.type?.name ? toCapitalizeWords(row?.type?.name) : ""),
     headerName: "Tipo",
     width: 140,
   },
