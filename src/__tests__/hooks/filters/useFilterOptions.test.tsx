@@ -62,7 +62,9 @@ describe("useFilterOptions", () => {
       types: [],
       models: [],
       measures: [],
+      secondaryMeasures: [],
       designs: [],
+      qualifiers: [],
     });
   });
 
