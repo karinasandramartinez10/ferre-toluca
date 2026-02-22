@@ -35,11 +35,7 @@ export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
       <Link href={`/product/${product.id}`} passHref>
         <div style={{ position: "relative", width: "100%" }}>
           {imagePublicId && (
-            <ProductImage
-              publicId={imagePublicId}
-              name={product.name}
-              heightFactor={2.3}
-            />
+            <ProductImage publicId={imagePublicId} name={product.name} heightFactor={2.3} />
           )}
         </div>
 
@@ -55,9 +51,7 @@ export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
           }}
         >
           <Box>
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
-            >
+            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -66,11 +60,7 @@ export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
               >
                 {toCapitalizeWords(product?.brand?.name)}
               </Typography>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                fontSize="14px"
-              >
+              <Typography variant="body2" color="text.secondary" fontSize="14px">
                 SKU {product.code}
               </Typography>
             </Box>
@@ -114,25 +104,14 @@ export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
             </Typography>
           </Tooltip>
         </CardContent>
-        <ProductDesignChip designName={product?.design?.name} />
+        <ProductDesignChip designName={product?.design?.name} typeName={product?.type?.name} />
       </Link>
       {showBtns && (
-        <CardActions
-          sx={{ justifyContent: "space-between", flexDirection: "row" }}
-        >
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={() => onViewMore(product.id)}
-          >
+        <CardActions sx={{ justifyContent: "space-between", flexDirection: "row" }}>
+          <Button variant="outlined" fullWidth onClick={() => onViewMore(product.id)}>
             Ver más
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={handleAddToOrder}
-          >
+          <Button variant="contained" color="primary" fullWidth onClick={handleAddToOrder}>
             Añadir a la orden
           </Button>
         </CardActions>
