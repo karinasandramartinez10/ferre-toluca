@@ -3,17 +3,17 @@
 import { Stack, Box } from "@mui/material";
 import { useVariantSelection } from "../../../../../hooks/variantSelector/useVariantSelection";
 import { ColorSelector } from "./ColorSelector";
-import { MeasureSelector } from "./MeasureSelector";
+import { VariantOptionSelector } from "./MeasureSelector";
 
 export const VariantSelector = ({ variants = [], initialId }) => {
   const {
     selectedColor,
     selectedVariantId,
     colorOptions,
-    measureOptions,
-    measureLabel,
+    variantOptions,
+    variantLabel,
     handleColorChange,
-    handleMeasureChange,
+    handleVariantChange,
   } = useVariantSelection(variants, initialId);
 
   return (
@@ -24,11 +24,11 @@ export const VariantSelector = ({ variants = [], initialId }) => {
           selectedColor={selectedColor}
           onColorChange={handleColorChange}
         />
-        <MeasureSelector
-          measureOptions={measureOptions}
+        <VariantOptionSelector
+          variantOptions={variantOptions}
           selectedVariantId={selectedVariantId}
-          measureLabel={measureLabel}
-          onMeasureChange={handleMeasureChange}
+          variantLabel={variantLabel}
+          onVariantChange={handleVariantChange}
         />
       </Box>
     </Stack>
