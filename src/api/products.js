@@ -138,7 +138,9 @@ export const getFilteredProducts = async (filters = {}) => {
       typeIds,
       modelIds,
       measureIds,
+      secondaryMeasureIds,
       designIds,
+      qualifiers,
       q,
       page = 1,
       size = 10,
@@ -152,7 +154,9 @@ export const getFilteredProducts = async (filters = {}) => {
     if (typeIds?.length) params.typeIds = typeIds.join(",");
     if (modelIds?.length) params.modelIds = modelIds.join(",");
     if (measureIds?.length) params.measureIds = measureIds.join(",");
+    if (secondaryMeasureIds?.length) params.secondaryMeasureIds = secondaryMeasureIds.join(",");
     if (designIds?.length) params.designIds = designIds.join(",");
+    if (qualifiers?.length) params.qualifiers = qualifiers.join(",");
     if (q) params.q = q;
 
     const { data } = await api.get("/product/grouped", { params });
@@ -190,8 +194,17 @@ export const getMenuTree = async () => {
 
 export const getFilterOptions = async (currentFilters = {}) => {
   try {
-    const { brandIds, categoryIds, subcategoryIds, typeIds, modelIds, measureIds, designIds } =
-      currentFilters;
+    const {
+      brandIds,
+      categoryIds,
+      subcategoryIds,
+      typeIds,
+      modelIds,
+      measureIds,
+      secondaryMeasureIds,
+      designIds,
+      qualifiers,
+    } = currentFilters;
 
     const params = {};
 
@@ -201,7 +214,9 @@ export const getFilterOptions = async (currentFilters = {}) => {
     if (typeIds?.length) params.typeIds = typeIds.join(",");
     if (modelIds?.length) params.modelIds = modelIds.join(",");
     if (measureIds?.length) params.measureIds = measureIds.join(",");
+    if (secondaryMeasureIds?.length) params.secondaryMeasureIds = secondaryMeasureIds.join(",");
     if (designIds?.length) params.designIds = designIds.join(",");
+    if (qualifiers?.length) params.qualifiers = qualifiers.join(",");
 
     const { data } = await api.get("/product/filter-options", { params });
 

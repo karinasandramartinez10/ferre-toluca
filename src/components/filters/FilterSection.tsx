@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Accordion,
   AccordionSummary,
@@ -17,6 +17,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
 import { toCapitalizeWords } from "../../utils/cases";
 import type { FilterOption } from "../../types/filters";
+
+const VISIBLE_LIMIT = 8;
 
 interface FilterSectionProps {
   title: string;
@@ -38,11 +40,22 @@ const FilterSection = ({
   disabled = false,
 }: FilterSectionProps) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
-  const filteredOptions = showSearch
-    ? options.filter((opt) => opt.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    : options;
+  const filteredOptions = useMemo(
+    () =>
+      showSearch
+        ? options.filter((opt) => opt.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        : options,
+    [options, showSearch, searchTerm]
+  );
 
+  const visibleOptions = useMemo(() => {
+    if (expanded || searchTerm) return filteredOptions;
+    return filteredOptions.slice(0, VISIBLE_LIMIT);
+  }, [filteredOptions, expanded, searchTerm]);
+
+  const hasMore = filteredOptions.length > VISIBLE_LIMIT && !searchTerm;
   const selectedCount = selectedIds.length;
 
   if (options.length === 0) return null;
@@ -105,7 +118,7 @@ const FilterSection = ({
           />
         )}
         <FormGroup>
-          {filteredOptions.map((option) => (
+          {visibleOptions.map((option) => (
             <FormControlLabel
               key={option.id}
               control={
@@ -129,6 +142,25 @@ const FilterSection = ({
             />
           ))}
         </FormGroup>
+        {hasMore && (
+          <Typography
+            variant="body2"
+            component="button"
+            onClick={() => setExpanded(!expanded)}
+            sx={{
+              background: "none",
+              border: "none",
+              color: "text.secondary",
+              cursor: "pointer",
+              fontSize: "0.8rem",
+              mt: 0.5,
+              p: 0,
+              "&:hover": { textDecoration: "underline" },
+            }}
+          >
+            {expanded ? "Ver menos" : `+ ${filteredOptions.length - VISIBLE_LIMIT} más`}
+          </Typography>
+        )}
         {showSearch && filteredOptions.length === 0 && (
           <Typography variant="body2" color="text.disabled" sx={{ py: 1 }}>
             No se encontraron resultados

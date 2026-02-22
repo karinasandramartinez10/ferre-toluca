@@ -22,6 +22,12 @@ export default function useProductFilters(fixedFilters = {}) {
     return value.split(",").map(Number).filter(Boolean);
   };
 
+  const parseStrings = (param) => {
+    const value = searchParams.get(param);
+    if (!value) return [];
+    return value.split(",").filter(Boolean);
+  };
+
   // Filtros desde URL
   const urlFilters = useMemo(
     () => ({
@@ -30,8 +36,10 @@ export default function useProductFilters(fixedFilters = {}) {
       subcategoryIds: parseIds("subcategoryIds"),
       typeIds: parseIds("typeIds"),
       modelIds: parseIds("modelIds"),
-      measureIds: parseIds("measureIds"),
+      measureIds: parseStrings("measureIds"),
+      secondaryMeasureIds: parseStrings("secondaryMeasureIds"),
       designIds: parseIds("designIds"),
+      qualifiers: parseStrings("qualifiers"),
       q: searchParams.get("q") || "",
     }),
     [searchParams]
@@ -133,7 +141,9 @@ export default function useProductFilters(fixedFilters = {}) {
       typeIds: [],
       modelIds: [],
       measureIds: [],
+      secondaryMeasureIds: [],
       designIds: [],
+      qualifiers: [],
       q: "",
     });
   }, [updateUrl]);

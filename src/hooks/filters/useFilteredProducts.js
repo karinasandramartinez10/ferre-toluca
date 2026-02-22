@@ -22,7 +22,9 @@ export default function useFilteredProducts(filters = {}, pageSize = 10) {
     typeIds: filters.typeIds || [],
     modelIds: filters.modelIds || [],
     measureIds: filters.measureIds || [],
+    secondaryMeasureIds: filters.secondaryMeasureIds || [],
     designIds: filters.designIds || [],
+    qualifiers: filters.qualifiers || [],
     q: filters.q || "",
   });
 

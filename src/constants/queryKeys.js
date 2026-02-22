@@ -25,7 +25,9 @@ export const queryKeys = {
       typeIds: filters.typeIds || [],
       modelIds: filters.modelIds || [],
       measureIds: filters.measureIds || [],
+      secondaryMeasureIds: filters.secondaryMeasureIds || [],
       designIds: filters.designIds || [],
+      qualifiers: filters.qualifiers || [],
     },
   ],
 };
