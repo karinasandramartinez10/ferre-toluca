@@ -38,14 +38,16 @@ const Schema = yup.object().shape({
   categoryId: yup.string().required("La categoría es requerida"),
   specifications: yup.string(),
   color: yup.string(),
-  // size: yup.string(),
+  qualifier: yup.string(),
+  secondaryMeasureValue: yup.string().nullable(),
+  secondaryMeasureId: yup.string(),
 });
 
 const defaultValues = {
   name: "",
   code: "",
   color: "",
-  // size: "",
+  qualifier: "",
   description: "",
   specifications: "",
   brandId: "",
@@ -54,6 +56,8 @@ const defaultValues = {
   typeId: "",
   measureValue: null,
   measureId: "",
+  secondaryMeasureValue: "",
+  secondaryMeasureId: "",
   modelName: "",
   modelId: "",
   image: null,
@@ -158,8 +162,11 @@ const ProductActionModal = ({
             categoryId: selected.category?.id ?? "",
             subCategoryId: selected.subCategory?.id ?? "",
             typeId: selected.type?.id ?? "",
+            qualifier: selected.qualifier ?? "",
             measureValue: selected.measureValue ?? null,
             measureId: selected.measure?.id ?? "",
+            secondaryMeasureValue: selected.secondaryMeasureValue ?? "",
+            secondaryMeasureId: selected.secondaryMeasure?.id ?? "",
             modelName: selected.productModel?.name ?? "",
             modelId: selected.productModel?.id ?? "",
           }),
@@ -299,7 +306,7 @@ const ProductActionModal = ({
     if (data.name) formData.append("name", data.name);
     if (data.code) formData.append("code", data.code);
     if (data.color) formData.append("color", data.color);
-    if (data.size) formData.append("size", data.size);
+    if (data.qualifier) formData.append("qualifier", data.qualifier);
     if (data.description) formData.append("description", data.description);
     if (data.specifications) formData.append("specifications", data.specifications);
 
@@ -310,6 +317,9 @@ const ProductActionModal = ({
 
     if (data.measureValue) formData.append("measureValue", data.measureValue);
     if (data.measureId) formData.append("measureId", data.measureId);
+    if (data.secondaryMeasureValue)
+      formData.append("secondaryMeasureValue", data.secondaryMeasureValue);
+    if (data.secondaryMeasureId) formData.append("secondaryMeasureId", data.secondaryMeasureId);
 
     if (photo) {
       formData.append("image", photo);
@@ -395,6 +405,44 @@ const ProductActionModal = ({
                 <Select {...field} value={field.value || ""} displayEmpty>
                   <MenuItem disabled value="">
                     Unidad
+                  </MenuItem>
+                  {refs.measures.map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.abbreviation}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          />
+        </Box>
+
+        {/* Medida secundaria */}
+        <Typography sx={sectionTitleSx}>Medida secundaria</Typography>
+        <Box sx={twoColumnGrid}>
+          <Controller
+            name="secondaryMeasureValue"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                value={field.value || ""}
+                label="Valor secundario"
+                fullWidth
+                error={!!errors.secondaryMeasureValue}
+                helperText={errors.secondaryMeasureValue?.message}
+                disabled={loading}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="secondaryMeasureId"
+            render={({ field }) => (
+              <FormControl size="small" fullWidth>
+                <Select {...field} value={field.value || ""} displayEmpty>
+                  <MenuItem disabled value="">
+                    Unidad secundaria
                   </MenuItem>
                   {refs.measures.map((option) => (
                     <MenuItem key={option.id} value={option.id}>

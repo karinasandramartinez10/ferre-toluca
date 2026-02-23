@@ -93,7 +93,9 @@ const ProductsWithFilters = ({
     }
     addChips("modelIds", "Modelo", options.models);
     addChips("measureIds", "Medida", options.measures);
+    addChips("secondaryMeasureIds", "Medida secundaria", options.secondaryMeasures);
     addChips("designIds", "Diseño", options.designs);
+    addChips("qualifiers", "Cualificador", options.qualifiers);
 
     return chips;
   };

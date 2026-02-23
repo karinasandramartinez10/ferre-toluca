@@ -15,7 +15,9 @@ export interface FilterOptions {
   types?: FilterOption[];
   models?: FilterOption[];
   measures?: MeasureOption[];
+  secondaryMeasures?: MeasureOption[];
   designs?: FilterOption[];
+  qualifiers?: FilterOption[];
 }
 
 export interface SelectedFilters {
@@ -25,5 +27,7 @@ export interface SelectedFilters {
   typeIds?: (number | string)[];
   modelIds?: (number | string)[];
   measureIds?: (number | string)[];
+  secondaryMeasureIds?: (number | string)[];
   designIds?: (number | string)[];
+  qualifiers?: (number | string)[];
 }

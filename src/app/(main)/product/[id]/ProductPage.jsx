@@ -103,7 +103,10 @@ const ProductPage = ({ product, role }) => {
       <MainSpecs
         color={product.color}
         measureValue={product.measureValue}
-        measure={product.measure.abbreviation}
+        measure={product.measure?.abbreviation}
+        qualifier={product.qualifier}
+        secondaryMeasureValue={product.secondaryMeasureValue}
+        secondaryMeasure={product.secondaryMeasure?.abbreviation}
       />
     </Box>
   );

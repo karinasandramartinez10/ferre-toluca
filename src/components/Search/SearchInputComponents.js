@@ -11,11 +11,7 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 
-export const SearchInput = ({
-  searchQuery,
-  handleSearchChange,
-  handleSearchSubmit,
-}) => (
+export const SearchInput = ({ searchQuery, handleSearchChange, handleSearchSubmit }) => (
   <InputBase
     value={searchQuery}
     onChange={handleSearchChange}
@@ -68,40 +64,27 @@ export const ErrorSearch = ({ error }) => (
 
 export const SearchList = ({ products, handleProductClick }) => (
   <List>
-    {products.map((group) => {
-      const representativeProduct = group.variants[0];
-      return (
-        <ListItem
-          button
-          key={representativeProduct.id}
-          onClick={() => handleProductClick(representativeProduct.id)}
+    {products.map((product) => (
+      <ListItem button key={product.id} onClick={() => handleProductClick(product.id)}>
+        <Box
+          sx={{
+            width: "50px",
+            height: "50px",
+            marginRight: "16px",
+            borderRadius: "8px",
+            overflow: "hidden",
+          }}
         >
-          <Box
-            sx={{
-              width: "50px",
-              height: "50px",
-              marginRight: "16px",
-              borderRadius: "8px",
-              overflow: "hidden",
-            }}
-          >
-            <Image
-              src={
-                representativeProduct.Files?.[0]?.path ??
-                "/images/placeholder.png"
-              }
-              alt={representativeProduct.name}
-              width={50}
-              height={50}
-              style={{ objectFit: "cover" }}
-            />
-          </Box>
-          <ListItemText
-            primary={representativeProduct.name}
-            secondary={representativeProduct.code}
+          <Image
+            src={product.Files?.[0]?.path ?? "/images/placeholder.png"}
+            alt={product.name}
+            width={50}
+            height={50}
+            style={{ objectFit: "cover" }}
           />
-        </ListItem>
-      );
-    })}
+        </Box>
+        <ListItemText primary={product.name} secondary={product.code} />
+      </ListItem>
+    ))}
   </List>
 );

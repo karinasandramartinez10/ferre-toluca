@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useMemo } from "react";
 import { Box, Typography, Button, Divider, Skeleton, Stack } from "@mui/material";
 import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
 import FilterSection from "./FilterSection";
@@ -24,14 +25,33 @@ const FilterSidebar = ({
   hasActiveFilters,
   loading = false,
 }: FilterSidebarProps) => {
-  // Determinar qué filtros mostrar basado en los filtros fijos
   const showBrands = !fixedFilters.brandIds?.length;
   const showCategories = !fixedFilters.categoryIds?.length;
   const showSubcategories = !fixedFilters.subcategoryIds?.length;
   const showTypes = !fixedFilters.typeIds?.length;
-  const showModels = true;
-  const showMeasures = true;
-  const showDesigns = true;
+
+  const handleToggle = useCallback(
+    (filterKey: string) => (id: number | string) => onToggle(filterKey, id),
+    [onToggle]
+  );
+
+  const measureOptions = useMemo(
+    () =>
+      options.measures?.map((m) => ({
+        ...m,
+        name: m.name || m.abbreviation || "",
+      })) ?? [],
+    [options.measures]
+  );
+
+  const secondaryMeasureOptions = useMemo(
+    () =>
+      options.secondaryMeasures?.map((m) => ({
+        ...m,
+        name: m.name || m.abbreviation || "",
+      })) ?? [],
+    [options.secondaryMeasures]
+  );
 
   if (loading) {
     return (
@@ -83,7 +103,7 @@ const FilterSidebar = ({
           title="Marca"
           options={options.brands}
           selectedIds={selectedFilters.brandIds || []}
-          onToggle={(id) => onToggle("brandIds", id)}
+          onToggle={handleToggle("brandIds")}
           showSearch={(options.brands?.length ?? 0) > 5}
           defaultExpanded
         />
@@ -94,7 +114,7 @@ const FilterSidebar = ({
           title="Categoría"
           options={options.categories}
           selectedIds={selectedFilters.categoryIds || []}
-          onToggle={(id) => onToggle("categoryIds", id)}
+          onToggle={handleToggle("categoryIds")}
           showSearch={(options.categories?.length ?? 0) > 5}
           defaultExpanded
         />
@@ -105,7 +125,7 @@ const FilterSidebar = ({
           title="Subcategoría"
           options={options.subcategories}
           selectedIds={selectedFilters.subcategoryIds || []}
-          onToggle={(id) => onToggle("subcategoryIds", id)}
+          onToggle={handleToggle("subcategoryIds")}
           showSearch={(options.subcategories?.length ?? 0) > 5}
           defaultExpanded={false}
         />
@@ -116,42 +136,61 @@ const FilterSidebar = ({
           title="Tipo"
           options={options.types}
           selectedIds={selectedFilters.typeIds || []}
-          onToggle={(id) => onToggle("typeIds", id)}
+          onToggle={handleToggle("typeIds")}
           showSearch={(options.types?.length ?? 0) > 5}
           defaultExpanded={false}
         />
       )}
 
-      {showModels && (options.models?.length ?? 0) > 0 && (
+      {(options.models?.length ?? 0) > 0 && (
         <FilterSection
           title="Modelo"
           options={options.models}
           selectedIds={selectedFilters.modelIds || []}
-          onToggle={(id) => onToggle("modelIds", id)}
+          onToggle={handleToggle("modelIds")}
           showSearch={(options.models?.length ?? 0) > 5}
           defaultExpanded={false}
         />
       )}
 
-      {showMeasures && (options.measures?.length ?? 0) > 0 && (
+      {measureOptions.length > 0 && (
         <FilterSection
           title="Medida"
-          options={options.measures!.map((m) => ({
-            ...m,
-            name: m.name || m.abbreviation || "",
-          }))}
+          options={measureOptions}
           selectedIds={selectedFilters.measureIds || []}
-          onToggle={(id) => onToggle("measureIds", id)}
+          onToggle={handleToggle("measureIds")}
+          showSearch={measureOptions.length > 5}
           defaultExpanded={false}
         />
       )}
 
-      {showDesigns && (options.designs?.length ?? 0) > 0 && (
+      {secondaryMeasureOptions.length > 0 && (
+        <FilterSection
+          title="Medida secundaria"
+          options={secondaryMeasureOptions}
+          selectedIds={selectedFilters.secondaryMeasureIds || []}
+          onToggle={handleToggle("secondaryMeasureIds")}
+          showSearch={secondaryMeasureOptions.length > 5}
+          defaultExpanded={false}
+        />
+      )}
+
+      {(options.designs?.length ?? 0) > 0 && (
         <FilterSection
           title="Diseño"
           options={options.designs}
           selectedIds={selectedFilters.designIds || []}
-          onToggle={(id) => onToggle("designIds", id)}
+          onToggle={handleToggle("designIds")}
+          defaultExpanded={false}
+        />
+      )}
+
+      {(options.qualifiers?.length ?? 0) > 0 && (
+        <FilterSection
+          title="Cualificador"
+          options={options.qualifiers}
+          selectedIds={selectedFilters.qualifiers || []}
+          onToggle={handleToggle("qualifiers")}
           defaultExpanded={false}
         />
       )}

@@ -10,7 +10,9 @@ const emptyOptions = {
   types: [],
   models: [],
   measures: [],
+  secondaryMeasures: [],
   designs: [],
+  qualifiers: [],
 };
 
 /**

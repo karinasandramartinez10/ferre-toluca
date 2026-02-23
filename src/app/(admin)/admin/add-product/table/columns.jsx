@@ -4,12 +4,35 @@ import { isRowValid } from "../helpers";
 import { AutocompleteCell } from "./AutoCompleteCell";
 import { TextFieldCellEditor } from "./TextFieldCellEditor";
 
-export const getAddProductColumns = (
-  onDelete,
-  measures,
-  productModels,
-  setRows
-) => [
+const selectStyle = {
+  width: "100%",
+  height: "100%",
+  border: "none",
+  background: "transparent",
+  font: "inherit",
+};
+
+const MeasureDropdown = ({ value, field, measures, params, setRows }) => {
+  const handleChange = (e) => {
+    const selectedId = parseInt(e.target.value, 10);
+    setRows((prevRows) =>
+      prevRows.map((r) => (r.id === params.row.id ? { ...params.row, [field]: selectedId } : r))
+    );
+  };
+
+  return (
+    <select value={value || ""} onChange={handleChange} style={selectStyle}>
+      <option value="">Selecciona</option>
+      {measures.map((m) => (
+        <option key={m.id} value={m.id}>
+          {m.abbreviation}
+        </option>
+      ))}
+    </select>
+  );
+};
+
+export const getAddProductColumns = (onDelete, measures, productModels, setRows) => [
   {
     field: "valid",
     headerName: "",
@@ -55,8 +78,7 @@ export const getAddProductColumns = (
     renderEditCell: (params) =>
       TextFieldCellEditor({
         params,
-        placeholder:
-          "Ej: Abrazadera de acero inoxidable modelo A4 de la marca ARDA",
+        placeholder: "Ej: Abrazadera de acero inoxidable modelo A4 de la marca ARDA",
       }),
   },
   {
@@ -86,49 +108,59 @@ export const getAddProductColumns = (
     headerName: "Unidad",
     width: 115,
     editable: false,
-    renderCell: (params) => {
-      const handleChange = (e) => {
-        const selectedId = parseInt(e.target.value, 10);
-        const updatedRow = {
-          ...params.row,
-          measureId: selectedId,
-        };
-
-        // ✅ Actualiza el row directo en el estado
-        setRows((prevRows) =>
-          prevRows.map((r) => (r.id === params.row.id ? updatedRow : r))
-        );
-      };
-
-      return (
-        <select
-          value={params.row.measureId || ""}
-          onChange={handleChange}
-          style={{
-            width: "100%",
-            height: "100%",
-            border: "none",
-            background: "transparent",
-            font: "inherit",
-          }}
-        >
-          <option value="">Selecciona</option>
-          {measures.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.abbreviation}
-            </option>
-          ))}
-        </select>
-      );
-    },
+    renderCell: (params) => (
+      <MeasureDropdown
+        value={params.row.measureId}
+        field="measureId"
+        measures={measures}
+        params={params}
+        setRows={setRows}
+      />
+    ),
   },
   {
     field: "modelName",
     headerName: "Modelo",
     width: 160,
     editable: false,
-    renderCell: (params) =>
-      AutocompleteCell({ params, productModels, setRows }),
+    renderCell: (params) => AutocompleteCell({ params, productModels, setRows }),
+  },
+  {
+    field: "qualifier",
+    headerName: "Cualificador",
+    width: 120,
+    editable: true,
+    renderEditCell: (params) =>
+      TextFieldCellEditor({
+        params,
+        placeholder: "Ej: Grande, Chica",
+      }),
+  },
+  {
+    field: "secondaryMeasureValue",
+    headerName: "Valor 2",
+    width: 90,
+    editable: true,
+    renderEditCell: (params) =>
+      TextFieldCellEditor({
+        params,
+        placeholder: "Ej: 50",
+      }),
+  },
+  {
+    field: "secondaryMeasureId",
+    headerName: "Unidad 2",
+    width: 115,
+    editable: false,
+    renderCell: (params) => (
+      <MeasureDropdown
+        value={params.row.secondaryMeasureId}
+        field="secondaryMeasureId"
+        measures={measures}
+        params={params}
+        setRows={setRows}
+      />
+    ),
   },
   {
     field: "color",

@@ -9,28 +9,28 @@ import {
   Box,
 } from "@mui/material";
 
-export const MeasureSelector = ({
-  measureOptions,
+export const VariantOptionSelector = ({
+  variantOptions,
   selectedVariantId,
-  measureLabel,
-  onMeasureChange,
+  variantLabel,
+  onVariantChange,
 }) => {
-  if (measureOptions.length > 1) {
+  if (variantOptions.length > 1) {
     return (
       <Stack gap={1}>
         <Typography variant="body2" fontWeight={600}>
           También disponible en:
         </Typography>
         <FormControl size="small">
-          <InputLabel id="variant-measure-label">{measureLabel}</InputLabel>
+          <InputLabel id="variant-measure-label">{variantLabel}</InputLabel>
           <Select
             labelId="variant-measure-label"
             value={selectedVariantId}
-            label={measureLabel}
-            onChange={(e) => onMeasureChange(Number(e.target.value))}
+            label={variantLabel}
+            onChange={(e) => onVariantChange(Number(e.target.value))}
             sx={{ minWidth: 120 }}
           >
-            {measureOptions.map(({ id, label }) => (
+            {variantOptions.map(({ id, label }) => (
               <MenuItem key={id} value={id}>
                 {label}
               </MenuItem>
@@ -45,11 +45,11 @@ export const MeasureSelector = ({
     <Stack width="auto">
       <Box>
         <Typography variant="body2" fontWeight={600}>
-          Única medida
+          Única variante
         </Typography>
 
         <Chip
-          label={measureOptions[0]?.label}
+          label={variantOptions[0]?.label}
           variant="outlined"
           sx={{
             mt: 1.4,

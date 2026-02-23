@@ -49,6 +49,9 @@ const initialRows = [
     modelName: "",
     measureId: null,
     measureValue: "",
+    qualifier: "",
+    secondaryMeasureId: null,
+    secondaryMeasureValue: "",
   },
 ];
 
@@ -227,7 +230,17 @@ const AddProduct = () => {
           product.specifications ? product.specifications.trim() : ""
         );
         requestBody.append(`products[${index}][color]`, product.color ? product.color.trim() : "");
-        requestBody.append(`products[${index}][size]`, product.size ? product.size : "");
+        requestBody.append(
+          `products[${index}][qualifier]`,
+          product.qualifier ? product.qualifier.trim() : ""
+        );
+        requestBody.append(
+          `products[${index}][secondaryMeasureValue]`,
+          product.secondaryMeasureValue || ""
+        );
+        if (product.secondaryMeasureId) {
+          requestBody.append(`products[${index}][secondaryMeasureId]`, product.secondaryMeasureId);
+        }
 
         if (product.modelId) {
           requestBody.append(`products[${index}][modelId]`, product.modelId);

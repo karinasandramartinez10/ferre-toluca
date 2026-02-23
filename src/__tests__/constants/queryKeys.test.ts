@@ -42,7 +42,9 @@ describe("queryKeys factory functions", () => {
         typeIds: [],
         modelIds: [],
         measureIds: [],
+        secondaryMeasureIds: [],
         designIds: [],
+        qualifiers: [],
       });
     });
 
@@ -55,7 +57,9 @@ describe("queryKeys factory functions", () => {
         typeIds: [],
         modelIds: [],
         measureIds: [],
+        secondaryMeasureIds: [],
         designIds: [],
+        qualifiers: [],
       });
     });
   });
