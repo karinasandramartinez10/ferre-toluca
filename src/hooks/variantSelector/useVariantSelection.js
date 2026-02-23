@@ -53,10 +53,6 @@ function buildVariantLabels(siblings, allSamePrimary) {
 
     let label = primary;
 
-    const hasPrimarySiblings = siblings.some((s) => s !== variant && matchesPrimary(s, variant));
-
-    if (!hasPrimarySiblings) return label;
-
     if (variant.secondaryMeasureValue) {
       const secondary = formatMeasure(
         variant.secondaryMeasureValue,
