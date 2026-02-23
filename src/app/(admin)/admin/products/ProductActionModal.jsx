@@ -22,6 +22,7 @@ import { getCategories } from "../../../../api/category";
 import { getMeasures } from "../../../../api/measures";
 import { getProductModels } from "../../../../api/productModels";
 import { getProductTypes } from "../../../../api/productTypes";
+import { getProductById } from "../../../../api/products";
 import { getSubcategories } from "../../../../api/subcategories";
 import { Dropzone } from "../../../../components/Dropzone";
 import { ErrorUI } from "../../../../components/Error";
@@ -114,25 +115,27 @@ const ProductActionModal = ({
 
     const loadModalData = async () => {
       try {
+        const product = await getProductById(selected.id);
+
         const { brands } = await getBrands();
         const { categories } = await getCategories();
         // Precarga filtrada según selección inicial
         let fetchedSubcategories = [];
         let fetchedTypes = [];
-        if (selected?.category?.id) {
+        if (product?.category?.id) {
           try {
             const res = await getSubcategories({
-              categoryId: selected.category.id,
+              categoryId: product.category.id,
             });
             fetchedSubcategories = res.subcategories || [];
           } catch (_) {
             fetchedSubcategories = [];
           }
         }
-        if (selected?.subCategory?.id) {
+        if (product?.subCategory?.id) {
           try {
             const res = await getProductTypes({
-              subcategoryId: selected.subCategory.id,
+              subcategoryId: product.subCategory.id,
             });
             fetchedTypes = res.productTypes || res.data?.productTypes || [];
           } catch (_) {
@@ -149,26 +152,26 @@ const ProductActionModal = ({
           measures,
         });
 
-        // construye objeto initial mezclando defaultValues y selected
+        // construye objeto initial mezclando defaultValues y product completo
         const initial = {
           ...defaultValues,
-          ...(selected && {
-            name: selected.name ?? "",
-            code: selected.code ?? "",
-            color: selected.color ?? "",
-            description: selected.description ?? "",
-            specifications: selected.specifications ?? "",
-            brandId: selected.brand?.id ?? "",
-            categoryId: selected.category?.id ?? "",
-            subCategoryId: selected.subCategory?.id ?? "",
-            typeId: selected.type?.id ?? "",
-            qualifier: selected.qualifier ?? "",
-            measureValue: selected.measureValue ?? null,
-            measureId: selected.measure?.id ?? "",
-            secondaryMeasureValue: selected.secondaryMeasureValue ?? "",
-            secondaryMeasureId: selected.secondaryMeasure?.id ?? "",
-            modelName: selected.productModel?.name ?? "",
-            modelId: selected.productModel?.id ?? "",
+          ...(product && {
+            name: product.name ?? "",
+            code: product.code ?? "",
+            color: product.color ?? "",
+            description: product.description ?? "",
+            specifications: product.specifications ?? "",
+            brandId: product.brand?.id ?? "",
+            categoryId: product.category?.id ?? "",
+            subCategoryId: product.subCategory?.id ?? "",
+            typeId: product.type?.id ?? "",
+            qualifier: product.qualifier ?? "",
+            measureValue: product.measureValue ?? null,
+            measureId: product.measure?.id ?? "",
+            secondaryMeasureValue: product.secondaryMeasureValue ?? "",
+            secondaryMeasureId: product.secondaryMeasureId ?? "",
+            modelName: product.productModel?.name ?? "",
+            modelId: product.productModel?.id ?? "",
           }),
         };
 
@@ -176,7 +179,7 @@ const ProductActionModal = ({
         // Marcar que la próxima ejecución de efectos es inicial (preservar valores)
         isInitialCategoryRunRef.current = true;
         isInitialSubcategoryRunRef.current = true;
-        const existingImage = selected?.Files?.[0]?.path ?? null;
+        const existingImage = product?.Files?.[0]?.path ?? null;
         setPhoto(existingImage ? { preview: existingImage } : null);
 
         // carga modelos si hay brandId
