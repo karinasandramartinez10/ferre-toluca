@@ -127,8 +127,20 @@ export function useVariantSelection(variants, initialId) {
   }, [filteredByColor, selectedVariant]);
 
   const handleColorChange = (color) => {
-    const first = variants.find((v) => v.color === color);
-    if (first) router.push(`/product/${first.id}`);
+    const withColor = variants.filter((v) => v.color === color);
+
+    // Best: same primary + secondary measure
+    const match =
+      (selectedVariant &&
+        (withColor.find(
+          (v) => matchesPrimary(v, selectedVariant) && matchesSecondary(v, selectedVariant)
+        ) ||
+          // Fallback: same primary measure only
+          withColor.find((v) => matchesPrimary(v, selectedVariant)))) ||
+      // Last resort: first variant with that color
+      withColor[0];
+
+    if (match) router.push(`/product/${match.id}`);
   };
 
   const handleVariantChange = (newId) => {
