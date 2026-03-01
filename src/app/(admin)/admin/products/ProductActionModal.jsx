@@ -19,11 +19,11 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { getBrands } from "../../../../api/admin/brands";
 import { getCategories } from "../../../../api/category";
-import { getMeasures } from "../../../../api/measures";
-import { getProductModels } from "../../../../api/productModels";
 import { getProductTypes } from "../../../../api/productTypes";
 import { getProductById } from "../../../../api/products";
 import { getSubcategories } from "../../../../api/subcategories";
+import { useMeasures } from "../../../../hooks/catalog/useMeasures";
+import { useProductModels } from "../../../../hooks/catalog/useProductModels";
 import { Dropzone } from "../../../../components/Dropzone";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
@@ -74,14 +74,12 @@ const ProductActionModal = ({
   loading,
 }) => {
   const [photo, setPhoto] = useState(null);
-  const [productModels, setProductModels] = useState([]);
 
   const [refs, setRefs] = useState({
     brands: [],
     categories: [],
     subcategories: [],
     types: [],
-    measures: [],
   });
   const [loadingRefs, setLoadingRefs] = useState(false);
   const [errorRefs, setErrorRefs] = useState(false);
@@ -103,6 +101,9 @@ const ProductActionModal = ({
   const brandId = watch("brandId");
   const categoryId = watch("categoryId");
   const subCategoryId = watch("subCategoryId");
+
+  const { measures } = useMeasures();
+  const { productModels } = useProductModels(brandId);
 
   // Flags para preservar valores en la carga inicial
   const isInitialCategoryRunRef = useRef(true);
@@ -142,14 +143,11 @@ const ProductActionModal = ({
             fetchedTypes = [];
           }
         }
-        const measures = await getMeasures();
-
         setRefs({
           brands,
           categories,
           subcategories: fetchedSubcategories,
           types: fetchedTypes,
-          measures,
         });
 
         // construye objeto initial mezclando defaultValues y product completo
@@ -181,12 +179,6 @@ const ProductActionModal = ({
         isInitialSubcategoryRunRef.current = true;
         const existingImage = product?.Files?.[0]?.path ?? null;
         setPhoto(existingImage ? { preview: existingImage } : null);
-
-        // carga modelos si hay brandId
-        if (initial.brandId) {
-          const models = await getProductModels(initial.brandId);
-          setProductModels(models);
-        }
       } catch {
         setErrorRefs(true);
       } finally {
@@ -196,31 +188,6 @@ const ProductActionModal = ({
 
     loadModalData();
   }, [open, selected, reset]);
-
-  useEffect(() => {
-    if (!brandId) {
-      setProductModels([]);
-      return;
-    }
-
-    const loadModels = async () => {
-      try {
-        const models = await getProductModels(brandId);
-        setProductModels(models);
-      } catch (error) {
-        setProductModels([]);
-      }
-    };
-
-    loadModels();
-
-    // Limpiar si la marca cambió respecto a la seleccionada
-    /*     if (selected?.brand?.id !== brandId) {
-      setValue("modelName", "", { shouldValidate: true, shouldDirty: true });
-      setValue("modelId", null, { shouldValidate: true, shouldDirty: true });
-    }
- */
-  }, [brandId]);
 
   // Efecto: cuando cambia la categoría, cargar subcategorías filtradas y limpiar dependencias
   useEffect(() => {
@@ -409,7 +376,7 @@ const ProductActionModal = ({
                   <MenuItem disabled value="">
                     Unidad
                   </MenuItem>
-                  {refs.measures.map((option) => (
+                  {measures.map((option) => (
                     <MenuItem key={option.id} value={option.id}>
                       {option.abbreviation}
                     </MenuItem>
@@ -447,7 +414,7 @@ const ProductActionModal = ({
                   <MenuItem disabled value="">
                     Unidad secundaria
                   </MenuItem>
-                  {refs.measures.map((option) => (
+                  {measures.map((option) => (
                     <MenuItem key={option.id} value={option.id}>
                       {option.abbreviation}
                     </MenuItem>
