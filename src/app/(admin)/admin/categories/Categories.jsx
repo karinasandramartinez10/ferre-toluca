@@ -2,11 +2,8 @@
 
 import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
-import {
-  createCategory,
-  getCategories,
-  updateCategory,
-} from "../../../../api/category";
+import { createCategory, getCategories, updateCategory } from "../../../../api/category";
+import { revalidateCategoryPage } from "../../../../actions/revalidate";
 import ActionModal from "../../../../components/ActionModal";
 import CategoriesTable from "../../../../components/CrudAdminTable";
 import { categoriesColumns } from "./columns";
@@ -59,6 +56,7 @@ const Categories = () => {
         };
 
         setRows((prevRows) => [...prevRows, newCategory]);
+        revalidateCategoryPage(category.path);
         enqueueSnackbar("Categoría agregada exitósamente", {
           variant: "success",
           autoHideDuration: 5000,
@@ -95,11 +93,10 @@ const Categories = () => {
 
         setRows((prevRows) =>
           prevRows.map((row) =>
-            row.id === selectedCategory.id
-              ? { ...row, ...updatedCategory }
-              : row
+            row.id === selectedCategory.id ? { ...row, ...updatedCategory } : row
           )
         );
+        revalidateCategoryPage(category.path);
         enqueueSnackbar("Categoría actualizada exitósamente", {
           variant: "success",
         });

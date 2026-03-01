@@ -8,7 +8,9 @@ import {
   updateProductType,
 } from "../../../../api/productTypes";
 import { getSubcategories } from "../../../../api/subcategories";
+import { revalidateTypePage } from "../../../../actions/revalidate";
 import ActionModal from "../../../../components/ActionModal";
+import { toSlug } from "../../../../utils/cases";
 import ProductTypesTable from "../../../../components/CrudAdminTable";
 import { productTypesColumns } from "./columns";
 
@@ -69,6 +71,7 @@ const ProductTypes = () => {
         };
 
         setRows((prevRows) => [...prevRows, newProductType]);
+        revalidateTypePage(toSlug(productType.name));
         enqueueSnackbar("Tipo de producto agregado exitosamente", {
           variant: "success",
           autoHideDuration: 5000,
@@ -107,11 +110,10 @@ const ProductTypes = () => {
         };
         setRows((prevRows) =>
           prevRows.map((row) =>
-            row.id === selectedProductType.id
-              ? { ...row, ...updatedProductType }
-              : row
+            row.id === selectedProductType.id ? { ...row, ...updatedProductType } : row
           )
         );
+        revalidateTypePage(toSlug(productType.name));
         enqueueSnackbar("Tipo de producto actualizado exitosamente", {
           variant: "success",
         });
@@ -158,9 +160,7 @@ const ProductTypes = () => {
         groupBy={(opt) => opt.category?.name || "Sin categoría"}
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={
-          mode === "create" ? handleAddProductType : handleEditProductType
-        }
+        onSubmit={mode === "create" ? handleAddProductType : handleEditProductType}
         mode={mode}
         selected={selectedProductType}
         loading={loading}
