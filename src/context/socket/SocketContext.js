@@ -1,12 +1,8 @@
 "use client";
 
-import { createContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
-import {
-  createSocketConnection,
-  disconnectSocket,
-  isSocketConnected,
-} from "../../config/socket";
+import { createSocketConnection, disconnectSocket, isSocketConnected } from "../../config/socket";
 
 const SocketContext = createContext();
 
@@ -15,30 +11,56 @@ export { SocketContext };
 export const SocketProvider = ({ children }) => {
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
-  
+
   const [socketStatus, setSocketStatus] = useState("disconnected");
   const socketRef = useRef(null);
   const isConnectingRef = useRef(false);
+  const handlersRef = useRef(null);
 
-  const setupSocketEvents = (socket) => {
-    socket.on("connect", () => {
-      setSocketStatus("connected");
-    });
+  const getHandlers = useCallback(() => {
+    if (!handlersRef.current) {
+      handlersRef.current = {
+        onConnect: () => setSocketStatus("connected"),
+        onDisconnect: (reason) => {
+          console.log("Socket.IO desconectado:", reason);
+          setSocketStatus("disconnected");
+        },
+        onConnectError: (error) => {
+          console.error("Error de conexión Socket.IO:", error);
+          setSocketStatus("disconnected");
+        },
+      };
+    }
+    return handlersRef.current;
+  }, []);
 
-    socket.on("disconnect", (reason) => {
-      console.log("Socket.IO desconectado:", reason);
-      setSocketStatus("disconnected");
-    });
+  const setupSocketEvents = useCallback(
+    (socket) => {
+      const handlers = getHandlers();
+      socket.off("connect", handlers.onConnect);
+      socket.off("disconnect", handlers.onDisconnect);
+      socket.off("connect_error", handlers.onConnectError);
 
-    socket.on("connect_error", (error) => {
-      console.error("Error de conexión Socket.IO:", error);
-      setSocketStatus("disconnected");
-    });
-  };
+      socket.on("connect", handlers.onConnect);
+      socket.on("disconnect", handlers.onDisconnect);
+      socket.on("connect_error", handlers.onConnectError);
+    },
+    [getHandlers]
+  );
+
+  const cleanupSocketEvents = useCallback(
+    (socket) => {
+      const handlers = getHandlers();
+      socket.off("connect", handlers.onConnect);
+      socket.off("disconnect", handlers.onDisconnect);
+      socket.off("connect_error", handlers.onConnectError);
+    },
+    [getHandlers]
+  );
 
   // Socket.io connection
   useEffect(() => {
-    if (status !== 'authenticated' || !userId || isConnectingRef.current) return;
+    if (status !== "authenticated" || !userId || isConnectingRef.current) return;
 
     // Si ya tenemos un socket conectado, solo configurar eventos
     if (socketRef.current && socketRef.current.connected) {
@@ -53,7 +75,7 @@ export const SocketProvider = ({ children }) => {
 
     // Crear nueva conexión
     const socket = createSocketConnection(userId);
-    
+
     if (!socket) {
       setSocketStatus("disconnected");
       isConnectingRef.current = false;
@@ -64,28 +86,27 @@ export const SocketProvider = ({ children }) => {
     socketRef.current = socket;
     setupSocketEvents(socket);
 
-    // Cleanup function
     return () => {
-      // Solo desconectar si realmente hay un socket Y no es un hot reload
-      if (socketRef.current && !socketRef.current.connected) {
+      if (socketRef.current) {
+        cleanupSocketEvents(socketRef.current);
         disconnectSocket(socketRef.current);
-        setSocketStatus("disconnected");
         socketRef.current = null;
         isConnectingRef.current = false;
       }
     };
-  }, [userId, status]);
+  }, [userId, status, setupSocketEvents, cleanupSocketEvents]);
 
   // Cleanup al desmontar completamente (logout, etc.)
   useEffect(() => {
     return () => {
       if (socketRef.current) {
+        cleanupSocketEvents(socketRef.current);
         disconnectSocket(socketRef.current);
         socketRef.current = null;
         isConnectingRef.current = false;
       }
     };
-  }, []);
+  }, [cleanupSocketEvents]);
 
   const value = {
     socket: socketRef.current,
@@ -94,9 +115,5 @@ export const SocketProvider = ({ children }) => {
     userId,
   };
 
-  return (
-    <SocketContext.Provider value={value}>
-      {children}
-    </SocketContext.Provider>
-  );
+  return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
 };

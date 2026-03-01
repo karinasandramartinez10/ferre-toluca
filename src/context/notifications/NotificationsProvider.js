@@ -43,9 +43,7 @@ export const NotificationsProvider = ({ children }) => {
   const markAsRead = useCallback(async (id) => {
     try {
       await markNotificationAsRead(id);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
-      );
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
     } catch {}
   }, []);
 
@@ -64,21 +62,13 @@ export const NotificationsProvider = ({ children }) => {
   useEffect(() => {
     if (!socket || !userId) return;
 
-    socket.emit("join-user-room", userId);
-
-    const handleConnect = () => {
-      socket.emit("join-user-room", userId);
-    };
-
     const handleNotification = (notification) => {
       addNotification(notification);
     };
 
-    socket.on("connect", handleConnect);
     socket.on("notification", handleNotification);
 
     return () => {
-      socket.off("connect", handleConnect);
       socket.off("notification", handleNotification);
     };
   }, [socket, userId, addNotification]);
@@ -112,8 +102,6 @@ export const NotificationsProvider = ({ children }) => {
   );
 
   return (
-    <NotificationsContext.Provider value={contextValue}>
-      {children}
-    </NotificationsContext.Provider>
+    <NotificationsContext.Provider value={contextValue}>{children}</NotificationsContext.Provider>
   );
 };
