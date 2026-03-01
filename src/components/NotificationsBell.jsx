@@ -21,8 +21,7 @@ import { useNotificationsContext } from "../context/notifications/useNotificatio
 const MAX_NOTIFICATIONS = 10;
 
 export default function NotificationsBell({ color }) {
-  const { notifications, unreadCount, markAsRead, markAllAsRead } =
-    useNotificationsContext();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotificationsContext();
   const { data: session } = useSession();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -44,7 +43,7 @@ export default function NotificationsBell({ color }) {
       if (role === "admin" || role === "superadmin") {
         router.push(`/admin/quotes/${notification.data.quoteId}`);
       } else {
-        router.push(`/history/${notification.data.quoteId}`);
+        router.push(`/user/profile/history/${notification.data.quoteId}`);
       }
     }
     handleClose();
@@ -80,13 +79,7 @@ export default function NotificationsBell({ color }) {
           },
         }}
       >
-        <Box
-          px={2}
-          py={1}
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-        >
+        <Box px={2} py={1} display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" fontSize="16px" fontWeight={700}>
             Notificaciones
           </Typography>
@@ -112,46 +105,38 @@ export default function NotificationsBell({ color }) {
         )}
         {Array.isArray(notifications) &&
           notifications.slice(0, MAX_NOTIFICATIONS).map((n) => (
-          <MenuItem
-            key={n.id}
-            onClick={() => handleNotificationClick(n)}
-            selected={!n.isRead}
-            sx={{ alignItems: "flex-start", whiteSpace: "normal" }}
-          >
-            <ListItemIcon sx={{ mt: 0.5 }}>
-              <MarkEmailReadIcon color={n.isRead ? "disabled" : "primary"} />
-            </ListItemIcon>
-            <ListItemText
-              primary={
-                <Typography
-                  variant="body2"
-                  fontWeight={n.isRead ? 400 : 700}
-                  color={n.isRead ? "text.secondary" : "primary.main"}
-                >
-                  {n.title}
-                </Typography>
-              }
-              secondary={
-                <>
+            <MenuItem
+              key={n.id}
+              onClick={() => handleNotificationClick(n)}
+              selected={!n.isRead}
+              sx={{ alignItems: "flex-start", whiteSpace: "normal" }}
+            >
+              <ListItemIcon sx={{ mt: 0.5 }}>
+                <MarkEmailReadIcon color={n.isRead ? "disabled" : "primary"} />
+              </ListItemIcon>
+              <ListItemText
+                primary={
                   <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ display: "block" }}
+                    variant="body2"
+                    fontWeight={n.isRead ? 400 : 700}
+                    color={n.isRead ? "text.secondary" : "primary.main"}
                   >
-                    {n.body}
+                    {n.title}
                   </Typography>
-                  <Typography
-                    variant="caption"
-                    color="text.disabled"
-                    sx={{ display: "block" }}
-                  >
-                    {new Date(n.createdAt).toLocaleString()}
-                  </Typography>
-                </>
-              }
-            />
-          </MenuItem>
-        ))}
+                }
+                secondary={
+                  <>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+                      {n.body}
+                    </Typography>
+                    <Typography variant="caption" color="text.disabled" sx={{ display: "block" }}>
+                      {new Date(n.createdAt).toLocaleString()}
+                    </Typography>
+                  </>
+                }
+              />
+            </MenuItem>
+          ))}
       </Menu>
     </>
   );

@@ -41,6 +41,7 @@ const Login = () => {
         minHeight="100vh"
         justifyContent="center"
         xs={12}
+        position="relative"
       >
         <LoginContainer>
           <LoginForm onSubmit={handleSubmit}>

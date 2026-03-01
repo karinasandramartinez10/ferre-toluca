@@ -8,7 +8,9 @@ import {
   getSubcategories,
   updateSubcategory,
 } from "../../../../api/subcategories";
+import { revalidateSubcategoryPage } from "../../../../actions/revalidate";
 import ActionModal from "../../../../components/ActionModal";
+import { toSlug } from "../../../../utils/cases";
 import SubcategoriesTable from "../../../../components/CrudAdminTable";
 import { subcategoriesColumns } from "./columns";
 
@@ -38,7 +40,7 @@ const Subcategories = () => {
     } catch (error) {
       console.error("Error fetching initial data:", error);
     }
-  }, [paginationModel])
+  }, [paginationModel]);
 
   useEffect(() => {
     fetchInitialData();
@@ -67,7 +69,7 @@ const Subcategories = () => {
       };
 
       const response = await createSubcategory(body);
-      
+
       if (response.status === 201) {
         const { subcategory } = response.data;
         const newSubcategory = {
@@ -76,6 +78,7 @@ const Subcategories = () => {
         };
 
         setRows((prevRows) => [...prevRows, newSubcategory]);
+        revalidateSubcategoryPage(toSlug(subcategory.name));
         enqueueSnackbar("Subcategoría agregada exitósamente", {
           variant: "success",
           autoHideDuration: 5000,
@@ -113,11 +116,10 @@ const Subcategories = () => {
 
         setRows((prevRows) =>
           prevRows.map((row) =>
-            row.id === selectedSubcategory.id
-              ? { ...row, ...updatedSubcategory }
-              : row
+            row.id === selectedSubcategory.id ? { ...row, ...updatedSubcategory } : row
           )
         );
+        revalidateSubcategoryPage(toSlug(subcategory.name));
         enqueueSnackbar("Subcategoría actualizada exitosamente", {
           variant: "success",
         });
@@ -160,9 +162,7 @@ const Subcategories = () => {
         option="categoryId"
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={
-          mode === "create" ? handleAddSubcategory : handleEditSubcategory
-        }
+        onSubmit={mode === "create" ? handleAddSubcategory : handleEditSubcategory}
         mode={mode}
         selected={selectedSubcategory}
         loading={loading}

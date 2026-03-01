@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toggleFavorites, getFavorites } from "../../api/favorites";
 import { queryKeys } from "../../constants/queryKeys";
-import { staleTimes } from "../../constants/queryConfig";
+import { staleTimes, gcTimes } from "../../constants/queryConfig";
 import type { Product } from "../../types/product";
 import type { FavoriteEntry } from "../../types/favorites";
 
@@ -27,6 +27,7 @@ export const useFavorites = () => {
     },
     enabled: status === "authenticated",
     staleTime: staleTimes.DYNAMIC,
+    gcTime: gcTimes.LONG,
   });
 
   const favoritesMap = useMemo(() => {

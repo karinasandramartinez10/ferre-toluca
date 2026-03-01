@@ -1,10 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  fetchStatusLogsForQuote,
-  postStatusLogForQuote,
-} from "../../api/admin/logs";
+import { fetchStatusLogsForQuote, postStatusLogForQuote } from "../../api/admin/logs";
 import { queryKeys } from "../../constants/queryKeys";
-import { staleTimes } from "../../constants/queryConfig";
+import { staleTimes, gcTimes } from "../../constants/queryConfig";
 
 /**
  * Hook para logs de status de una cotización.
@@ -19,6 +16,7 @@ export function useStatusLogs(quoteId) {
     queryFn: () => fetchStatusLogsForQuote(quoteId),
     enabled: !!quoteId,
     staleTime: staleTimes.DYNAMIC,
+    gcTime: gcTimes.SHORT,
   });
 
   const { mutateAsync: appendLog } = useMutation({

@@ -1,18 +1,5 @@
-import {
-  AdminPanelSettings,
-  Favorite,
-  Person,
-  ReceiptLong,
-} from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  IconButton,
-  Popover,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { AdminPanelSettings, Person } from "@mui/icons-material";
+import { Box, Button, IconButton, Popover, Stack, Tooltip, Typography } from "@mui/material";
 import Link from "next/link";
 import Image from "next/image";
 import Cart from "../../components/Cart";
@@ -28,8 +15,7 @@ export const MainNavbarDesktop = ({ session }) => {
   const isMobile = useResponsive("down", "sm");
 
   const isAuthenticated = !!session?.user;
-  const isAdmin =
-    session?.user?.role === "admin" || session?.user?.role === "superadmin";
+  const isAdmin = session?.user?.role === "admin" || session?.user?.role === "superadmin";
 
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -60,6 +46,7 @@ export const MainNavbarDesktop = ({ session }) => {
               alt="ferreteria texcoco"
               fill
               sizes="120px"
+              priority
               style={{ objectFit: "contain" }}
             />
           </Box>
@@ -97,22 +84,12 @@ export const MainNavbarDesktop = ({ session }) => {
         >
           <Stack sx={{ p: 2, gap: 1 }}>
             {isAuthenticated && !isAdmin && (
-              <Button 
-                variant="contained"
-                component={Link}
-                href="/user/profile/fiscal"
-                fullWidth
-              >
+              <Button variant="contained" component={Link} href="/user/profile/fiscal" fullWidth>
                 Mi Cuenta
               </Button>
             )}
             {isAuthenticated ? (
-              <Button
-                onClick={Logout}
-                color="error"
-                fullWidth
-                variant="outlined"
-              >
+              <Button onClick={Logout} color="error" fullWidth variant="outlined">
                 Cerrar sesión
               </Button>
             ) : (
@@ -120,12 +97,7 @@ export const MainNavbarDesktop = ({ session }) => {
                 <Typography fontWeight={700} variant="body1" sx={{ mb: 1 }}>
                   Accede o crea una cuenta
                 </Typography>
-                <Button
-                  variant="contained"
-                  component={Link}
-                  href="/auth/login"
-                  fullWidth
-                >
+                <Button variant="contained" component={Link} href="/auth/login" fullWidth>
                   Iniciar sesión
                 </Button>
                 <Button

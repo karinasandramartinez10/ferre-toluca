@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { fetchOrderHistory } from "../../api/quote";
 import { queryKeys } from "../../constants/queryKeys";
-import { staleTimes } from "../../constants/queryConfig";
+import { staleTimes, gcTimes } from "../../constants/queryConfig";
 import { format } from "date-fns";
 
 export const useOrderHistory = (size = 10) => {
@@ -21,7 +21,11 @@ export const useOrderHistory = (size = 10) => {
     setCurrentPage(1);
   }, [filtersKey]);
 
-  const { data, isLoading: loading, error } = useQuery({
+  const {
+    data,
+    isLoading: loading,
+    error,
+  } = useQuery({
     queryKey: queryKeys.orderHistory({
       page: currentPage,
       size,
@@ -43,6 +47,7 @@ export const useOrderHistory = (size = 10) => {
     },
     placeholderData: keepPreviousData,
     staleTime: staleTimes.FREQUENT,
+    gcTime: gcTimes.SHORT,
   });
 
   return {

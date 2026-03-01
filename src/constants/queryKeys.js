@@ -2,6 +2,9 @@ export const queryKeys = {
   // STATIC — catálogos, estructura de navegación
   menuTree: ["menu-tree"],
   fiscalCatalogs: ["fiscalCatalogs"],
+  measures: ["measures"],
+  productModels: (brandId) => ["productModels", brandId ?? "all"],
+  productTypesBySubcategory: (subcategoryId) => ["productTypes", "bySubcategory", subcategoryId],
 
   // DYNAMIC — cambian con acciones del usuario, se invalidan con mutations
   favorites: ["favorites"],

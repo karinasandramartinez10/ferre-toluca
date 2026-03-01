@@ -28,12 +28,8 @@ const Favorites = () => {
     ); */
 
   const favoritesList = favorites.map(({ product }, index) => (
-    <Grid item xs={12} sm={8} md={4} lg={3} key={index}>
-      <ProductCard
-        key={product.id}
-        product={product}
-        onViewMore={handleProductClick}
-      />
+    <Grid item xs={12} sm={8} md={4} lg={3} key={`${product.id}-${index}`}>
+      <ProductCard product={product} onViewMore={handleProductClick} />
     </Grid>
   ));
 

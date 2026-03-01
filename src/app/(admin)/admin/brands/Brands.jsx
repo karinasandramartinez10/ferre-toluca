@@ -1,13 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import {
-  createBrand,
-  getBrands,
-  updateBrand,
-} from "../../../../api/admin/brands";
+import { createBrand, getBrands, updateBrand } from "../../../../api/admin/brands";
 import BrandModal from "./BrandModal";
 import { useSnackbar } from "notistack";
+import { revalidateBrandPage } from "../../../../actions/revalidate";
 import { toCamelCase, toCapitalizeFirstLetter } from "../../../../utils/cases";
 import CrudAdminTable from "../../../../components/CrudAdminTable";
 import { brandsColumns } from "./columns";
@@ -72,6 +69,7 @@ const Brands = () => {
         };
 
         setRows((prevRows) => [...prevRows, newBrand]);
+        revalidateBrandPage(brand.codeName);
         enqueueSnackbar("Marca agregada exitósamente", {
           variant: "success",
           autoHideDuration: 5000,
@@ -110,10 +108,9 @@ const Brands = () => {
         };
 
         setRows((prevRows) =>
-          prevRows.map((row) =>
-            row.id === selectedBrand.id ? { ...row, ...updatedBrand } : row
-          )
+          prevRows.map((row) => (row.id === selectedBrand.id ? { ...row, ...updatedBrand } : row))
         );
+        revalidateBrandPage(brand.codeName);
         enqueueSnackbar("Marca actualizada exitósamente", {
           variant: "success",
         });

@@ -3,6 +3,7 @@
 import { LoadingButton } from "@mui/lab";
 import { Box, Chip, Divider, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
 
+import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Dropzone } from "../../../../components/Dropzone";
@@ -15,15 +16,20 @@ import { getCategories } from "../../../../api/category";
 import { getSubcategories } from "../../../../api/subcategories";
 import { validateRows } from "./helpers";
 import AddProductFields from "./AddProductFields";
-import { getProductTypes } from "../../../../api/productTypes";
 import { getBrands } from "../../../../api/admin/brands";
-import { getMeasures } from "../../../../api/measures";
-import { getProductModels } from "../../../../api/productModels";
-import { ProductTable } from "./table/ProductTable";
+import { useMeasures } from "../../../../hooks/catalog/useMeasures";
+import { useProductModels } from "../../../../hooks/catalog/useProductModels";
+import { useProductTypesBySubcategory } from "../../../../hooks/catalog/useProductTypesBySubcategory";
 import { AddProductBanner } from "./AddProductBanner";
 import CSVUploadButton from "./CSVUploadButton";
 import { useCSVParser } from "./useCSVParser";
-import BulkCSVUpload from "./BulkCSVUpload";
+
+const ProductTable = dynamic(() => import("./table/ProductTable").then((mod) => mod.ProductTable), {
+  ssr: false,
+});
+const BulkCSVUpload = dynamic(() => import("./BulkCSVUpload"), {
+  ssr: false,
+});
 
 const defaultFormValues = {
   brandId: "",
@@ -60,9 +66,6 @@ const AddProduct = () => {
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-  const [types, setTypes] = useState([]);
-  const [measures, setMeasures] = useState([]);
-  const [productModels, setProductModels] = useState([]);
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [rows, setRows] = useState(initialRows);
@@ -91,35 +94,25 @@ const AddProduct = () => {
 
   const { transformCSVToRows } = useCSVParser();
 
+  const { measures } = useMeasures();
+  const { productModels } = useProductModels(brandId);
+  const { productTypes: types } = useProductTypesBySubcategory(subCategoryId);
+
+  // Limpiar modelo seleccionado en filas cuando cambia la marca
   useEffect(() => {
-    const fetchModelsByBrand = async () => {
-      if (!brandId) {
-        setProductModels([]);
-        return;
-      }
-      try {
-        const models = await getProductModels(brandId);
-        setProductModels(models);
-
-        setRows((prevRows) =>
-          prevRows.map((row) => ({
-            ...row,
-            modelName: "",
-            modelId: null,
-          }))
-        );
-      } catch (err) {
-        console.error("Error fetching models by brand:", err);
-      }
-    };
-
-    fetchModelsByBrand();
+    if (!brandId) return;
+    setRows((prevRows) =>
+      prevRows.map((row) => ({
+        ...row,
+        modelName: "",
+        modelId: null,
+      }))
+    );
   }, [brandId]);
 
   useEffect(() => {
     if (!categoryId) {
       setSubcategories([]);
-      setTypes([]);
       setValue("subCategoryId", "");
       setValue("typeId", "");
       return;
@@ -131,7 +124,6 @@ const AddProduct = () => {
         setSubcategories(res.subcategories);
         setValue("subCategoryId", "");
         setValue("typeId", "");
-        setTypes([]);
       } catch (err) {
         console.error("Error fetching subcategories:", err);
       }
@@ -140,38 +132,17 @@ const AddProduct = () => {
     fetchSubcategories();
   }, [categoryId]);
 
+  // Reset typeId cuando cambia subcategoría
   useEffect(() => {
-    if (!subCategoryId || subCategoryId === "") {
-      setTypes([]);
-      setValue("typeId", "");
-      return;
-    }
-
-    const fetchTypes = async () => {
-      try {
-        const res = await getProductTypes({ subcategoryId: subCategoryId });
-        setTypes(res.productTypes || res.data.productTypes || []);
-        setValue("typeId", "");
-      } catch (err) {
-        console.error("Error fetching product types:", err);
-      }
-    };
-
-    fetchTypes();
-  }, [subCategoryId]);
+    setValue("typeId", "");
+  }, [subCategoryId, setValue]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [brandsData, categoriesData, measuresData] = await Promise.all([
-          getBrands(),
-          getCategories(),
-          getMeasures(),
-          getProductModels(),
-        ]);
+        const [brandsData, categoriesData] = await Promise.all([getBrands(), getCategories()]);
         setBrands(brandsData.brands);
         setCategories(categoriesData.categories);
-        setMeasures(measuresData);
       } catch (error) {
         console.error("Error fetching initial data:", error);
       }
@@ -266,8 +237,6 @@ const AddProduct = () => {
       setRows(initialRows);
       setRowModesModel({});
       setSubcategories([]);
-      setTypes([]);
-      setProductModels([]);
       setLoading(false);
 
       return;

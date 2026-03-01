@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import { DataGrid } from "@mui/x-data-grid";
 import { fetchAllProducts, updateProduct } from "../../../../api/products";
+import { revalidateProduct } from "../../../../actions/revalidate";
 import { getProductColumns } from "./constants";
 import ProductActionModal from "./ProductActionModal";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
@@ -64,6 +65,7 @@ const ProductsPage = () => {
         enqueueSnackbar("Producto actualizado exitosamente", {
           variant: "success",
         });
+        revalidateProduct(selected.id);
       }
       await loadPage(data.page, data.pageSize);
     } catch (err) {
