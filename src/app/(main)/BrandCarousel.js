@@ -128,7 +128,7 @@ const BrandCarousel = ({ brands }) => {
         </Typography>
         <Slider {...settings(handleBeforeChange, handleAfterChange)}>
           {brands.map((brand, index) => (
-            <Box key={index} mt={1} mb={2} px={1}>
+            <Box key={`${brand.id}-${index}`} mt={1} mb={2} px={1}>
               <BannerCard
                 height="120px"
                 publicId={brand?.File?.publicId}

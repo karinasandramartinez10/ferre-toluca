@@ -21,7 +21,6 @@ export const BannerCard = ({ publicId, onClick, alt = "brand-card", index }) => 
         cursor: "pointer",
         borderRadius: 2,
       }}
-      key={index}
     >
       <CloudinaryImage
         publicId={publicId}

@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Typography,
-  Button,
-  Stack,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-} from "@mui/material";
+import { Box, Typography, Button, Stack, Dialog, DialogTitle, DialogContent } from "@mui/material";
 import { signIn, useSession } from "next-auth/react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -16,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 import { createQuote } from "../../../api/quote";
 import { LoadingButton } from "@mui/lab";
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import LoginContainer from "../../auth/login/LoginContainer";
 import LoginForm from "../../auth/login/LoginForm";
@@ -27,7 +20,9 @@ import { useFiscalMutations } from "../../../hooks/user/fiscal/useFiscalMutation
 
 import { useFiscalCatalogs } from "../../../hooks/user/fiscal/useFiscalCatalogs";
 import { FiscalProfileSchema } from "../../../schemas/user/fiscal";
-import FiscalForm from "../../(user)/user/profile/fiscal/FiscalForm";
+const FiscalForm = dynamic(() => import("../../(user)/user/profile/fiscal/FiscalForm"), {
+  ssr: false,
+});
 import { getDefaultFiscalProfile } from "../../../utils/fiscal";
 import OrderItemRow from "./OrderItemRow";
 import BillingSelect from "./BillingSelect";
@@ -35,10 +30,7 @@ import MessageSection from "./MessageSection";
 
 const TotalRow = ({ totalItems }) => (
   <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-    <Typography
-      variant="body"
-      fontWeight={600}
-    >{`Total de productos: ${totalItems}`}</Typography>
+    <Typography variant="body" fontWeight={600}>{`Total de productos: ${totalItems}`}</Typography>
   </Box>
 );
 
@@ -56,12 +48,7 @@ const ActionsRow = ({ onClear, onSubmit, disabled, loading }) => (
       Vaciar Carrito
     </Button>
 
-    <LoadingButton
-      disabled={disabled}
-      loading={loading}
-      variant="contained"
-      onClick={onSubmit}
-    >
+    <LoadingButton disabled={disabled} loading={loading} variant="contained" onClick={onSubmit}>
       Solicitar cotización
     </LoadingButton>
   </Box>
@@ -112,8 +99,7 @@ const CheckoutPage = () => {
 
   const isAuthenticated = !!session?.user;
 
-  const { orderItems, removeFromOrder, clearOrder, totalItems } =
-    useOrderContext();
+  const { orderItems, removeFromOrder, clearOrder, totalItems } = useOrderContext();
 
   const {
     control,
@@ -158,17 +144,14 @@ const CheckoutPage = () => {
         reset();
       } catch (error) {
         console.log(error);
-        enqueueSnackbar(
-          error?.message || "Hubo un error al procesar la orden",
-          {
-            variant: "error",
-            autoHideDuration: 5000,
-            anchorOrigin: {
-              vertical: "top",
-              horizontal: "right",
-            },
-          }
-        );
+        enqueueSnackbar(error?.message || "Hubo un error al procesar la orden", {
+          variant: "error",
+          autoHideDuration: 5000,
+          anchorOrigin: {
+            vertical: "top",
+            horizontal: "right",
+          },
+        });
       } finally {
         setLoading(false);
       }
@@ -237,7 +220,7 @@ const CheckoutPage = () => {
           Tu carrito está vacío.
         </Typography>
         {isAuthenticated && (
-          <Button component={Link} href="/history" variant="contained">
+          <Button component={Link} href="/user/profile/history" variant="contained">
             Ver historial de órdenes
           </Button>
         )}

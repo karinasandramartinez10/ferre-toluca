@@ -28,8 +28,7 @@ const BurgerMenuItem = ({ icon, text, href, onClose }) => {
             borderRadius: 2,
             alignItems: "flex-start",
             gap: 1,
-            backgroundColor:
-              pathname === href ? theme.palette.primary.hover : "transparent",
+            backgroundColor: pathname === href ? theme.palette.primary.hover : "transparent",
             "&:hover": {
               color: "#FFF",
               backgroundColor: theme.palette.primary.hover,
@@ -60,7 +59,7 @@ const BurgerMenuSection = ({ title, items, onClose }) => {
         }}
       />
       {items.map((option, index) => (
-        <BurgerMenuItem key={index} {...option} onClose={onClose} />
+        <BurgerMenuItem key={`${option.text}-${index}`} {...option} onClose={onClose} />
       ))}
     </List>
   );
@@ -90,7 +89,7 @@ export const BurgerMenu = ({ toggleDrawer, sections, showLogout, src }) => {
         </Box>
         <Divider />
         {sections.map((section, index) => (
-          <React.Fragment key={index}>
+          <React.Fragment key={`${section.title}-${index}`}>
             {index > 0 && <Divider />}
             <BurgerMenuSection {...section} onClose={toggleDrawer} />
           </React.Fragment>

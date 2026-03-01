@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Box, Divider, Link, Stack, Typography } from "@mui/material";
 import NextLink from "next/link";
@@ -11,46 +11,17 @@ const LoginContainer = ({ children }) => {
           Bienvenido de nuevo
         </Typography>
 
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="baseline"
-          gap={1}
-        >
+        <Box display="flex" justifyContent="center" alignItems="baseline" gap={1}>
           <Typography variant="body1"> ¿No tienes una cuenta?</Typography>
-          <NextLink
-            passHref
-            legacyBehavior
-            href="/auth/signup"
-            onClick={() => router.push("/")}
-            style={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Link>Crear cuenta</Link>
-          </NextLink>
+          <Link component={NextLink} href="/auth/signup">
+            Crear cuenta
+          </Link>
         </Box>
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="baseline"
-          gap={1}
-          mb={1}
-        >
+        <Box display="flex" justifyContent="center" alignItems="baseline" gap={1} mb={1}>
           <Typography variant="body1"> ¿Olvidaste tu contraseña?</Typography>
-          <NextLink
-            passHref
-            legacyBehavior
-            href="/auth/forgot-password"
-            replace
-            style={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Link>Restablécela</Link>
-          </NextLink>
+          <Link component={NextLink} href="/auth/forgot-password" replace>
+            Restablécela
+          </Link>
         </Box>
       </Stack>
 
@@ -64,4 +35,4 @@ const LoginContainer = ({ children }) => {
   );
 };
 
-export default LoginContainer
+export default LoginContainer;
