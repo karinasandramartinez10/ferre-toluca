@@ -16,19 +16,16 @@ const ForgotPassword = () => {
   const handleSubmit = async ({ email }) => {
     try {
       await forgotPassword({ email });
-      enqueueSnackbar(
-        "Se envió un correo para restablecer tu contraseña",
-        {
-          variant: "success",
-          autoHideDuration: 5000,
-          anchorOrigin: {
-            vertical: "top",
-            horizontal: "right",
-          },
-        }
-      );
+      enqueueSnackbar("Se envió un correo para restablecer tu contraseña", {
+        variant: "success",
+        autoHideDuration: 5000,
+        anchorOrigin: {
+          vertical: "top",
+          horizontal: "right",
+        },
+      });
     } catch (error) {
-      enqueueSnackbar("There was an error", {
+      enqueueSnackbar(error.message || "Hubo un error al enviar el correo", {
         variant: "error",
         autoHideDuration: 5000,
         anchorOrigin: {
