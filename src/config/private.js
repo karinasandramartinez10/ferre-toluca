@@ -3,6 +3,17 @@ import { getSession } from "next-auth/react";
 import { authEvents } from "../lib/authEvents";
 import { EVENTS_EMITERS } from "../lib/events";
 
+let activeSessionPromise = null;
+
+function getSessionDeduplicated() {
+  if (!activeSessionPromise) {
+    activeSessionPromise = getSession().finally(() => {
+      activeSessionPromise = null;
+    });
+  }
+  return activeSessionPromise;
+}
+
 export const privateApi = axios.create({
   baseURL: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1`,
 });
@@ -10,7 +21,7 @@ export const privateApi = axios.create({
 privateApi.interceptors.request.use(
   async (config) => {
     try {
-      const session = await getSession();
+      const session = await getSessionDeduplicated();
       const token = session?.user?.access_token ?? null;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
