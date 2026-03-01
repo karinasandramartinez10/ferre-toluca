@@ -68,7 +68,7 @@ export default function SearchComponent() {
 
   const handleSearchSubmit = () => {
     if (debouncedSearchQuery.length >= 3) {
-      router.push(`/search?q=${debouncedSearchQuery}`);
+      router.push(`/search?q=${encodeURIComponent(debouncedSearchQuery)}`);
     }
   };
 
