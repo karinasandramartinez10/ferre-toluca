@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { getFilteredProducts } from "../../api/products";
 import { queryKeys } from "../../constants/queryKeys";
-import { staleTimes } from "../../constants/queryConfig";
+import { staleTimes, gcTimes } from "../../constants/queryConfig";
 
 /**
  * Hook para obtener productos con filtros combinados.
@@ -13,6 +13,7 @@ import { staleTimes } from "../../constants/queryConfig";
  */
 export default function useFilteredProducts(filters = {}, pageSize = 10) {
   const [currentPage, setCurrentPage] = useState(1);
+  const queryClient = useQueryClient();
 
   // Key estable para detectar cambios de filtros
   const filtersKey = JSON.stringify({
@@ -43,12 +44,31 @@ export default function useFilteredProducts(filters = {}, pageSize = 10) {
       }),
     placeholderData: keepPreviousData,
     staleTime: staleTimes.FREQUENT,
+    gcTime: gcTimes.SHORT,
   });
+
+  const totalPages = data?.totalPages || 0;
+
+  // Prefetch de la siguiente página
+  useEffect(() => {
+    if (currentPage < totalPages) {
+      queryClient.prefetchQuery({
+        queryKey: queryKeys.filteredProducts(filtersKey, currentPage + 1, pageSize),
+        queryFn: () =>
+          getFilteredProducts({
+            ...filters,
+            page: currentPage + 1,
+            size: pageSize,
+          }),
+        staleTime: staleTimes.FREQUENT,
+      });
+    }
+  }, [currentPage, totalPages, filtersKey, pageSize, queryClient, filters]);
 
   return {
     products: data?.products || [],
     count: data?.count || 0,
-    totalPages: data?.totalPages || 0,
+    totalPages,
     loading: isLoading,
     error: error?.message || null,
     currentPage,

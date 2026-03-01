@@ -8,12 +8,14 @@
 const minutes = (n) => n * 60 * 1000;
 
 export const staleTimes = {
+  IMMUTABLE: Infinity,
   STATIC: minutes(10),
   DYNAMIC: minutes(5),
   FREQUENT: minutes(2),
 };
 
 export const gcTimes = {
+  IMMUTABLE: Infinity,
   LONG: minutes(30),
   SHORT: minutes(10),
 };

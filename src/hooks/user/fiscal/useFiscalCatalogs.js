@@ -4,19 +4,21 @@ import { useQuery } from "@tanstack/react-query";
 import { getTaxRegimes } from "../../../api/taxRegimes";
 import { getCfdiUses } from "../../../api/cfdiUses";
 import { queryKeys } from "../../../constants/queryKeys";
-import { staleTimes } from "../../../constants/queryConfig";
+import { staleTimes, gcTimes } from "../../../constants/queryConfig";
 
 export function useFiscalCatalogs() {
-  const { data, isLoading: loading, error } = useQuery({
+  const {
+    data,
+    isLoading: loading,
+    error,
+  } = useQuery({
     queryKey: queryKeys.fiscalCatalogs,
     queryFn: async () => {
-      const [regimes, uses] = await Promise.all([
-        getTaxRegimes(),
-        getCfdiUses(),
-      ]);
+      const [regimes, uses] = await Promise.all([getTaxRegimes(), getCfdiUses()]);
       return { taxRegimes: regimes, cfdiUses: uses };
     },
-    staleTime: staleTimes.STATIC,
+    staleTime: staleTimes.IMMUTABLE,
+    gcTime: gcTimes.IMMUTABLE,
   });
 
   return {

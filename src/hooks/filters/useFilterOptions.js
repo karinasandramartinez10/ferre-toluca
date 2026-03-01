@@ -1,7 +1,7 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getFilterOptions } from "../../api/products";
 import { queryKeys } from "../../constants/queryKeys";
-import { staleTimes } from "../../constants/queryConfig";
+import { staleTimes, gcTimes } from "../../constants/queryConfig";
 
 const emptyOptions = {
   brands: [],
@@ -28,6 +28,7 @@ export default function useFilterOptions(currentFilters = {}) {
     queryFn: () => getFilterOptions(currentFilters),
     placeholderData: keepPreviousData,
     staleTime: staleTimes.FREQUENT,
+    gcTime: gcTimes.SHORT,
   });
 
   return {
