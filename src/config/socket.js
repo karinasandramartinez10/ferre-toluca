@@ -12,7 +12,7 @@ export const SOCKET_CONFIG = {
   },
 };
 
-export const createSocketConnection = (userId, options = {}) => {
+export const createSocketConnection = (token, options = {}) => {
   if (!SOCKET_CONFIG.SOCKET_URL) {
     console.error("NEXT_PUBLIC_BACKEND_API_URL no está definido");
     return null;
@@ -20,13 +20,8 @@ export const createSocketConnection = (userId, options = {}) => {
 
   const socket = io(SOCKET_CONFIG.SOCKET_URL, {
     ...SOCKET_CONFIG.SOCKET_OPTIONS,
+    auth: { token },
     ...options,
-  });
-
-  socket.on("connect", () => {
-    if (userId) {
-      socket.emit("join-user-room", userId);
-    }
   });
 
   return socket;

@@ -11,6 +11,7 @@ export { SocketContext };
 export const SocketProvider = ({ children }) => {
   const { data: session, status } = useSession();
   const userId = session?.user?.id;
+  const accessToken = session?.user?.access_token;
 
   const [socketStatus, setSocketStatus] = useState("disconnected");
   const socketRef = useRef(null);
@@ -26,7 +27,18 @@ export const SocketProvider = ({ children }) => {
           setSocketStatus("disconnected");
         },
         onConnectError: (error) => {
-          console.error("Error de conexión Socket.IO:", error);
+          const code = error?.message || error?.data?.code;
+          const authCodes = ["TOKEN_EXPIRED", "INVALID_TOKEN", "NO_TOKEN"];
+
+          if (authCodes.includes(code)) {
+            console.error("Socket.IO auth error:", code);
+            if (socketRef.current) {
+              socketRef.current.disconnect();
+            }
+          } else {
+            console.error("Error de conexión Socket.IO:", error);
+          }
+
           setSocketStatus("disconnected");
         },
       };
@@ -60,7 +72,7 @@ export const SocketProvider = ({ children }) => {
 
   // Socket.io connection
   useEffect(() => {
-    if (status !== "authenticated" || !userId || isConnectingRef.current) return;
+    if (status !== "authenticated" || !accessToken || isConnectingRef.current) return;
 
     // Si ya tenemos un socket conectado, solo configurar eventos
     if (socketRef.current && socketRef.current.connected) {
@@ -74,7 +86,7 @@ export const SocketProvider = ({ children }) => {
     setSocketStatus("connecting");
 
     // Crear nueva conexión
-    const socket = createSocketConnection(userId);
+    const socket = createSocketConnection(accessToken);
 
     if (!socket) {
       setSocketStatus("disconnected");
@@ -94,7 +106,7 @@ export const SocketProvider = ({ children }) => {
         isConnectingRef.current = false;
       }
     };
-  }, [userId, status, setupSocketEvents, cleanupSocketEvents]);
+  }, [accessToken, status, setupSocketEvents, cleanupSocketEvents]);
 
   // Cleanup al desmontar completamente (logout, etc.)
   useEffect(() => {
