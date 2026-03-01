@@ -11,6 +11,7 @@
 
 # audit
 /audit
+docs/audit/
 
 # next.js
 /.next/
