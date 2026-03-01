@@ -3,6 +3,7 @@
 import { Grid, Box, Stack } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 import { useFavorites } from "../../../../hooks/favorites/useFavorites";
 import ConfirmDeleteFavorite from "./ConfirmDeleteFavorite";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
@@ -16,8 +17,11 @@ import { ProductActions } from "./ProductActions";
 import { ProductFeatures } from "./ProductFeatures";
 import { VariantSelector } from "./VariantSelector/VariantSelector";
 
-const ProductPage = ({ product, role }) => {
+const ProductPage = ({ product }) => {
   const [openDialog, setOpenDialog] = useState(false);
+  const { data: session } = useSession();
+
+  const role = session?.user?.role;
 
   const { addToOrder } = useOrderContext();
   const { toggleFavorite, isFavorite } = useFavorites();
