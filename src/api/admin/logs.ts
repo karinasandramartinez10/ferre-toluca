@@ -1,7 +1,11 @@
 import privateApi from "../../config/private";
+import type { CreateLogEntryPayload, QuoteId, StatusLogEntry } from "../../types/quote";
 import { getApiErrorMessage } from "../../utils/apiError";
 
-export const postStatusLogForQuote = async (quoteId, entry) => {
+export const postStatusLogForQuote = async (
+  quoteId: QuoteId,
+  entry: CreateLogEntryPayload
+): Promise<StatusLogEntry | undefined> => {
   try {
     const { data } = await privateApi.post(`/quote/${quoteId}/logs`, entry, {
       headers: { "Content-Type": "application/json" },
@@ -10,7 +14,7 @@ export const postStatusLogForQuote = async (quoteId, entry) => {
   } catch (error) {}
 };
 
-export const fetchStatusLogsForQuote = async (quoteId) => {
+export const fetchStatusLogsForQuote = async (quoteId: QuoteId): Promise<StatusLogEntry[]> => {
   try {
     const { data } = await privateApi.get(`/quote/${quoteId}/logs`);
     return data.data;

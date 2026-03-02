@@ -1,17 +1,21 @@
+import type { AxiosResponse } from "axios";
 import { api } from "../config";
 import privateApi from "../config/private";
 import { getApiErrorMessage } from "../utils/apiError";
+import type { SubcategoriesParams, SubcategoriesResponse, SubcategoryBody } from "../types/catalog";
 
-export const getSubcategories = async (params) => {
+export const getSubcategories = async (
+  params: SubcategoriesParams
+): Promise<SubcategoriesResponse> => {
   try {
     const { data } = await api.get("/subcategories", { params });
-    return data.data
+    return data.data;
   } catch (error) {
     throw new Error(getApiErrorMessage(error));
   }
 };
 
-export const deleteSubcategory = async (id) => {
+export const deleteSubcategory = async (id: string): Promise<AxiosResponse> => {
   try {
     const response = await privateApi.delete(`/subcategories/${id}`);
     return response;
@@ -20,7 +24,7 @@ export const deleteSubcategory = async (id) => {
   }
 };
 
-export const createSubcategory = async (body) => {
+export const createSubcategory = async (body: SubcategoryBody): Promise<AxiosResponse> => {
   try {
     const resp = await privateApi.post("/subcategories", body);
     return resp;
@@ -30,7 +34,10 @@ export const createSubcategory = async (body) => {
   }
 };
 
-export const updateSubcategory = async (id, body) => {
+export const updateSubcategory = async (
+  id: string,
+  body: SubcategoryBody
+): Promise<AxiosResponse> => {
   try {
     const resp = await privateApi.put(`/subcategories/${id}`, body);
     return resp;
