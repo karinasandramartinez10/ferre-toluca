@@ -3,7 +3,8 @@
 export async function fetchGroupedProductsServer(page = 1, size = 10) {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/product/grouped?page=${page}&size=${size}`
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/product/grouped?page=${page}&size=${size}`,
+      { cache: "force-cache" }
     );
 
     if (!res.ok) {
@@ -76,11 +77,19 @@ export async function getPopularProductIdsServer(limit = 500) {
 
 export const getProductById = async (id) => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/product/${id}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/product/${id}`, {
+      cache: "force-cache",
+    });
+
+    if (!res.ok) {
+      console.warn(`[getProductById] Non-OK response for id=${id}:`, res.status);
+      return null;
+    }
 
     const response = await res.json();
     return response.data;
   } catch (error) {
-    return {};
+    console.warn(`[getProductById] Fetch failed for id=${id}:`, error?.message);
+    return null;
   }
 };
