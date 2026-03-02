@@ -12,10 +12,34 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
+import type { FieldValues, Resolver } from "react-hook-form";
 import * as yup from "yup";
 import UploadingMessage from "../app/(admin)/admin/brands/UploadingMessage";
 import GroupedSelect from "./inputs/GroupedSelect";
 import { useGroupedMenuItems } from "../hooks/useGroupedMenuItems";
+import type { ModalMode } from "../types/ui";
+
+type AnyRecord = Record<string, any>;
+
+interface OptionItem {
+  id: string;
+  name: string;
+  [key: string]: unknown;
+}
+
+interface ActionModalProps {
+  title?: string;
+  optionTitle?: string;
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: AnyRecord) => void;
+  loading: boolean;
+  mode?: ModalMode;
+  selected?: any;
+  options?: any[];
+  option?: string;
+  groupBy?: (option: any) => string;
+}
 
 const nameSchema = yup.string().required("El nombre es requerido");
 
@@ -30,10 +54,10 @@ const ActionModal = ({
   selected,
   options = [],
   option,
-  groupBy, // optional: function(option) => group label
-}) => {
+  groupBy,
+}: ActionModalProps) => {
   const dynamicSchema = useMemo(() => {
-    const shape = { name: nameSchema };
+    const shape: Record<string, yup.AnySchema> = { name: nameSchema };
     if (options?.length && option) {
       shape[option] = yup
         .mixed()
@@ -47,7 +71,7 @@ const ActionModal = ({
   }, [options, option]);
 
   const dynamicDefaultValues = useMemo(() => {
-    const base = { name: "" };
+    const base: AnyRecord = { name: "" };
     if (option) base[option] = "";
     return base;
   }, [option]);
@@ -58,8 +82,8 @@ const ActionModal = ({
     setValue,
     reset,
     formState: { errors, isValid },
-  } = useForm({
-    resolver: yupResolver(dynamicSchema),
+  } = useForm<AnyRecord>({
+    resolver: yupResolver(dynamicSchema) as Resolver<FieldValues>,
     mode: "onChange",
     defaultValues: dynamicDefaultValues,
   });
@@ -68,23 +92,25 @@ const ActionModal = ({
     if (mode === "edit" && selected) {
       setValue("name", selected.name, { shouldValidate: true });
 
-      const getRelationKey = (opt) => {
-        const map = {
+      const getRelationKey = (opt: string): string | null => {
+        const map: Record<string, string> = {
           categoryId: "category",
           subcategoryId: "subCategory",
         };
         return map[opt] || null;
       };
 
-      const relationKey = getRelationKey(option);
-      const relatedObject = selected[relationKey];
+      const relationKey = getRelationKey(option!);
+      const relatedObject = relationKey
+        ? (selected[relationKey] as { id?: string } | undefined)
+        : undefined;
       if (option) {
         setValue(option, relatedObject?.id || "", { shouldValidate: true });
       }
     }
   }, [mode, selected, option, setValue, open]);
 
-  const handleFormSubmit = (data) => {
+  const handleFormSubmit = (data: AnyRecord) => {
     onSubmit(data);
     resetValues();
   };
@@ -105,27 +131,23 @@ const ActionModal = ({
       <DialogTitle sx={{ fontWeight: 600 }}>
         {mode === "create" ? `Agregar ${title}` : `Editar ${title}`}
       </DialogTitle>
-      <Box
-        component="form"
-        onSubmit={handleSubmit(handleFormSubmit)}
-        noValidate
-      >
+      <Box component="form" onSubmit={handleSubmit(handleFormSubmit)} noValidate>
         <DialogContent sx={{ padding: "8px 24px" }}>
           <Box display="flex" flexDirection="column" gap={2} mt={1}>
             {options.length > 0 && (
               <>
-                <Typography fontWeight={600}>
-                  {optionTitle}
-                </Typography>
+                <Typography fontWeight={600}>{optionTitle}</Typography>
                 <Controller
                   control={control}
-                  name={option}
+                  name={option!}
                   render={({ field }) => (
                     <GroupedSelect
                       value={field.value}
                       onChange={field.onChange}
                       dense
                       maxMenuHeight={360}
+                      sx={undefined}
+                      MenuProps={undefined}
                     >
                       {groupedMenuItems}
                     </GroupedSelect>
@@ -142,7 +164,7 @@ const ActionModal = ({
                   label="Nombre"
                   fullWidth
                   error={!!errors.name}
-                  helperText={errors.name?.message}
+                  helperText={errors.name?.message as string}
                   disabled={loading}
                 />
               )}
@@ -151,11 +173,7 @@ const ActionModal = ({
           </Box>
         </DialogContent>
         <DialogActions sx={{ padding: "16px" }}>
-          <Button
-            onClick={handleCloseModal}
-            variant="outlined"
-            disabled={loading}
-          >
+          <Button onClick={handleCloseModal} variant="outlined" disabled={loading}>
             Cancelar
           </Button>
           <LoadingButton

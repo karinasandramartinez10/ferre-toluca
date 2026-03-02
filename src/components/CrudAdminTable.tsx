@@ -1,13 +1,15 @@
 import { Add, Edit } from "@mui/icons-material";
 import { Box, Button } from "@mui/material";
-import {
-  DataGrid,
-  GridActionsCellItem,
-  GridToolbarContainer,
-} from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem, GridToolbarContainer } from "@mui/x-data-grid";
+import type { GridColDef, GridPaginationModel, GridRowParams } from "@mui/x-data-grid";
 import { localeText } from "../constants/x-datagrid/localeText";
 
-function CrudToolbar({ title, handleClick }) {
+interface CrudToolbarProps {
+  title: string;
+  handleClick: () => void;
+}
+
+function CrudToolbar({ title, handleClick }: CrudToolbarProps) {
   return (
     <GridToolbarContainer
       sx={{
@@ -43,6 +45,19 @@ function CrudToolbar({ title, handleClick }) {
   );
 }
 
+type Row = any;
+
+interface CrudAdminTableProps {
+  rows: Row[];
+  columns?: GridColDef[];
+  onEditClick: (row: Row) => void;
+  paginationModel: GridPaginationModel;
+  onPaginationModelChange: (model: GridPaginationModel) => void;
+  rowCount: number;
+  title: string;
+  handleClick: () => void;
+}
+
 const CrudAdminTable = ({
   rows,
   columns = [],
@@ -52,15 +67,15 @@ const CrudAdminTable = ({
   rowCount,
   title,
   handleClick,
-}) => {
-  const dynamicColumns = [
+}: CrudAdminTableProps) => {
+  const dynamicColumns: GridColDef[] = [
     ...columns,
     {
       field: "actions",
       type: "actions",
       headerName: "Acciones",
       flex: 0.3,
-      getActions: ({ row }) => {
+      getActions: ({ row }: GridRowParams) => {
         return [
           <GridActionsCellItem
             key={`edit-${row.id}`}
@@ -101,13 +116,13 @@ const CrudAdminTable = ({
         }}
         sx={{ gap: 1 }}
         slots={{
-          toolbar: CrudToolbar,
+          toolbar: CrudToolbar as any,
         }}
         slotProps={{
           toolbar: {
             title,
             handleClick,
-          },
+          } as any,
         }}
       />
     </Box>

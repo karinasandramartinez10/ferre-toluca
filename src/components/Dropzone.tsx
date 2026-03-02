@@ -1,11 +1,23 @@
 "use client";
 
+import type { Dispatch, SetStateAction } from "react";
 import { Box, IconButton, Stack, Typography, Paper } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Image from "next/image";
 import { useSnackbar } from "notistack";
-import { useDropzone } from "react-dropzone";
+import { useDropzone, type FileRejection } from "react-dropzone";
 import { filesize } from "filesize";
+import type { UseFormSetValue } from "react-hook-form";
+import type { PhotoPreview } from "../types/ui";
+
+interface DropzoneProps {
+  text?: string;
+  preview?: boolean;
+  setValue: UseFormSetValue<any>;
+  onRemove: () => void;
+  photo: PhotoPreview | null;
+  setPhoto: Dispatch<SetStateAction<PhotoPreview | null>>;
+}
 
 export const Dropzone = ({
   text = "Arrastra o escoge un archivo",
@@ -14,10 +26,10 @@ export const Dropzone = ({
   onRemove,
   photo,
   setPhoto,
-}) => {
+}: DropzoneProps) => {
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleDrop = (acceptedFiles, fileRejections) => {
+  const handleDrop = (acceptedFiles: File[], fileRejections: FileRejection[]) => {
     const file = acceptedFiles[0];
 
     if (fileRejections.length >= 1) {
@@ -32,9 +44,12 @@ export const Dropzone = ({
       return;
     }
 
-    const photoWithPreview = Object.assign(file, {
+    const photoWithPreview: PhotoPreview = {
+      ...file,
+      name: file.name,
+      size: file.size,
       preview: URL.createObjectURL(file),
-    });
+    };
 
     setPhoto(photoWithPreview);
     setValue("image", file);

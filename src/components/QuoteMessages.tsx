@@ -1,39 +1,38 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useState, useEffect } from "react";
+import type { FormEvent } from "react";
+import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import { useState, useEffect, useRef } from "react";
 import { fetchQuoteMessages, sendQuoteMessage } from "../api/quote";
 import { formatDateDayAbrev } from "../utils/date";
-import { useRef } from "react";
 import { useSession } from "next-auth/react";
 import { palette } from "../theme/palette";
 import { useSocket } from "../context/socket/useSocket";
+import type { QuoteMessage } from "../types/quote";
 
-export default function QuoteMessages({ quoteId }) {
-  const [messages, setMessages] = useState([]);
+interface QuoteMessagesProps {
+  quoteId: string;
+}
+
+export default function QuoteMessages({ quoteId }: QuoteMessagesProps) {
+  const [messages, setMessages] = useState<QuoteMessage[]>([]);
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const { data: session } = useSession();
-  const userId = session?.user?.id;
+  const userId = (session?.user as any)?.id;
 
-  const { socket } = useSocket();
-  
+  const { socket } = useSocket() as { socket: any };
+
   const loadMessages = async () => {
     setLoading(true);
     setError(null);
     try {
       const msgs = await fetchQuoteMessages(quoteId);
       setMessages(
-        msgs.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+        msgs.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
       );
     } catch (err) {
       setError("No se pudieron cargar los mensajes");
@@ -69,8 +68,8 @@ export default function QuoteMessages({ quoteId }) {
   // Listener de mensajes de la cotización
   useEffect(() => {
     if (!socket) return;
-    
-    const handler = (payload) => {
+
+    const handler = (payload: any) => {
       const incomingQuoteId = payload?.quoteId ?? payload?.message?.quoteId;
       const message = payload?.message ?? payload;
       if (String(incomingQuoteId) === String(quoteId) && message?.content) {
@@ -80,7 +79,7 @@ export default function QuoteMessages({ quoteId }) {
         });
       }
     };
-    
+
     socket.on("quote-message", handler);
     socket.on("quote_message", handler); // por compatibilidad
 
@@ -90,7 +89,7 @@ export default function QuoteMessages({ quoteId }) {
     };
   }, [socket, quoteId]);
 
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -98,7 +97,7 @@ export default function QuoteMessages({ quoteId }) {
     }
   }, [messages]);
 
-  const handleSend = async (e) => {
+  const handleSend = async (e: FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
     setSending(true);
@@ -142,32 +141,22 @@ export default function QuoteMessages({ quoteId }) {
                   <Box
                     sx={{
                       bgcolor: isMine
-                        ? palette.palette.primary.main
-                        : palette.palette.grey.main,
-                      color: isMine ? "#fff" : palette.palette.grey.main,
+                        ? (palette as any).palette.primary.main
+                        : (palette as any).palette.grey.main,
+                      color: isMine ? "#fff" : (palette as any).palette.grey.main,
                       borderRadius: 2,
                       p: 1,
                       minWidth: 120,
                       wordBreak: "break-word",
                     }}
                   >
-                    <Typography
-                      variant="body2"
-                      fontWeight={500}
-                      sx={{ mb: 0, color: "#FFF" }}
-                    >
+                    <Typography variant="body2" fontWeight={500} sx={{ mb: 0, color: "#FFF" }}>
                       {msg.content}
                     </Typography>
-                    <Typography
-                      variant="caption"
-                      color="#fff"
-                      sx={{ fontSize: "0.75rem" }}
-                    >
+                    <Typography variant="caption" color="#fff" sx={{ fontSize: "0.75rem" }}>
                       {formatDateDayAbrev(msg.createdAt)}
                     </Typography>
-                    {idx === messages.length - 1 && (
-                      <div ref={messagesEndRef} />
-                    )}
+                    {idx === messages.length - 1 && <div ref={messagesEndRef} />}
                   </Box>
                 </Box>
               );
@@ -184,11 +173,7 @@ export default function QuoteMessages({ quoteId }) {
           onChange={(e) => setContent(e.target.value)}
           disabled={sending}
         />
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={!content.trim() || sending}
-        >
+        <Button variant="contained" type="submit" disabled={!content.trim() || sending}>
           Enviar
         </Button>
       </Box>
