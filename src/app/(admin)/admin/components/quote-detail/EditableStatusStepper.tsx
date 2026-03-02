@@ -2,6 +2,12 @@ import { Stepper, Step, StepLabel } from "@mui/material";
 import { STEPS } from "../../../../../constants/quotes/status";
 import { motion } from "framer-motion";
 
+interface EditableStatusStepperProps {
+  activeStep: number;
+  justSavedIdx: number | null;
+  onStepClick: (idx: number) => void;
+}
+
 const transitionAnim = { type: "spring", stiffness: 200 };
 const hoverAnim = { scale: 1.1, color: "#920A0A" };
 
@@ -9,7 +15,7 @@ export function EditableStatusStepper({
   activeStep,
   justSavedIdx,
   onStepClick,
-}) {
+}: EditableStatusStepperProps) {
   return (
     <Stepper alternativeLabel activeStep={activeStep}>
       {STEPS.map(({ label, Icon }, idx) => (

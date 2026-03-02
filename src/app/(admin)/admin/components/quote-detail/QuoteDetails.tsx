@@ -17,6 +17,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  CircularProgress,
   Grid,
   IconButton,
   Stack,
@@ -27,19 +28,29 @@ import { STEPS } from "../../../../../constants/quotes/status";
 import { formatDateDayAbrev } from "../../../../../utils/date";
 import { EditableStatusStepper } from "./EditableStatusStepper";
 import InfoRow from "./InfoRow";
+import type { Quote, QuoteStatus } from "../../../../../types/quote";
+
+interface QuoteDetailsProps {
+  quote: Quote;
+  justSavedIdx: number | null;
+  saving?: boolean;
+  onCall: () => void;
+  onEmail: () => void;
+  onSave: (status: QuoteStatus) => void;
+  onPrint: () => void;
+}
 
 const QuoteDetails = ({
   quote,
   justSavedIdx,
+  saving = false,
   onCall,
   onEmail,
   onSave,
   onPrint,
-}) => {
+}: QuoteDetailsProps) => {
   const [selected, setSelected] = useState(quote.status);
-  const [activeIdx, setActiveIdx] = useState(
-    STEPS.findIndex((s) => s.value === quote.status)
-  );
+  const [activeIdx, setActiveIdx] = useState(STEPS.findIndex((s) => s.value === quote.status));
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
@@ -49,7 +60,7 @@ const QuoteDetails = ({
     setShowAlert(false);
   }, [quote.status]);
 
-  const handleStepClick = (idx) => {
+  const handleStepClick = (idx: number) => {
     if (idx === activeIdx) {
       setShowAlert(true);
     } else {
@@ -65,9 +76,11 @@ const QuoteDetails = ({
         <Button
           size="small"
           variant="contained"
+          disabled={saving}
           onClick={() => onSave(selected)}
+          startIcon={saving ? <CircularProgress size={16} color="inherit" /> : null}
         >
-          Guardar estado
+          {saving ? "Guardando..." : "Guardar estado"}
         </Button>
       )}
       <IconButton onClick={onPrint}>
@@ -161,9 +174,7 @@ const QuoteDetails = ({
               onStepClick={handleStepClick}
             />
             {showAlert && (
-              <Alert severity="info">
-                Haz clic en otro paso para habilitar “Guardar estado”
-              </Alert>
+              <Alert severity="info">Haz clic en otro paso para habilitar “Guardar estado”</Alert>
             )}
           </Grid>
 
@@ -177,18 +188,16 @@ const QuoteDetails = ({
               Información del cliente
             </Typography>
             <Stack spacing={1}>
-              {userInfoRows.map(
-                ({ icon, label, value, action, actionLabel }) => (
-                  <InfoRow
-                    key={label}
-                    icon={icon}
-                    label={label}
-                    value={value}
-                    action={action}
-                    actionLabel={actionLabel}
-                  />
-                )
-              )}
+              {userInfoRows.map(({ icon, label, value, action, actionLabel }) => (
+                <InfoRow
+                  key={label}
+                  icon={icon}
+                  label={label}
+                  value={value}
+                  action={action}
+                  actionLabel={actionLabel}
+                />
+              ))}
             </Stack>
           </Grid>
           {fiscalInfoRows.length > 0 && (
@@ -202,12 +211,7 @@ const QuoteDetails = ({
               </Typography>
               <Stack spacing={1}>
                 {fiscalInfoRows.map(({ icon, label, value }) => (
-                  <InfoRow
-                    key={label}
-                    icon={icon}
-                    label={label}
-                    value={value}
-                  />
+                  <InfoRow key={label} icon={icon} label={label} value={value} />
                 ))}
               </Stack>
             </Grid>

@@ -1,51 +1,30 @@
 "use client";
 
 import { Box, Card, CardContent, CardHeader, Stack } from "@mui/material";
-import { useEffect, useState } from "react";
-import { fetchQuoteById, updateQuote } from "../../../../../api/quote";
+import { useState } from "react";
 import { ErrorUI } from "../../../../../components/Error";
 import { Loading } from "../../../../../components/Loading";
 import QuoteProductCard from "./QuoteProductCard";
 import QuoteDetails from "./QuoteDetails";
-import { useSnackbar } from "notistack";
 import { STEPS } from "../../../../../constants/quotes/status";
 import { StatusLogList } from "./StatusLogList";
 import { useStatusLogs } from "../../../../../hooks/logs/useStatusLogs";
+import { useQuote, useUpdateQuoteStatus } from "../../../../../hooks/quotes";
 import QuoteMessages from "../../../../../components/QuoteMessages";
 import { buildTableHtml, escapeHtml, openPrintWindow } from "../../../../../utils/print";
 import { statusLabelMap } from "../../../../../helpers/quotes";
+import type { QuoteStatus } from "../../../../../types/quote";
 
-export const QuoteId = ({ quoteId }) => {
-  const [quote, setQuote] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [justSavedIdx, setJustSavedIdx] = useState(null);
+interface QuoteIdProps {
+  quoteId: string;
+}
 
-  const { enqueueSnackbar } = useSnackbar();
+export const QuoteId = ({ quoteId }: QuoteIdProps) => {
+  const [justSavedIdx, setJustSavedIdx] = useState<number | null>(null);
 
+  const { data: quote, isLoading, isError } = useQuote(quoteId);
+  const statusMutation = useUpdateQuoteStatus(quoteId);
   const { logs: statusLogs, loading: logsLoading, appendLog } = useStatusLogs(quoteId);
-
-  useEffect(() => {
-    if (!quoteId) return;
-
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const fetchedQuote = await fetchQuoteById(quoteId);
-        if (!fetchedQuote) {
-          throw new Error("Cotización no encontrada");
-        }
-        setQuote(fetchedQuote);
-      } catch (err) {
-        console.error(err);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [quoteId]);
 
   const handleCall = () => {
     window.location.href = `tel: ${quote?.User?.phoneNumber}`;
@@ -99,56 +78,31 @@ export const QuoteId = ({ quoteId }) => {
     });
   };
 
-  const refetchQuote = async () => {
-    try {
-      const updated = await fetchQuoteById(quoteId);
-      setQuote(updated);
-    } catch {
-      /* silent */
-    }
-  };
-
-  const handleSaveStatus = async (newStatus) => {
+  const handleSaveStatus = async (newStatus: QuoteStatus) => {
     const oldStatus = quote.status;
-    try {
-      const resp = await updateQuote(quoteId, {
-        status: newStatus,
-        updatedAt: quote.updatedAt,
-      });
-      setQuote((q) => ({
-        ...q,
-        status: newStatus,
-        updatedAt: resp.data?.data?.updatedAt ?? q.updatedAt,
-      }));
 
-      const idx = STEPS.findIndex((s) => s.value === newStatus);
-      setJustSavedIdx(idx);
+    await statusMutation.mutateAsync({
+      status: newStatus,
+      updatedAt: quote.updatedAt,
+    });
 
-      await appendLog(quoteId, {
-        oldStatus,
-        newStatus,
-        changedAt: new Date().toISOString(),
-      });
+    const idx = STEPS.findIndex((s) => s.value === newStatus);
+    setJustSavedIdx(idx);
 
-      enqueueSnackbar("Estado actualizado", { variant: "success" });
-      setTimeout(() => setJustSavedIdx(null), 800);
-    } catch (err) {
-      if (err?.response?.status === 409) {
-        enqueueSnackbar("La cotización fue modificada por otro usuario. Recargando datos...", {
-          variant: "warning",
-        });
-        await refetchQuote();
-      } else {
-        enqueueSnackbar("Error al actualizar estado", { variant: "error" });
-      }
-    }
+    await appendLog(quoteId, {
+      oldStatus,
+      newStatus,
+      changedAt: new Date().toISOString(),
+    });
+
+    setTimeout(() => setJustSavedIdx(null), 800);
   };
 
-  if (error) {
+  if (isError) {
     return <ErrorUI message="Error cargando los detalles de la cotización" />;
   }
 
-  if (loading) return <Loading />;
+  if (isLoading) return <Loading />;
 
   if (!quote) {
     return <ErrorUI message="No se encontró la cotización solicitada." />;
@@ -159,6 +113,7 @@ export const QuoteId = ({ quoteId }) => {
       <QuoteDetails
         quote={quote}
         justSavedIdx={justSavedIdx}
+        saving={statusMutation.isPending}
         onCall={handleCall}
         onEmail={handleEmail}
         onSave={handleSaveStatus}

@@ -17,16 +17,10 @@ import QuoteMessages from "../../../../../../components/QuoteMessages";
 import { fetchUserQuoteById } from "../../../../../../api/quote";
 import { Loading } from "../../../../../../components/Loading";
 import { ErrorUI } from "../../../../../../components/Error";
-import QuoteProductCard from "../../../../../(admin)/admin/quotes/[id]/QuoteProductCard";
-import {
-  Business,
-  Badge,
-  ExpandMore,
-  ReceiptLong,
-  Policy,
-} from "@mui/icons-material";
+import QuoteProductCard from "../../../../../(admin)/admin/components/quote-detail/QuoteProductCard";
+import { Business, Badge, ExpandMore, ReceiptLong, Policy } from "@mui/icons-material";
 import { QuoteStatusStepper } from "../QuoteStatusStepper";
-import InfoRow from "../../../../../(admin)/admin/quotes/[id]/InfoRow";
+import InfoRow from "../../../../../(admin)/admin/components/quote-detail/InfoRow";
 
 export default function UserQuoteIdPage({ quoteId }) {
   const [quote, setQuote] = useState(null);
@@ -88,11 +82,7 @@ export default function UserQuoteIdPage({ quoteId }) {
                   />
                 )}
                 {quote.fiscalProfile?.rfc && (
-                  <InfoRow
-                    icon={<Badge />}
-                    label="RFC"
-                    value={quote.fiscalProfile?.rfc}
-                  />
+                  <InfoRow icon={<Badge />} label="RFC" value={quote.fiscalProfile?.rfc} />
                 )}
                 {quote.fiscalProfile?.TaxRegime && (
                   <InfoRow
@@ -110,11 +100,7 @@ export default function UserQuoteIdPage({ quoteId }) {
                 )}
               </Stack>
 
-              <Accordion
-                disableGutters
-                defaultExpanded
-                sx={{ boxShadow: "none", mb: 0 }}
-              >
+              <Accordion disableGutters defaultExpanded sx={{ boxShadow: "none", mb: 0 }}>
                 <AccordionSummary
                   sx={{ margin: 0, padding: 0 }}
                   aria-controls="products-accordion-content"
@@ -130,8 +116,7 @@ export default function UserQuoteIdPage({ quoteId }) {
                     sx={{
                       display: "grid",
                       gap: 2,
-                      gridTemplateColumns:
-                        "repeat(auto-fill, minmax(300px, 1fr))",
+                      gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
                       maxHeight: { xs: "none", md: 350 },
                       overflowY: { xs: "visible", md: "auto" },
                     }}

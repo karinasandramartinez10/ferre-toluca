@@ -4,8 +4,14 @@ import { format } from "date-fns";
 import { localeText } from "../../../../../constants/x-datagrid/localeText";
 import { statusLabelMap } from "../../../../../helpers/quotes";
 import { statusLogColumns } from "./columns";
+import type { StatusLogEntry } from "../../../../../types/quote";
 
-export function StatusLogList({ logs, loading }) {
+interface StatusLogListProps {
+  logs: StatusLogEntry[];
+  loading: boolean;
+}
+
+export function StatusLogList({ logs, loading }: StatusLogListProps) {
   const rows = logs.map((log) => ({
     id: log.id,
     admin: log.changedBy,
