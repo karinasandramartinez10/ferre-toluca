@@ -49,7 +49,7 @@ export default function FiscalCard({
             </Typography>
           </Box>
         }
-        subheader={`RFC: ${profile.rfc} · CP: ${profile.taxZipCode}`}
+        subheader={`RFC: ${profile.rfc?.length > 6 ? profile.rfc.slice(0, 4) + "••••" + profile.rfc.slice(-2) : profile.rfc} · CP: ${profile.taxZipCode}`}
         subheaderTypographyProps={{
           noWrap: true,
           sx: {
@@ -70,16 +70,9 @@ export default function FiscalCard({
         }
         sx={{ pb: 0 }}
       />
-      <CardContent
-        sx={{ flexGrow: 1, display: "flex", flexDirection: "column", gap: 1 }}
-      >
+      <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", gap: 1 }}>
         <Box display="flex" gap={1} mt="auto" flexWrap="wrap">
-          <Tooltip
-            title={
-              isDefault ? "Ya es predeterminado" : "Marcar como predeterminado"
-            }
-            arrow
-          >
+          <Tooltip title={isDefault ? "Ya es predeterminado" : "Marcar como predeterminado"} arrow>
             <span>
               <IconButton
                 size="small"
@@ -93,11 +86,7 @@ export default function FiscalCard({
             </span>
           </Tooltip>
           <Tooltip title="Editar" arrow>
-            <IconButton
-              size="small"
-              onClick={() => onEdit(profile)}
-              aria-label="editar"
-            >
+            <IconButton size="small" onClick={() => onEdit(profile)} aria-label="editar">
               <Edit />
             </IconButton>
           </Tooltip>

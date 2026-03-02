@@ -1,0 +1,634 @@
+import { yupResolver } from "@hookform/resolvers/yup";
+import { LoadingButton } from "@mui/lab";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
+import { getBrands } from "../../../../api/admin/brands";
+import { getCategories } from "../../../../api/category";
+import { getProductTypes } from "../../../../api/productTypes";
+import { getProductById } from "../../../../api/products";
+import { getSubcategories } from "../../../../api/subcategories";
+import { useMeasures } from "../../../../hooks/catalog/useMeasures";
+import { useProductModels } from "../../../../hooks/catalog/useProductModels";
+import { Dropzone } from "../../../../components/Dropzone";
+import type { PhotoPreview } from "../../../../types/ui";
+import { ErrorUI } from "../../../../components/Error";
+import { Loading } from "../../../../components/Loading";
+import { getSelectOptions, multiLineFields, selectFields, textFields } from "./constants";
+import { sectionTitleSx, twoColumnGrid } from "./styles";
+import { toCapitalizeWords } from "../../../../utils/cases";
+import type {
+  Brand,
+  Category,
+  Subcategory,
+  ProductType,
+  ProductModel,
+  Measure,
+} from "../../../../types/catalog";
+
+interface ProductActionModalProps {
+  title?: string;
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (formData: FormData) => Promise<void>;
+  fetchData: () => Promise<void>;
+  selected: {
+    id: string;
+    category?: { id: string };
+    subCategory?: { id: string };
+    updatedAt?: string;
+  } | null;
+  loading: boolean;
+}
+
+interface FormValues {
+  name: string;
+  code: string;
+  color: string;
+  qualifier: string;
+  description: string;
+  specifications: string;
+  brandId: string;
+  categoryId: string;
+  subCategoryId: string;
+  typeId: string;
+  measureValue: string | null;
+  measureId: string;
+  secondaryMeasureValue: string;
+  secondaryMeasureId: string;
+  modelName: string;
+  modelId: string | null;
+  image: File | null;
+}
+
+interface Refs {
+  brands: Brand[];
+  categories: Category[];
+  subcategories: Subcategory[];
+  types: ProductType[];
+}
+
+const Schema = yup.object().shape({
+  name: yup.string().required("El nombre es requerido"),
+  description: yup.string().required("La descripción es requerida"),
+  code: yup.string().required("El código es requerido"),
+  brandId: yup.string().required("La marca es requerida"),
+  categoryId: yup.string().required("La categoría es requerida"),
+  specifications: yup.string(),
+  color: yup.string(),
+  qualifier: yup.string(),
+  secondaryMeasureValue: yup.string().nullable(),
+  secondaryMeasureId: yup.string(),
+  subCategoryId: yup.string().defined(),
+  typeId: yup.string().defined(),
+  measureValue: yup.string().nullable(),
+  measureId: yup.string().defined(),
+  modelName: yup.string().defined(),
+  modelId: yup.string().nullable(),
+  image: yup.mixed<File>().nullable(),
+});
+
+const defaultValues: FormValues = {
+  name: "",
+  code: "",
+  color: "",
+  qualifier: "",
+  description: "",
+  specifications: "",
+  brandId: "",
+  categoryId: "",
+  subCategoryId: "",
+  typeId: "",
+  measureValue: null,
+  measureId: "",
+  secondaryMeasureValue: "",
+  secondaryMeasureId: "",
+  modelName: "",
+  modelId: "",
+  image: null,
+};
+
+const ProductActionModal = ({
+  title = "",
+  open,
+  onClose,
+  onSubmit,
+  fetchData,
+  selected,
+  loading,
+}: ProductActionModalProps) => {
+  const [photo, setPhoto] = useState<PhotoPreview | null>(null);
+
+  const [refs, setRefs] = useState<Refs>({
+    brands: [],
+    categories: [],
+    subcategories: [],
+    types: [],
+  });
+  const [loadingRefs, setLoadingRefs] = useState(false);
+  const [errorRefs, setErrorRefs] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    getValues,
+    reset,
+    watch,
+    formState: { errors, isValid },
+  } = useForm({
+    resolver: yupResolver(Schema),
+    mode: "onChange",
+    defaultValues,
+  });
+
+  const brandId = watch("brandId");
+  const categoryId = watch("categoryId");
+  const subCategoryId = watch("subCategoryId");
+
+  const { measures } = useMeasures();
+  const { productModels } = useProductModels(brandId);
+
+  const isInitialCategoryRunRef = useRef(true);
+  const isInitialSubcategoryRunRef = useRef(true);
+
+  useEffect(() => {
+    if (!open) return;
+    setLoadingRefs(true);
+    setErrorRefs(false);
+
+    const loadModalData = async () => {
+      try {
+        const product = await getProductById(selected!.id);
+
+        const { brands } = await getBrands({ size: 1000 });
+        const { categories } = await getCategories({ size: 1000 });
+        let fetchedSubcategories: Subcategory[] = [];
+        let fetchedTypes: ProductType[] = [];
+        if (product?.category?.id) {
+          try {
+            const res = await getSubcategories({
+              categoryId: product.category.id,
+            });
+            fetchedSubcategories = res.subcategories || [];
+          } catch {
+            fetchedSubcategories = [];
+          }
+        }
+        if (product?.subCategory?.id) {
+          try {
+            const res = await getProductTypes({
+              subcategoryId: product.subCategory.id,
+            });
+            fetchedTypes = res.productTypes || res.data?.productTypes || [];
+          } catch {
+            fetchedTypes = [];
+          }
+        }
+        setRefs({
+          brands,
+          categories,
+          subcategories: fetchedSubcategories,
+          types: fetchedTypes,
+        });
+
+        const initial: FormValues = {
+          ...defaultValues,
+          ...(product && {
+            name: product.name ?? "",
+            code: product.code ?? "",
+            color: product.color ?? "",
+            description: product.description ?? "",
+            specifications: product.specifications ?? "",
+            brandId: product.brand?.id ?? "",
+            categoryId: product.category?.id ?? "",
+            subCategoryId: product.subCategory?.id ?? "",
+            typeId: product.type?.id ?? "",
+            qualifier: product.qualifier ?? "",
+            measureValue: product.measureValue ?? null,
+            measureId: product.measure?.id ?? "",
+            secondaryMeasureValue: product.secondaryMeasureValue ?? "",
+            secondaryMeasureId: product.secondaryMeasureId ?? "",
+            modelName: product.productModel?.name ?? "",
+            modelId: product.productModel?.id ?? "",
+          }),
+        };
+
+        reset(initial);
+        isInitialCategoryRunRef.current = true;
+        isInitialSubcategoryRunRef.current = true;
+        const existingImage = product?.Files?.[0]?.path ?? null;
+        setPhoto(existingImage ? { preview: existingImage } : null);
+      } catch {
+        setErrorRefs(true);
+      } finally {
+        setLoadingRefs(false);
+      }
+    };
+
+    loadModalData();
+  }, [open, selected, reset]);
+
+  useEffect(() => {
+    if (!categoryId) return;
+
+    const fetchSubcategoriesByCategory = async () => {
+      try {
+        const res = await getSubcategories({ categoryId });
+        setRefs((prev) => ({
+          ...prev,
+          subcategories: res.subcategories || [],
+        }));
+
+        const preserveInitial =
+          isInitialCategoryRunRef.current && selected?.category?.id === categoryId;
+        if (!preserveInitial) {
+          setValue("subCategoryId", "", {
+            shouldValidate: true,
+            shouldDirty: true,
+          });
+          setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
+          setRefs((prev) => ({ ...prev, types: [] }));
+        }
+      } catch {
+        setRefs((prev) => ({ ...prev, subcategories: [] }));
+      } finally {
+        isInitialCategoryRunRef.current = false;
+      }
+    };
+
+    fetchSubcategoriesByCategory();
+  }, [categoryId, selected, setValue]);
+
+  useEffect(() => {
+    if (!subCategoryId) {
+      setRefs((prev) => ({ ...prev, types: [] }));
+      setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
+      return;
+    }
+
+    const fetchTypesBySubcategory = async () => {
+      try {
+        const res = await getProductTypes({ subcategoryId: subCategoryId });
+        setRefs((prev) => ({
+          ...prev,
+          types: res.productTypes || res.data?.productTypes || [],
+        }));
+
+        const preserveInitial =
+          isInitialSubcategoryRunRef.current && selected?.subCategory?.id === subCategoryId;
+        if (!preserveInitial) {
+          setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
+        }
+      } catch {
+        setRefs((prev) => ({ ...prev, types: [] }));
+      } finally {
+        isInitialSubcategoryRunRef.current = false;
+      }
+    };
+
+    fetchTypesBySubcategory();
+  }, [subCategoryId, selected, setValue]);
+
+  const handleFormSubmit = async (data: Record<string, unknown>) => {
+    const formData = new FormData();
+
+    const trimmedModelName = (data.modelName as string)?.trim();
+    const shouldRemoveModel = !data.modelId && !trimmedModelName;
+
+    if (shouldRemoveModel) {
+      formData.append("modelId", "");
+      formData.append("modelName", "");
+    } else {
+      if (data.modelId) {
+        formData.append("modelId", data.modelId as string);
+      } else if (trimmedModelName) {
+        formData.append("modelName", trimmedModelName);
+      }
+    }
+
+    if (data.name) formData.append("name", data.name as string);
+    if (data.code) formData.append("code", data.code as string);
+    if (data.color) formData.append("color", data.color as string);
+    if (data.qualifier) formData.append("qualifier", data.qualifier as string);
+    if (data.description) formData.append("description", data.description as string);
+    if (data.specifications) formData.append("specifications", data.specifications as string);
+
+    if (data.brandId) formData.append("brandId", data.brandId as string);
+    if (data.categoryId) formData.append("categoryId", data.categoryId as string);
+    if (data.subCategoryId) formData.append("subCategoryId", data.subCategoryId as string);
+    if (data.typeId) formData.append("typeId", data.typeId as string);
+
+    if (data.measureValue) formData.append("measureValue", data.measureValue as string);
+    if (data.measureId) formData.append("measureId", data.measureId as string);
+    if (data.secondaryMeasureValue)
+      formData.append("secondaryMeasureValue", data.secondaryMeasureValue as string);
+    if (data.secondaryMeasureId)
+      formData.append("secondaryMeasureId", data.secondaryMeasureId as string);
+
+    if (photo) {
+      formData.append("image", photo as unknown as Blob);
+    }
+
+    if (selected?.updatedAt) {
+      formData.append("updatedAt", selected.updatedAt);
+    }
+
+    await onSubmit(formData);
+    await fetchData();
+    reset(defaultValues);
+  };
+
+  const handleCloseModal = () => {
+    reset(defaultValues);
+    onClose();
+  };
+
+  let content;
+  if (loadingRefs) {
+    content = <Loading />;
+  } else if (errorRefs) {
+    content = (
+      <ErrorUI
+        onRetry={() => {
+          // Trigger re-render to reload data
+          setLoadingRefs(true);
+          setErrorRefs(false);
+        }}
+        message="Error cargando datos. Intenta de nuevo."
+      />
+    );
+  } else {
+    content = (
+      <Box component="form" display="flex" flexDirection="column" noValidate>
+        {/* Identificación */}
+        <Typography sx={sectionTitleSx}>Identificación</Typography>
+        <Box sx={twoColumnGrid}>
+          {textFields.map(({ name, label }) => (
+            <Controller
+              key={name}
+              name={name as keyof FormValues}
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label={label}
+                  fullWidth
+                  error={!!errors[name as keyof FormValues]}
+                  helperText={errors[name as keyof FormValues]?.message}
+                  disabled={loading || loadingRefs}
+                />
+              )}
+            />
+          ))}
+        </Box>
+
+        {/* Medidas */}
+        <Typography sx={sectionTitleSx}>Medidas</Typography>
+        <Box sx={twoColumnGrid}>
+          <Controller
+            name="measureValue"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Valor"
+                fullWidth
+                error={!!errors.measureValue}
+                helperText={errors.measureValue?.message}
+                disabled={loading}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="measureId"
+            render={({ field }) => (
+              <FormControl size="small" fullWidth>
+                <Select {...field} value={field.value || ""} displayEmpty>
+                  <MenuItem disabled value="">
+                    Unidad
+                  </MenuItem>
+                  {(measures as Measure[]).map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.abbreviation}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          />
+        </Box>
+
+        {/* Medida secundaria */}
+        <Typography sx={sectionTitleSx}>Medida secundaria</Typography>
+        <Box sx={twoColumnGrid}>
+          <Controller
+            name="secondaryMeasureValue"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                value={field.value || ""}
+                label="Valor secundario"
+                fullWidth
+                error={!!errors.secondaryMeasureValue}
+                helperText={errors.secondaryMeasureValue?.message}
+                disabled={loading}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="secondaryMeasureId"
+            render={({ field }) => (
+              <FormControl size="small" fullWidth>
+                <Select {...field} value={field.value || ""} displayEmpty>
+                  <MenuItem disabled value="">
+                    Unidad secundaria
+                  </MenuItem>
+                  {(measures as Measure[]).map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.abbreviation}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+          />
+        </Box>
+
+        {/* Clasificación */}
+        <Typography sx={sectionTitleSx}>Clasificación</Typography>
+        <Box sx={twoColumnGrid}>
+          {selectFields.map(({ name, label }) => (
+            <Controller
+              key={name}
+              name={name as keyof FormValues}
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth size="small">
+                  <Typography fontWeight={500} fontSize="0.85rem" mb={0.5}>
+                    {label}
+                  </Typography>
+                  <Select {...field} value={field.value ?? ""}>
+                    <MenuItem disabled value="">
+                      {label}
+                    </MenuItem>
+                    {getSelectOptions(
+                      name,
+                      refs.brands,
+                      refs.categories,
+                      refs.subcategories,
+                      refs.types
+                    ).map((opt: { id: string; name: string }) => (
+                      <MenuItem key={opt.id} value={opt.id}>
+                        {toCapitalizeWords(opt.name)}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
+            />
+          ))}
+        </Box>
+
+        {/* Modelo */}
+        <Typography sx={sectionTitleSx}>Modelo</Typography>
+        <Controller
+          name="modelName"
+          control={control}
+          render={({ field }) => {
+            const currentModelName = getValues("modelName");
+            const currentModelId = getValues("modelId");
+            return (
+              <Autocomplete
+                freeSolo
+                disableClearable
+                options={productModels as ProductModel[]}
+                getOptionLabel={(opt) =>
+                  typeof opt === "string" ? opt : (opt as ProductModel).name
+                }
+                value={
+                  (productModels as ProductModel[]).find((m) => m.name === field.value) ||
+                  field.value
+                }
+                onChange={(_, newVal) => {
+                  const isCustom = typeof newVal === "string";
+                  const newName = isCustom ? newVal : (newVal as ProductModel).name;
+                  const newId = isCustom ? null : (newVal as ProductModel).id;
+                  if (newName !== currentModelName) {
+                    setValue("modelName", newName, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  }
+                  if (newId !== currentModelId) {
+                    setValue("modelId", newId, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  }
+                }}
+                onInputChange={(_, newInputValue) => {
+                  const current = getValues("modelName");
+                  if (newInputValue !== current) {
+                    setValue("modelName", newInputValue, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                    setValue("modelId", null, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="standard"
+                    fullWidth
+                    error={!!errors.modelName}
+                    helperText={errors.modelName?.message}
+                  />
+                )}
+              />
+            );
+          }}
+        />
+
+        {/* Descripción */}
+        <Typography sx={sectionTitleSx}>Descripción</Typography>
+        <Box sx={twoColumnGrid}>
+          {multiLineFields.map(({ name, label }) => (
+            <Controller
+              key={name}
+              name={name as keyof FormValues}
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label={label}
+                  fullWidth
+                  multiline
+                  minRows={3}
+                  error={!!errors[name as keyof FormValues]}
+                  helperText={errors[name as keyof FormValues]?.message}
+                  disabled={loading}
+                />
+              )}
+            />
+          ))}
+        </Box>
+
+        {/* Imagen */}
+        <Typography sx={sectionTitleSx}>Imagen</Typography>
+        <Dropzone
+          text="Arrastra o escoge una nueva imagen"
+          preview
+          photo={photo}
+          setPhoto={setPhoto}
+          setValue={setValue}
+          onRemove={() => setPhoto(null)}
+        />
+      </Box>
+    );
+  }
+
+  return (
+    <Dialog open={open} onClose={handleCloseModal} fullWidth maxWidth="md">
+      <DialogTitle sx={{ fontWeight: 600 }}>{`Editar ${title}`}</DialogTitle>
+      <DialogContent>{content}</DialogContent>
+      <DialogActions>
+        <Button onClick={handleCloseModal} variant="outlined" disabled={loading}>
+          Cancelar
+        </Button>
+        <LoadingButton
+          onClick={handleSubmit(handleFormSubmit)}
+          loading={loading}
+          disabled={loading || !isValid || loadingRefs}
+          variant="contained"
+          color="primary"
+        >
+          Guardar Cambios
+        </LoadingButton>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default ProductActionModal;

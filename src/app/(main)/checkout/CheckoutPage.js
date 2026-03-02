@@ -143,8 +143,7 @@ const CheckoutPage = () => {
         clearOrder();
         reset();
       } catch (error) {
-        console.log(error);
-        enqueueSnackbar(error?.message || "Hubo un error al procesar la orden", {
+        enqueueSnackbar("Hubo un error al procesar la orden", {
           variant: "error",
           autoHideDuration: 5000,
           anchorOrigin: {

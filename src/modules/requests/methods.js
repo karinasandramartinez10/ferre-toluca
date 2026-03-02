@@ -1,7 +1,5 @@
 const request = (method, path, body, options, headers, token) => {
   const defaultHeaders = {
-    //   Accept: 'application/json',
-    Authorization: `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1`,
     "Content-Type": "application/json",
   };
 
@@ -21,11 +19,7 @@ const request = (method, path, body, options, headers, token) => {
     fetchOptions.body = JSON.stringify(body);
   }
 
-  return fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1${path}`,
-    fetchOptions
-  );
+  return fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1${path}`, fetchOptions);
 };
 
-export const POST = (path, body, options, headers) =>
-  request("POST", path, body, options, headers);
+export const POST = (path, body, options, headers) => request("POST", path, body, options, headers);

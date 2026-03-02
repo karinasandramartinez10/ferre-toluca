@@ -17,11 +17,19 @@ export const ResetPassword = () => {
   const searchParams = useSearchParams();
   const isDesktop = useResponsive("up", "lg");
   const router = useRouter();
-  const token = searchParams.get("token");
+  const rawToken = searchParams.get("token") ?? "";
+  const token = /^[a-zA-Z0-9._-]{10,512}$/.test(rawToken) ? rawToken : null;
 
   const { enqueueSnackbar } = useSnackbar();
 
   const handleSubmit = async ({ password }) => {
+    if (!token) {
+      enqueueSnackbar("El enlace de restablecimiento es inválido o expiró.", {
+        variant: "error",
+      });
+      return;
+    }
+
     try {
       await resetPassword({ token, newPassword: password });
       enqueueSnackbar("Se restableció tu contraseña correctamente", {
@@ -37,8 +45,7 @@ export const ResetPassword = () => {
         router.push("/auth/login");
       }, 5000);
     } catch (error) {
-      console.log(error);
-      enqueueSnackbar(error, {
+      enqueueSnackbar("Hubo un error al restablecer tu contraseña. Intenta de nuevo.", {
         variant: "error",
         autoHideDuration: 5000,
         anchorOrigin: {
@@ -79,8 +86,8 @@ export const ResetPassword = () => {
                 {redirectCountdown && (
                   <Grid item xs={12}>
                     <Typography variant="h6" align="center">
-                      Serás reedirigido a la página de inicio de sesión en{" "}
-                      {redirectCountdown} segundos...
+                      Serás reedirigido a la página de inicio de sesión en {redirectCountdown}{" "}
+                      segundos...
                     </Typography>
                   </Grid>
                 )}

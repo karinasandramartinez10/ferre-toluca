@@ -11,6 +11,7 @@
 
 # audit
 /audit
+docs/audit/
 
 # next.js
 /.next/
@@ -40,3 +41,4 @@ CLAUDE.md
 
 .claude/
 .playwright-mcp/
+.mcp.json
