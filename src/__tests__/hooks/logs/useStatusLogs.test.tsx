@@ -14,8 +14,22 @@ import { useStatusLogs } from "../../../hooks/logs/useStatusLogs";
 
 beforeEach(() => {
   vi.clearAllMocks();
-  mockFetchStatusLogs.mockResolvedValue([{ id: 1, status: "IN_REVIEW", createdAt: "2024-01-01" }]);
-  mockPostStatusLog.mockResolvedValue({ id: 2, status: "APPROVED" });
+  mockFetchStatusLogs.mockResolvedValue([
+    {
+      id: 1,
+      changedBy: "admin",
+      oldStatus: "IN_REVIEW",
+      newStatus: "PARTIALLY_AVAILABLE",
+      changedAt: "2024-01-01",
+    },
+  ]);
+  mockPostStatusLog.mockResolvedValue({
+    id: 2,
+    changedBy: "admin",
+    oldStatus: "IN_REVIEW",
+    newStatus: "PARTIALLY_AVAILABLE",
+    changedAt: "2024-01-01",
+  });
 });
 
 describe("useStatusLogs", () => {
@@ -26,7 +40,7 @@ describe("useStatusLogs", () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.logs).toHaveLength(1);
-    expect(result.current.logs[0].status).toBe("IN_REVIEW");
+    expect(result.current.logs[0].oldStatus).toBe("IN_REVIEW");
     expect(mockFetchStatusLogs).toHaveBeenCalledWith("q1");
   });
 
@@ -44,7 +58,11 @@ describe("useStatusLogs", () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    const entry = { status: "APPROVED", note: "Approved by admin" };
+    const entry = {
+      oldStatus: "IN_REVIEW",
+      newStatus: "PARTIALLY_AVAILABLE",
+      changedAt: new Date().toISOString(),
+    };
 
     await act(async () => {
       await result.current.appendLog("q1", entry);
