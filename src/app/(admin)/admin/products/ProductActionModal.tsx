@@ -25,11 +25,62 @@ import { getSubcategories } from "../../../../api/subcategories";
 import { useMeasures } from "../../../../hooks/catalog/useMeasures";
 import { useProductModels } from "../../../../hooks/catalog/useProductModels";
 import { Dropzone } from "../../../../components/Dropzone";
+import type { PhotoPreview } from "../../../../types/ui";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
 import { getSelectOptions, multiLineFields, selectFields, textFields } from "./constants";
 import { sectionTitleSx, twoColumnGrid } from "./styles";
 import { toCapitalizeWords } from "../../../../utils/cases";
+import type {
+  Brand,
+  Category,
+  Subcategory,
+  ProductType,
+  ProductModel,
+  Measure,
+} from "../../../../types/catalog";
+
+interface ProductActionModalProps {
+  title?: string;
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (formData: FormData) => Promise<void>;
+  fetchData: () => Promise<void>;
+  selected: {
+    id: string;
+    category?: { id: string };
+    subCategory?: { id: string };
+    updatedAt?: string;
+  } | null;
+  loading: boolean;
+}
+
+interface FormValues {
+  name: string;
+  code: string;
+  color: string;
+  qualifier: string;
+  description: string;
+  specifications: string;
+  brandId: string;
+  categoryId: string;
+  subCategoryId: string;
+  typeId: string;
+  measureValue: string | null;
+  measureId: string;
+  secondaryMeasureValue: string;
+  secondaryMeasureId: string;
+  modelName: string;
+  modelId: string | null;
+  image: File | null;
+}
+
+interface Refs {
+  brands: Brand[];
+  categories: Category[];
+  subcategories: Subcategory[];
+  types: ProductType[];
+}
 
 const Schema = yup.object().shape({
   name: yup.string().required("El nombre es requerido"),
@@ -42,9 +93,16 @@ const Schema = yup.object().shape({
   qualifier: yup.string(),
   secondaryMeasureValue: yup.string().nullable(),
   secondaryMeasureId: yup.string(),
+  subCategoryId: yup.string().defined(),
+  typeId: yup.string().defined(),
+  measureValue: yup.string().nullable(),
+  measureId: yup.string().defined(),
+  modelName: yup.string().defined(),
+  modelId: yup.string().nullable(),
+  image: yup.mixed<File>().nullable(),
 });
 
-const defaultValues = {
+const defaultValues: FormValues = {
   name: "",
   code: "",
   color: "",
@@ -72,10 +130,10 @@ const ProductActionModal = ({
   fetchData,
   selected,
   loading,
-}) => {
-  const [photo, setPhoto] = useState(null);
+}: ProductActionModalProps) => {
+  const [photo, setPhoto] = useState<PhotoPreview | null>(null);
 
-  const [refs, setRefs] = useState({
+  const [refs, setRefs] = useState<Refs>({
     brands: [],
     categories: [],
     subcategories: [],
@@ -105,7 +163,6 @@ const ProductActionModal = ({
   const { measures } = useMeasures();
   const { productModels } = useProductModels(brandId);
 
-  // Flags para preservar valores en la carga inicial
   const isInitialCategoryRunRef = useRef(true);
   const isInitialSubcategoryRunRef = useRef(true);
 
@@ -116,20 +173,19 @@ const ProductActionModal = ({
 
     const loadModalData = async () => {
       try {
-        const product = await getProductById(selected.id);
+        const product = await getProductById(selected!.id);
 
-        const { brands } = await getBrands();
-        const { categories } = await getCategories();
-        // Precarga filtrada según selección inicial
-        let fetchedSubcategories = [];
-        let fetchedTypes = [];
+        const { brands } = await getBrands({ size: 1000 });
+        const { categories } = await getCategories({ size: 1000 });
+        let fetchedSubcategories: Subcategory[] = [];
+        let fetchedTypes: ProductType[] = [];
         if (product?.category?.id) {
           try {
             const res = await getSubcategories({
               categoryId: product.category.id,
             });
             fetchedSubcategories = res.subcategories || [];
-          } catch (_) {
+          } catch {
             fetchedSubcategories = [];
           }
         }
@@ -139,7 +195,7 @@ const ProductActionModal = ({
               subcategoryId: product.subCategory.id,
             });
             fetchedTypes = res.productTypes || res.data?.productTypes || [];
-          } catch (_) {
+          } catch {
             fetchedTypes = [];
           }
         }
@@ -150,8 +206,7 @@ const ProductActionModal = ({
           types: fetchedTypes,
         });
 
-        // construye objeto initial mezclando defaultValues y product completo
-        const initial = {
+        const initial: FormValues = {
           ...defaultValues,
           ...(product && {
             name: product.name ?? "",
@@ -174,7 +229,6 @@ const ProductActionModal = ({
         };
 
         reset(initial);
-        // Marcar que la próxima ejecución de efectos es inicial (preservar valores)
         isInitialCategoryRunRef.current = true;
         isInitialSubcategoryRunRef.current = true;
         const existingImage = product?.Files?.[0]?.path ?? null;
@@ -189,7 +243,6 @@ const ProductActionModal = ({
     loadModalData();
   }, [open, selected, reset]);
 
-  // Efecto: cuando cambia la categoría, cargar subcategorías filtradas y limpiar dependencias
   useEffect(() => {
     if (!categoryId) return;
 
@@ -211,10 +264,9 @@ const ProductActionModal = ({
           setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
           setRefs((prev) => ({ ...prev, types: [] }));
         }
-      } catch (_) {
+      } catch {
         setRefs((prev) => ({ ...prev, subcategories: [] }));
       } finally {
-        // Solo preservar en la primera corrida tras abrir el modal
         isInitialCategoryRunRef.current = false;
       }
     };
@@ -222,10 +274,8 @@ const ProductActionModal = ({
     fetchSubcategoriesByCategory();
   }, [categoryId, selected, setValue]);
 
-  // Efecto: cuando cambia la subcategoría, cargar tipos filtrados y limpiar typeId si aplica
   useEffect(() => {
     if (!subCategoryId) {
-      // Si se limpió la subcategoría, limpiamos tipos
       setRefs((prev) => ({ ...prev, types: [] }));
       setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
       return;
@@ -244,10 +294,9 @@ const ProductActionModal = ({
         if (!preserveInitial) {
           setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
         }
-      } catch (_) {
+      } catch {
         setRefs((prev) => ({ ...prev, types: [] }));
       } finally {
-        // Solo preservar en la primera corrida tras abrir el modal
         isInitialSubcategoryRunRef.current = false;
       }
     };
@@ -255,11 +304,10 @@ const ProductActionModal = ({
     fetchTypesBySubcategory();
   }, [subCategoryId, selected, setValue]);
 
-  const handleFormSubmit = async (data) => {
+  const handleFormSubmit = async (data: Record<string, unknown>) => {
     const formData = new FormData();
 
-    // Si no hay modelo seleccionado ni texto válido en modelName, limpiamos
-    const trimmedModelName = data.modelName?.trim();
+    const trimmedModelName = (data.modelName as string)?.trim();
     const shouldRemoveModel = !data.modelId && !trimmedModelName;
 
     if (shouldRemoveModel) {
@@ -267,32 +315,33 @@ const ProductActionModal = ({
       formData.append("modelName", "");
     } else {
       if (data.modelId) {
-        formData.append("modelId", data.modelId);
+        formData.append("modelId", data.modelId as string);
       } else if (trimmedModelName) {
         formData.append("modelName", trimmedModelName);
       }
     }
 
-    if (data.name) formData.append("name", data.name);
-    if (data.code) formData.append("code", data.code);
-    if (data.color) formData.append("color", data.color);
-    if (data.qualifier) formData.append("qualifier", data.qualifier);
-    if (data.description) formData.append("description", data.description);
-    if (data.specifications) formData.append("specifications", data.specifications);
+    if (data.name) formData.append("name", data.name as string);
+    if (data.code) formData.append("code", data.code as string);
+    if (data.color) formData.append("color", data.color as string);
+    if (data.qualifier) formData.append("qualifier", data.qualifier as string);
+    if (data.description) formData.append("description", data.description as string);
+    if (data.specifications) formData.append("specifications", data.specifications as string);
 
-    if (data.brandId) formData.append("brandId", data.brandId);
-    if (data.categoryId) formData.append("categoryId", data.categoryId);
-    if (data.subCategoryId) formData.append("subCategoryId", data.subCategoryId);
-    if (data.typeId) formData.append("typeId", data.typeId);
+    if (data.brandId) formData.append("brandId", data.brandId as string);
+    if (data.categoryId) formData.append("categoryId", data.categoryId as string);
+    if (data.subCategoryId) formData.append("subCategoryId", data.subCategoryId as string);
+    if (data.typeId) formData.append("typeId", data.typeId as string);
 
-    if (data.measureValue) formData.append("measureValue", data.measureValue);
-    if (data.measureId) formData.append("measureId", data.measureId);
+    if (data.measureValue) formData.append("measureValue", data.measureValue as string);
+    if (data.measureId) formData.append("measureId", data.measureId as string);
     if (data.secondaryMeasureValue)
-      formData.append("secondaryMeasureValue", data.secondaryMeasureValue);
-    if (data.secondaryMeasureId) formData.append("secondaryMeasureId", data.secondaryMeasureId);
+      formData.append("secondaryMeasureValue", data.secondaryMeasureValue as string);
+    if (data.secondaryMeasureId)
+      formData.append("secondaryMeasureId", data.secondaryMeasureId as string);
 
     if (photo) {
-      formData.append("image", photo);
+      formData.append("image", photo as unknown as Blob);
     }
 
     if (selected?.updatedAt) {
@@ -309,9 +358,6 @@ const ProductActionModal = ({
     onClose();
   };
 
-  // const currentModelName = getValues("modelName");
-  // const currentModelId = getValues("modelId");
-
   let content;
   if (loadingRefs) {
     content = <Loading />;
@@ -319,13 +365,14 @@ const ProductActionModal = ({
     content = (
       <ErrorUI
         onRetry={() => {
-          loadModalData();
+          // Trigger re-render to reload data
+          setLoadingRefs(true);
+          setErrorRefs(false);
         }}
         message="Error cargando datos. Intenta de nuevo."
       />
     );
   } else {
-    // aquí va todo tu formulario
     content = (
       <Box component="form" display="flex" flexDirection="column" noValidate>
         {/* Identificación */}
@@ -334,15 +381,15 @@ const ProductActionModal = ({
           {textFields.map(({ name, label }) => (
             <Controller
               key={name}
-              name={name}
+              name={name as keyof FormValues}
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
                   label={label}
                   fullWidth
-                  error={!!errors[name]}
-                  helperText={errors[name]?.message}
+                  error={!!errors[name as keyof FormValues]}
+                  helperText={errors[name as keyof FormValues]?.message}
                   disabled={loading || loadingRefs}
                 />
               )}
@@ -376,7 +423,7 @@ const ProductActionModal = ({
                   <MenuItem disabled value="">
                     Unidad
                   </MenuItem>
-                  {measures.map((option) => (
+                  {(measures as Measure[]).map((option) => (
                     <MenuItem key={option.id} value={option.id}>
                       {option.abbreviation}
                     </MenuItem>
@@ -414,7 +461,7 @@ const ProductActionModal = ({
                   <MenuItem disabled value="">
                     Unidad secundaria
                   </MenuItem>
-                  {measures.map((option) => (
+                  {(measures as Measure[]).map((option) => (
                     <MenuItem key={option.id} value={option.id}>
                       {option.abbreviation}
                     </MenuItem>
@@ -431,7 +478,7 @@ const ProductActionModal = ({
           {selectFields.map(({ name, label }) => (
             <Controller
               key={name}
-              name={name}
+              name={name as keyof FormValues}
               control={control}
               render={({ field }) => (
                 <FormControl fullWidth size="small">
@@ -448,7 +495,7 @@ const ProductActionModal = ({
                       refs.categories,
                       refs.subcategories,
                       refs.types
-                    ).map((opt) => (
+                    ).map((opt: { id: string; name: string }) => (
                       <MenuItem key={opt.id} value={opt.id}>
                         {toCapitalizeWords(opt.name)}
                       </MenuItem>
@@ -472,13 +519,18 @@ const ProductActionModal = ({
               <Autocomplete
                 freeSolo
                 disableClearable
-                options={productModels}
-                getOptionLabel={(opt) => (typeof opt === "string" ? opt : opt.name)}
-                value={productModels.find((m) => m.name === field.value) || field.value}
+                options={productModels as ProductModel[]}
+                getOptionLabel={(opt) =>
+                  typeof opt === "string" ? opt : (opt as ProductModel).name
+                }
+                value={
+                  (productModels as ProductModel[]).find((m) => m.name === field.value) ||
+                  field.value
+                }
                 onChange={(_, newVal) => {
                   const isCustom = typeof newVal === "string";
-                  const newName = isCustom ? newVal : newVal.name;
-                  const newId = isCustom ? null : newVal.id;
+                  const newName = isCustom ? newVal : (newVal as ProductModel).name;
+                  const newId = isCustom ? null : (newVal as ProductModel).id;
                   if (newName !== currentModelName) {
                     setValue("modelName", newName, {
                       shouldValidate: true,
@@ -525,7 +577,7 @@ const ProductActionModal = ({
           {multiLineFields.map(({ name, label }) => (
             <Controller
               key={name}
-              name={name}
+              name={name as keyof FormValues}
               control={control}
               render={({ field }) => (
                 <TextField
@@ -534,8 +586,8 @@ const ProductActionModal = ({
                   fullWidth
                   multiline
                   minRows={3}
-                  error={!!errors[name]}
-                  helperText={errors[name]?.message}
+                  error={!!errors[name as keyof FormValues]}
+                  helperText={errors[name as keyof FormValues]?.message}
                   disabled={loading}
                 />
               )}

@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Dropzone } from "../../../../components/Dropzone";
+import type { PhotoPreview } from "../../../../types/ui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useSnackbar } from "notistack";
@@ -23,6 +24,8 @@ import { useProductTypesBySubcategory } from "../../../../hooks/catalog/useProdu
 import { AddProductBanner } from "./AddProductBanner";
 import CSVUploadButton from "./CSVUploadButton";
 import { useCSVParser } from "./useCSVParser";
+import type { Brand, Category, Subcategory, Measure } from "../../../../types/catalog";
+import type { GridRowModesModel } from "@mui/x-data-grid";
 
 const ProductTable = dynamic(() => import("./table/ProductTable").then((mod) => mod.ProductTable), {
   ssr: false,
@@ -31,7 +34,33 @@ const BulkCSVUpload = dynamic(() => import("./BulkCSVUpload"), {
   ssr: false,
 });
 
-const defaultFormValues = {
+interface ProductFormValues {
+  brandId: string;
+  categoryId: string;
+  hasType: string;
+  subCategoryId: string;
+  typeId: string;
+  image?: File;
+}
+
+interface ProductRow {
+  id: string;
+  name: string;
+  description: string;
+  code: string;
+  specifications: string;
+  modelId: string | null;
+  modelName: string;
+  measureId: string | null;
+  measureValue: string;
+  qualifier: string;
+  secondaryMeasureId: string | null;
+  secondaryMeasureValue: string;
+  color?: string;
+  isNew?: boolean;
+}
+
+const defaultFormValues: ProductFormValues = {
   brandId: "",
   categoryId: "",
   hasType: "no",
@@ -42,9 +71,13 @@ const defaultFormValues = {
 const ProductSchema = yup.object().shape({
   brandId: yup.string().required("La marca es requerida"),
   categoryId: yup.string().required("La categoría es requerida"),
+  hasType: yup.string().defined(),
+  subCategoryId: yup.string().defined(),
+  typeId: yup.string().defined(),
+  image: yup.mixed<File>(),
 });
 
-const initialRows = [
+const initialRows: ProductRow[] = [
   {
     id: uuidv4(),
     name: "",
@@ -63,13 +96,13 @@ const initialRows = [
 
 const AddProduct = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const [brands, setBrands] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [subcategories, setSubcategories] = useState([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [loading, setLoading] = useState(false);
-  const [photo, setPhoto] = useState(null);
-  const [rows, setRows] = useState(initialRows);
-  const [rowModesModel, setRowModesModel] = useState({});
+  const [photo, setPhoto] = useState<PhotoPreview | null>(null);
+  const [rows, setRows] = useState<ProductRow[]>(initialRows);
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   const {
     control,
@@ -98,7 +131,6 @@ const AddProduct = () => {
   const { productModels } = useProductModels(brandId);
   const { productTypes: types } = useProductTypesBySubcategory(subCategoryId);
 
-  // Limpiar modelo seleccionado en filas cuando cambia la marca
   useEffect(() => {
     if (!brandId) return;
     setRows((prevRows) =>
@@ -132,7 +164,6 @@ const AddProduct = () => {
     fetchSubcategories();
   }, [categoryId]);
 
-  // Reset typeId cuando cambia subcategoría
   useEffect(() => {
     setValue("typeId", "");
   }, [subCategoryId, setValue]);
@@ -140,7 +171,10 @@ const AddProduct = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [brandsData, categoriesData] = await Promise.all([getBrands(), getCategories()]);
+        const [brandsData, categoriesData] = await Promise.all([
+          getBrands({ size: 1000 }),
+          getCategories({ size: 1000 }),
+        ]);
         setBrands(brandsData.brands);
         setCategories(categoriesData.categories);
       } catch (error) {
@@ -153,15 +187,15 @@ const AddProduct = () => {
 
   const handleRemoveFile = () => {
     unregister("image");
-    URL.revokeObjectURL(photo?.preview);
+    URL.revokeObjectURL(photo?.preview ?? "");
     setPhoto(null);
   };
 
-  const handleDeleteClick = (id) => () => {
+  const handleDeleteClick = (id: string) => () => {
     setRows(rows.filter((row) => row.id !== id));
   };
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: ProductFormValues) => {
     if (!validateRows(rows)) {
       enqueueSnackbar("Debes completar al menos el nombre, codigo, descripción, valor y unidad", {
         variant: "error",
@@ -255,13 +289,13 @@ const AddProduct = () => {
     }
   };
 
-  const processRowUpdate = (newRow) => {
+  const processRowUpdate = (newRow: ProductRow) => {
     const updatedRow = { ...newRow, isNew: false };
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
     return updatedRow;
   };
 
-  const handleRowModesModelChange = (newRowModesModel) => {
+  const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
 
@@ -314,16 +348,19 @@ const AddProduct = () => {
             </Stack>
 
             <CSVUploadButton
-              onCSVParsed={(parsedData) => {
+              onCSVParsed={(parsedData: unknown[]) => {
                 const {
                   rows: parsedRows,
                   errors,
                   acceptedAbbreviations,
-                } = transformCSVToRows(parsedData, measures);
+                } = transformCSVToRows(parsedData, measures as Measure[]);
 
                 if (errors.length > 0) {
                   const message = errors
-                    .map((err) => `Fila ${err.index + 2}: "${err.value}" no es una unidad válida.`)
+                    .map(
+                      (err: { index: number; value: string }) =>
+                        `Fila ${err.index + 2}: "${err.value}" no es una unidad válida.`
+                    )
                     .join("\n");
 
                   enqueueSnackbar(

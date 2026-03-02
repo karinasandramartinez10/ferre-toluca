@@ -14,6 +14,22 @@ import * as yup from "yup";
 import { Controller, useForm } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 import UploadingMessage from "./UploadingMessage";
+import type { Brand } from "../../../../types/catalog";
+import type { ModalMode, PhotoPreview } from "../../../../types/ui";
+
+export interface BrandFormData {
+  name: string;
+  image: File | string | null;
+}
+
+interface BrandModalProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: BrandFormData) => void;
+  loading: boolean;
+  mode?: ModalMode;
+  selectedBrand: Brand | null;
+}
 
 const BrandSchema = yup.object().shape({
   name: yup.string().required("El nombre es requerido"),
@@ -22,7 +38,7 @@ const BrandSchema = yup.object().shape({
 
 const defaultValues = {
   name: "",
-  image: null,
+  image: null as File | string | null,
 };
 
 const BrandModal = ({
@@ -32,8 +48,8 @@ const BrandModal = ({
   loading,
   mode = "create",
   selectedBrand,
-}) => {
-  const [photo, setPhoto] = useState(null);
+}: BrandModalProps) => {
+  const [photo, setPhoto] = useState<PhotoPreview | null>(null);
 
   const {
     control,
@@ -62,12 +78,14 @@ const BrandModal = ({
 
   const handleRemoveFile = () => {
     unregister("image");
-    URL.revokeObjectURL(photo?.preview);
+    if (photo?.preview) {
+      URL.revokeObjectURL(photo.preview);
+    }
     setPhoto(null);
   };
 
-  const handleFormSubmit = (data) => {
-    onSubmit(data);
+  const handleFormSubmit = (data: Record<string, unknown>) => {
+    onSubmit(data as unknown as BrandFormData);
     resetValues();
   };
 
@@ -112,18 +130,13 @@ const BrandModal = ({
               photo={photo}
               setPhoto={setPhoto}
               onRemove={handleRemoveFile}
-              loading={loading}
             />
           )}
           {errors.image && <Box color="error.main">{errors.image.message}</Box>}
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={handleCloseModal}
-          variant="outlined"
-          disabled={loading}
-        >
+        <Button onClick={handleCloseModal} variant="outlined" disabled={loading}>
           Cancelar
         </Button>
         <LoadingButton
