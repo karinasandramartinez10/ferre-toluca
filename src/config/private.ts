@@ -1,9 +1,9 @@
-import axios from "axios";
+import axios, { type InternalAxiosRequestConfig } from "axios";
 import { getSession } from "next-auth/react";
 import { authEvents } from "../lib/authEvents";
 import { EVENTS_EMITERS } from "../lib/events";
 
-let activeSessionPromise = null;
+let activeSessionPromise: ReturnType<typeof getSession> | null = null;
 
 function getSessionDeduplicated() {
   if (!activeSessionPromise) {
@@ -19,10 +19,10 @@ export const privateApi = axios.create({
 });
 
 privateApi.interceptors.request.use(
-  async (config) => {
+  async (config: InternalAxiosRequestConfig) => {
     try {
-      const session = await getSessionDeduplicated();
-      const token = session?.user?.access_token ?? null;
+      const session: any = await getSessionDeduplicated();
+      const token: string | null = session?.user?.access_token ?? null;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }

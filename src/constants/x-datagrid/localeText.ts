@@ -1,4 +1,6 @@
-export const localeText = {
+import type { GridLocaleText } from "@mui/x-data-grid";
+
+export const localeText: Partial<GridLocaleText> = {
   // General
   noRowsLabel: "Sin registros",
   noResultsOverlayLabel: "No se encontraron resultados",

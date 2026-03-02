@@ -2,8 +2,9 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import type { QuoteStatusStep } from "../../types/quote";
 
-export const STEPS = [
+export const STEPS: QuoteStatusStep[] = [
   {
     value: "IN_REVIEW",
     label: "En revisión",
