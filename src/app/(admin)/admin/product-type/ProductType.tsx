@@ -13,19 +13,21 @@ import ActionModal from "../../../../components/ActionModal";
 import { toSlug } from "../../../../utils/cases";
 import ProductTypesTable from "../../../../components/CrudAdminTable";
 import { productTypesColumns } from "./columns";
+import type { ProductType, Subcategory } from "../../../../types/catalog";
+import type { GridPaginationModel } from "@mui/x-data-grid";
 
 const ProductTypes = () => {
-  const [rows, setRows] = useState([]);
-  const [paginationModel, setPaginationModel] = useState({
+  const [rows, setRows] = useState<ProductType[]>([]);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 10,
   });
   const [rowCount, setRowCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [subcategories, setSubcategories] = useState([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedProductType, setSelectedProductType] = useState(null);
-  const [mode, setMode] = useState("create");
+  const [selectedProductType, setSelectedProductType] = useState<ProductType | null>(null);
+  const [mode, setMode] = useState<"create" | "edit">("create");
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -49,7 +51,7 @@ const ProductTypes = () => {
   useEffect(() => {
     const fetchSubcategories = async () => {
       try {
-        const data = await getSubcategories();
+        const data = await getSubcategories({ size: 1000 });
         setSubcategories(data.subcategories);
       } catch (error) {
         console.error("Error fetching subcategories:", error);
@@ -59,7 +61,7 @@ const ProductTypes = () => {
     fetchSubcategories();
   }, []);
 
-  const handleAddProductType = async (data) => {
+  const handleAddProductType = async (data: { name: string; subcategoryId: string }) => {
     try {
       setLoading(true);
       const response = await createProductType(data);
@@ -83,7 +85,7 @@ const ProductTypes = () => {
         setLoading(false);
         setIsModalOpen(false);
       }
-    } catch (error) {
+    } catch {
       setLoading(false);
       enqueueSnackbar("Error creando el tipo de producto", {
         variant: "error",
@@ -91,7 +93,7 @@ const ProductTypes = () => {
     }
   };
 
-  const handleEditProductType = async (data) => {
+  const handleEditProductType = async (data: { name: string; subcategoryId: string }) => {
     try {
       setLoading(true);
 
@@ -100,7 +102,7 @@ const ProductTypes = () => {
         subcategoryId: data.subcategoryId,
       };
 
-      const response = await updateProductType(selectedProductType.id, body);
+      const response = await updateProductType(selectedProductType!.id, body);
 
       if (response.status === 200) {
         const { productType } = response.data;
@@ -110,7 +112,7 @@ const ProductTypes = () => {
         };
         setRows((prevRows) =>
           prevRows.map((row) =>
-            row.id === selectedProductType.id ? { ...row, ...updatedProductType } : row
+            row.id === selectedProductType!.id ? { ...row, ...updatedProductType } : row
           )
         );
         revalidateTypePage(toSlug(productType.name));
@@ -120,7 +122,7 @@ const ProductTypes = () => {
         setLoading(false);
         setIsModalOpen(false);
       }
-    } catch (error) {
+    } catch {
       setLoading(false);
       enqueueSnackbar("Error actualizando el tipo de producto", {
         variant: "error",
@@ -128,7 +130,7 @@ const ProductTypes = () => {
     }
   };
 
-  const openEditModal = (productType) => {
+  const openEditModal = (productType: ProductType) => {
     setSelectedProductType(productType);
     setMode("edit");
     setIsModalOpen(true);
@@ -157,7 +159,7 @@ const ProductTypes = () => {
         optionTitle="Selecciona la subcategoría a asociar"
         option="subcategoryId"
         options={subcategories}
-        groupBy={(opt) => opt.category?.name || "Sin categoría"}
+        groupBy={(opt: Subcategory) => opt.category?.name || "Sin categoría"}
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={mode === "create" ? handleAddProductType : handleEditProductType}

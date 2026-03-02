@@ -4,21 +4,25 @@ import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState } from "react";
 import { createCategory, getCategories, updateCategory } from "../../../../api/category";
 import { revalidateCategoryPage } from "../../../../actions/revalidate";
+import { getApiErrorMessage } from "../../../../utils/apiError";
 import ActionModal from "../../../../components/ActionModal";
 import CategoriesTable from "../../../../components/CrudAdminTable";
 import { categoriesColumns } from "./columns";
+import type { Category } from "../../../../types/catalog";
+import type { ModalMode } from "../../../../types/ui";
+import type { GridPaginationModel } from "@mui/x-data-grid";
 
 const Categories = () => {
-  const [rows, setRows] = useState([]);
-  const [paginationModel, setPaginationModel] = useState({
+  const [rows, setRows] = useState<Category[]>([]);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 10,
   });
   const [rowCount, setRowCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [mode, setMode] = useState("create");
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [mode, setMode] = useState<ModalMode>("create");
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -39,24 +43,24 @@ const Categories = () => {
     fetchInitialData();
   }, [fetchInitialData]);
 
-  const handleAddCategory = async (data) => {
+  const handleAddCategory = async (data: Record<string, unknown>) => {
     try {
       setLoading(true);
 
       const body = {
-        name: data.name,
+        name: data.name as string,
       };
 
       const response = await createCategory(body);
       if (response.status === 201) {
-        const { category } = response.data;
+        const { category } = response.data as { category: Category };
         const newCategory = {
           ...category,
           id: category.id,
         };
 
         setRows((prevRows) => [...prevRows, newCategory]);
-        revalidateCategoryPage(category.path);
+        revalidateCategoryPage(category.path ?? "");
         enqueueSnackbar("Categoría agregada exitósamente", {
           variant: "success",
           autoHideDuration: 5000,
@@ -70,22 +74,30 @@ const Categories = () => {
       }
     } catch (error) {
       setLoading(false);
-      console.error("Error creating category:", error);
+      if ((error as any)?.response?.status === 409) {
+        enqueueSnackbar("Ya existe una categoría con ese nombre", {
+          variant: "warning",
+        });
+      } else {
+        enqueueSnackbar(getApiErrorMessage(error) || "Error al crear categoría", {
+          variant: "error",
+        });
+      }
     }
   };
 
-  const handleEditCategory = async (data) => {
+  const handleEditCategory = async (data: Record<string, unknown>) => {
     try {
       setLoading(true);
 
       const body = {
-        name: data.name,
+        name: data.name as string,
       };
 
-      const response = await updateCategory(selectedCategory.id, body);
+      const response = await updateCategory(selectedCategory!.id, body);
 
       if (response.status === 200) {
-        const { category } = response.data;
+        const { category } = response.data as { category: Category };
         const updatedCategory = {
           ...category,
           id: category.id,
@@ -93,10 +105,10 @@ const Categories = () => {
 
         setRows((prevRows) =>
           prevRows.map((row) =>
-            row.id === selectedCategory.id ? { ...row, ...updatedCategory } : row
+            row.id === selectedCategory!.id ? { ...row, ...updatedCategory } : row
           )
         );
-        revalidateCategoryPage(category.path);
+        revalidateCategoryPage(category.path ?? "");
         enqueueSnackbar("Categoría actualizada exitósamente", {
           variant: "success",
         });
@@ -105,12 +117,20 @@ const Categories = () => {
       }
     } catch (error) {
       setLoading(false);
-      console.error("Error actualizando la categoría", error.message);
+      if ((error as any)?.response?.status === 409) {
+        enqueueSnackbar("Ya existe una categoría con ese nombre", {
+          variant: "warning",
+        });
+      } else {
+        enqueueSnackbar(getApiErrorMessage(error) || "Error al actualizar categoría", {
+          variant: "error",
+        });
+      }
     }
   };
 
-  const openEditModal = (category) => {
-    setSelectedCategory(category);
+  const openEditModal = (category: any) => {
+    setSelectedCategory(category as Category);
     setMode("edit");
     setIsModalOpen(true);
   };

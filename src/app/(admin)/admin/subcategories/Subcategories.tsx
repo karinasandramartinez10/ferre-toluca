@@ -9,23 +9,26 @@ import {
   updateSubcategory,
 } from "../../../../api/subcategories";
 import { revalidateSubcategoryPage } from "../../../../actions/revalidate";
+import { getApiErrorMessage } from "../../../../utils/apiError";
 import ActionModal from "../../../../components/ActionModal";
 import { toSlug } from "../../../../utils/cases";
 import SubcategoriesTable from "../../../../components/CrudAdminTable";
 import { subcategoriesColumns } from "./columns";
+import type { Category, Subcategory } from "../../../../types/catalog";
+import type { GridPaginationModel } from "@mui/x-data-grid";
 
 const Subcategories = () => {
-  const [rows, setRows] = useState([]);
-  const [paginationModel, setPaginationModel] = useState({
+  const [rows, setRows] = useState<Subcategory[]>([]);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 10,
   });
   const [rowCount, setRowCount] = useState(0);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-  const [mode, setMode] = useState("create");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<Subcategory | null>(null);
+  const [mode, setMode] = useState<"create" | "edit">("create");
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -47,19 +50,19 @@ const Subcategories = () => {
   }, [fetchInitialData]);
 
   useEffect(() => {
-    const fetchInitialData = async () => {
+    const fetchCategories = async () => {
       try {
-        const categoriesData = await getCategories();
+        const categoriesData = await getCategories({ size: 1000 });
         setCategories(categoriesData.categories);
       } catch (error) {
         console.error("Error fetching initial data:", error);
       }
     };
 
-    fetchInitialData();
+    fetchCategories();
   }, []);
 
-  const handleAddSubcategory = async (data) => {
+  const handleAddSubcategory = async (data: { name: string; categoryId: string }) => {
     try {
       setLoading(true);
 
@@ -92,11 +95,19 @@ const Subcategories = () => {
       }
     } catch (error) {
       setLoading(false);
-      console.error("Error creating category:", error);
+      if ((error as any)?.response?.status === 409) {
+        enqueueSnackbar("Ya existe una subcategoría con ese nombre", {
+          variant: "warning",
+        });
+      } else {
+        enqueueSnackbar(getApiErrorMessage(error) || "Error al crear subcategoría", {
+          variant: "error",
+        });
+      }
     }
   };
 
-  const handleEditSubcategory = async (data) => {
+  const handleEditSubcategory = async (data: { name: string; categoryId: string }) => {
     try {
       setLoading(true);
 
@@ -105,7 +116,7 @@ const Subcategories = () => {
         categoryId: data.categoryId,
       };
 
-      const response = await updateSubcategory(selectedSubcategory.id, body);
+      const response = await updateSubcategory(selectedSubcategory!.id, body);
 
       if (response.status === 200) {
         const { subcategory } = response.data;
@@ -116,7 +127,7 @@ const Subcategories = () => {
 
         setRows((prevRows) =>
           prevRows.map((row) =>
-            row.id === selectedSubcategory.id ? { ...row, ...updatedSubcategory } : row
+            row.id === selectedSubcategory!.id ? { ...row, ...updatedSubcategory } : row
           )
         );
         revalidateSubcategoryPage(toSlug(subcategory.name));
@@ -128,11 +139,19 @@ const Subcategories = () => {
       }
     } catch (error) {
       setLoading(false);
-      console.error("Error actualizando la subcategoría", error.message);
+      if ((error as any)?.response?.status === 409) {
+        enqueueSnackbar("Ya existe una subcategoría con ese nombre", {
+          variant: "warning",
+        });
+      } else {
+        enqueueSnackbar(getApiErrorMessage(error) || "Error al actualizar subcategoría", {
+          variant: "error",
+        });
+      }
     }
   };
 
-  const openEditModal = (subcategory) => {
+  const openEditModal = (subcategory: Subcategory) => {
     setSelectedSubcategory(subcategory);
     setMode("edit");
     setIsModalOpen(true);
@@ -167,6 +186,7 @@ const Subcategories = () => {
         selected={selectedSubcategory}
         loading={loading}
         options={categories}
+        groupBy={undefined}
       />
     </>
   );
