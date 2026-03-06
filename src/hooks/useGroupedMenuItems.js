@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { ListSubheader, MenuItem } from "@mui/material";
 import { toCapitalizeWords } from "../utils/cases";
 
@@ -8,11 +8,7 @@ export function useGroupedMenuItems(options, groupBy) {
 
     if (!groupBy) {
       return options.map((opt) => (
-        <MenuItem
-          key={opt.id}
-          value={opt.id}
-          sx={{ fontSize: 14, py: 0.5, minHeight: 32 }}
-        >
+        <MenuItem key={opt.id} value={opt.id} sx={{ fontSize: 14, py: 0.5, minHeight: 32 }}>
           {toCapitalizeWords(opt.name)}
         </MenuItem>
       ));
@@ -42,11 +38,7 @@ export function useGroupedMenuItems(options, groupBy) {
       );
       opts.forEach((opt) => {
         items.push(
-          <MenuItem
-            key={opt.id}
-            value={opt.id}
-            sx={{ fontSize: 14, py: 0.5, minHeight: 32 }}
-          >
+          <MenuItem key={opt.id} value={opt.id} sx={{ fontSize: 14, py: 0.5, minHeight: 32 }}>
             {toCapitalizeWords(opt.name)}
           </MenuItem>
         );
