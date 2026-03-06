@@ -24,6 +24,7 @@ import { useProductTypesBySubcategory } from "../../../../hooks/catalog/useProdu
 import { AddProductBanner } from "./AddProductBanner";
 import CSVUploadButton from "./CSVUploadButton";
 import { useCSVParser } from "./useCSVParser";
+import { buildAddProductFormData } from "./buildAddProductFormData";
 import type { Brand, Category, Subcategory, Measure } from "../../../../types/catalog";
 import type { GridRowModesModel } from "@mui/x-data-grid";
 
@@ -209,53 +210,7 @@ const AddProduct = () => {
 
     setLoading(true);
     try {
-      const requestBody = new FormData();
-      if (values.image) {
-        requestBody.append("image", values.image);
-      }
-      requestBody.append("brandId", values.brandId);
-      requestBody.append("categoryId", values.categoryId);
-      requestBody.append("subCategoryId", values.subCategoryId);
-      if (values.hasType === "yes" && values.typeId) {
-        requestBody.append("typeId", values.typeId);
-      }
-
-      rows.forEach((product, index) => {
-        requestBody.append(`products[${index}][name]`, product.name ? product.name.trim() : "");
-        requestBody.append(
-          `products[${index}][description]`,
-          product.description ? product.description.trim() : ""
-        );
-        requestBody.append(
-          `products[${index}][code]`,
-          product.code ? product.code.toUpperCase() : ""
-        );
-        requestBody.append(
-          `products[${index}][specifications]`,
-          product.specifications ? product.specifications.trim() : ""
-        );
-        requestBody.append(`products[${index}][color]`, product.color ? product.color.trim() : "");
-        requestBody.append(
-          `products[${index}][qualifier]`,
-          product.qualifier ? product.qualifier.trim() : ""
-        );
-        requestBody.append(
-          `products[${index}][secondaryMeasureValue]`,
-          product.secondaryMeasureValue || ""
-        );
-        if (product.secondaryMeasureId) {
-          requestBody.append(`products[${index}][secondaryMeasureId]`, product.secondaryMeasureId);
-        }
-
-        if (product.modelId) {
-          requestBody.append(`products[${index}][modelId]`, product.modelId);
-        } else if (product.modelName) {
-          requestBody.append(`products[${index}][modelName]`, product.modelName.trim());
-        }
-
-        requestBody.append(`products[${index}][measureId]`, product.measureId || "");
-        requestBody.append(`products[${index}][measureValue]`, product.measureValue || "");
-      });
+      const requestBody = buildAddProductFormData(values, rows);
 
       await postProduct(requestBody);
       enqueueSnackbar("Producto(s) añadido(s) exitósamente", {
