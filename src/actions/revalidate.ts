@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 export async function revalidateProduct(productId: string): Promise<void> {
   revalidatePath(`/product/${productId}`);
+  revalidatePath("/");
 }
 
 export async function revalidateBrandPage(codeName: string): Promise<void> {
