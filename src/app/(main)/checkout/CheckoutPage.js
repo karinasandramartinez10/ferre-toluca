@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography, Button, Stack, Dialog, DialogTitle, DialogContent } from "@mui/material";
+import { Box, Typography, Button, Stack } from "@mui/material";
 import { signIn, useSession } from "next-auth/react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -8,31 +8,25 @@ import { useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 import { createQuote } from "../../../api/quote";
 import { LoadingButton } from "@mui/lab";
-import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import LoginContainer from "../../auth/login/LoginContainer";
 import LoginForm from "../../auth/login/LoginForm";
 import { useRouter } from "next/navigation";
 import { useOrderContext } from "../../../context/order/useOrderContext";
+import { usePricingMode } from "../../../context/pricing/usePricingMode";
+import { formatPrice } from "../../../utils/currency";
 import Link from "next/link";
 import { useUserFiscals } from "../../../hooks/user/fiscal/useUserFiscals";
 import { useFiscalMutations } from "../../../hooks/user/fiscal/useFiscalMutations";
-
 import { useFiscalCatalogs } from "../../../hooks/user/fiscal/useFiscalCatalogs";
-import { FiscalProfileSchema } from "../../../schemas/user/fiscal";
-const FiscalForm = dynamic(() => import("../../(user)/user/profile/fiscal/FiscalForm"), {
-  ssr: false,
-});
 import { getDefaultFiscalProfile } from "../../../utils/fiscal";
+import { getSettings } from "../../../api/admin/settings";
 import OrderItemRow from "./OrderItemRow";
 import BillingSelect from "./BillingSelect";
 import MessageSection from "./MessageSection";
-
-const TotalRow = ({ totalItems }) => (
-  <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-    <Typography variant="body" fontWeight={600}>{`Total de productos: ${totalItems}`}</Typography>
-  </Box>
-);
+import TotalRow from "./TotalRow";
+import FiscalDialog from "./FiscalDialog";
+import { parseQuoteError } from "./parseQuoteError";
 
 const ActionsRow = ({ onClear, onSubmit, disabled, loading }) => (
   <Box
@@ -54,33 +48,6 @@ const ActionsRow = ({ onClear, onSubmit, disabled, loading }) => (
   </Box>
 );
 
-const FiscalDialog = ({
-  open,
-  onClose,
-  defaults,
-  taxRegimes,
-  cfdiUses,
-  onSubmit,
-  submitting,
-  hideIsDefault,
-}) => (
-  <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-    <DialogTitle>Nuevos datos de facturación</DialogTitle>
-    <DialogContent sx={{ paddingTop: "16px !important" }}>
-      <FiscalForm
-        defaults={defaults}
-        schema={FiscalProfileSchema}
-        taxRegimes={taxRegimes}
-        cfdiUses={cfdiUses}
-        onSubmit={onSubmit}
-        submitting={submitting}
-        onCancel={onClose}
-        hideIsDefault={hideIsDefault}
-      />
-    </DialogContent>
-  </Dialog>
-);
-
 const QuoteSchema = yup.object().shape({
   message: yup.string().required("El mensaje es requerido"),
 });
@@ -100,6 +67,19 @@ const CheckoutPage = () => {
   const isAuthenticated = !!session?.user;
 
   const { orderItems, removeFromOrder, clearOrder, totalItems } = useOrderContext();
+  const { pricingMode } = usePricingMode();
+  const [wholesaleMinQty, setWholesaleMinQty] = useState(0);
+
+  useEffect(() => {
+    if (pricingMode === "wholesale") {
+      getSettings()
+        .then((settings) => {
+          const setting = settings.find((s) => s.key === "WHOLESALE_MIN_QUANTITY");
+          if (setting) setWholesaleMinQty(parseInt(setting.value, 10) || 0);
+        })
+        .catch(() => {});
+    }
+  }, [pricingMode]);
 
   const {
     control,
@@ -127,6 +107,7 @@ const CheckoutPage = () => {
 
         const requestBody = {
           message: values.message,
+          pricingMode,
           products,
           userFiscalProfileId: selectedFiscalId || undefined,
         };
@@ -143,9 +124,9 @@ const CheckoutPage = () => {
         clearOrder();
         reset();
       } catch (error) {
-        enqueueSnackbar("Hubo un error al procesar la orden", {
+        enqueueSnackbar(parseQuoteError(error), {
           variant: "error",
-          autoHideDuration: 5000,
+          autoHideDuration: 7000,
           anchorOrigin: {
             vertical: "top",
             horizontal: "right",
@@ -155,7 +136,7 @@ const CheckoutPage = () => {
         setLoading(false);
       }
     },
-    [orderItems, selectedFiscalId, enqueueSnackbar, clearOrder, reset]
+    [orderItems, selectedFiscalId, pricingMode, enqueueSnackbar, clearOrder, reset]
   );
 
   // Default selected fiscal profile
@@ -233,18 +214,38 @@ const CheckoutPage = () => {
         Productos a cotizar
       </Typography>
 
-      {orderItems.map(({ product, quantity }) => (
-        <OrderItemRow
-          key={product.id}
-          product={product}
-          quantity={quantity}
-          onRemove={() => removeFromOrder(product.id)}
-        />
-      ))}
+      <Box sx={{ maxHeight: { xs: 350, md: 450 }, overflowY: "auto", pr: 1 }}>
+        {orderItems.map(({ product, quantity }) => {
+          const unitPrice =
+            pricingMode === "wholesale" ? product.wholesalePrice : product.retailPrice;
+          return (
+            <OrderItemRow
+              key={product.id}
+              product={product}
+              quantity={quantity}
+              unitPrice={unitPrice}
+              onRemove={() => removeFromOrder(product.id)}
+            />
+          );
+        })}
+      </Box>
 
       {isAuthenticated ? (
         <>
-          <TotalRow totalItems={totalItems} />
+          <TotalRow
+            totalItems={totalItems}
+            pricingMode={pricingMode}
+            wholesaleMinQty={wholesaleMinQty}
+            orderTotal={formatPrice(
+              orderItems.reduce((sum, { product, quantity }) => {
+                const price =
+                  pricingMode === "wholesale"
+                    ? parseFloat(product.wholesalePrice || 0)
+                    : parseFloat(product.retailPrice || 0);
+                return sum + price * quantity;
+              }, 0)
+            )}
+          />
           <BillingSelect
             loading={loadingFiscals}
             profiles={sortedProfiles}
