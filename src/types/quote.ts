@@ -35,8 +35,12 @@ export interface FiscalProfile {
 
 // ── Product ─────────────────────────────────────────────────────
 
+import type { PriceType } from "./pricing";
+
 export interface QuoteProductJoin {
   quantity: number;
+  unitPrice: string;
+  priceType: PriceType;
 }
 
 export interface QuoteProduct {

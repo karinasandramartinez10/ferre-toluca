@@ -1,9 +1,14 @@
 import { Box, Card, Typography, Tooltip, Chip, Stack } from "@mui/material";
 import { CloudinaryImage } from "../../../../../components/CloudinaryImage";
+import { formatPrice } from "../../../../../utils/currency";
+import { PRICING_LABELS } from "../../../../../constants/pricing";
 
 export const ProductItem = ({ product }) => {
   const name = product.name;
-  const qty = product.QuoteProduct.quantity;
+  const qp = product.QuoteProduct;
+  const qty = qp.quantity;
+  const unitPrice = formatPrice(qp.unitPrice);
+  const priceType = qp.priceType;
 
   return (
     <Card
@@ -38,8 +43,21 @@ export const ProductItem = ({ product }) => {
               {name}
             </Typography>
           </Tooltip>
-          <Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexWrap: "wrap" }}>
             <Chip label={`x${qty}`} size="small" />
+            {unitPrice && (
+              <Typography variant="caption" color="primary.main" fontWeight={600}>
+                {unitPrice}
+              </Typography>
+            )}
+            {priceType && unitPrice && (
+              <Chip
+                label={PRICING_LABELS[priceType] || priceType}
+                size="small"
+                variant="outlined"
+                color={priceType === "wholesale" ? "secondary" : "default"}
+              />
+            )}
           </Box>
         </Stack>
       </Box>

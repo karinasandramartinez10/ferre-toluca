@@ -2,10 +2,7 @@
 
 import { useEffect, useState, useMemo, useReducer } from "react";
 import OrderContext from "./OrderContext";
-import {
-  loadOrderFromLocalStorage,
-  saveOrderToLocalStorage,
-} from "./OrderActions";
+import { loadOrderFromLocalStorage, saveOrderToLocalStorage } from "./OrderActions";
 import { initialOrderState, orderReducer } from "./OrderReducer";
 import { OrderTypes } from "./OrderTypes";
 
@@ -30,6 +27,7 @@ export const OrderProvider = ({ children }) => {
   }, [state.orderItems, loading]);
 
   const addToOrder = (product, quantity) => {
+    if (product?.isAvailable === false) return;
     dispatch({
       type: OrderTypes.add,
       payload: { product, quantity },

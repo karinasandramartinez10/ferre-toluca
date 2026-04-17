@@ -1,6 +1,7 @@
 import { Edit } from "@mui/icons-material";
 import { GridActionsCellItem } from "@mui/x-data-grid";
 import { toCapitalizeWords } from "../../../../utils/cases";
+import { formatPriceColumn } from "../../../../utils/currency";
 
 export const textFields = [
   { name: "name", label: "Nombre", required: true },
@@ -49,6 +50,24 @@ export const getProductColumns = (onEdit) => [
     ],
   },
   { field: "code", headerName: "Código", width: 125 },
+  {
+    field: "retailPrice",
+    headerName: "Precio menudeo",
+    width: 140,
+    valueFormatter: (value) => formatPriceColumn(value),
+  },
+  {
+    field: "wholesalePrice",
+    headerName: "Precio mayoreo",
+    width: 140,
+    valueFormatter: (value) => formatPriceColumn(value),
+  },
+  {
+    field: "isAvailable",
+    headerName: "Disponible",
+    width: 110,
+    renderCell: ({ value }) => (value !== false ? "Disponible" : "Agotado"),
+  },
   {
     field: "name",
     headerName: "Nombre",

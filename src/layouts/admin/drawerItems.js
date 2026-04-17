@@ -6,6 +6,9 @@ import {
   Category,
   Inventory,
   History,
+  MailOutline,
+  ContactMail,
+  Settings,
 } from "@mui/icons-material";
 
 export const drawerItems = [
@@ -63,6 +66,24 @@ export const drawerItems = [
     text: "Tipos de Producto",
     pathname: "/admin/product-type",
     icon: <Category sx={{ fontSize: 20 }} />,
+    visibleFor: ["superadmin"],
+  },
+  {
+    text: "Invitaciones",
+    pathname: "/admin/invitations",
+    icon: <MailOutline sx={{ fontSize: 20 }} />,
+    visibleFor: ["superadmin"],
+  },
+  {
+    text: "Solicitudes de contacto",
+    pathname: "/admin/contact-requests",
+    icon: <ContactMail sx={{ fontSize: 20 }} />,
+    visibleFor: ["admin", "superadmin"],
+  },
+  {
+    text: "Configuración",
+    pathname: "/admin/settings",
+    icon: <Settings sx={{ fontSize: 20 }} />,
     visibleFor: ["superadmin"],
   },
 ];

@@ -174,6 +174,30 @@ export const getAddProductColumns = (onDelete, measures, productModels, setRows)
       }),
   },
   {
+    field: "retailPrice",
+    headerName: "Precio menudeo",
+    width: 120,
+    editable: true,
+    renderEditCell: (params) =>
+      TextFieldCellEditor({
+        params,
+        placeholder: "Ej: 150.00",
+        type: "number",
+      }),
+  },
+  {
+    field: "wholesalePrice",
+    headerName: "Precio mayoreo",
+    width: 120,
+    editable: true,
+    renderEditCell: (params) =>
+      TextFieldCellEditor({
+        params,
+        placeholder: "Ej: 120.00",
+        type: "number",
+      }),
+  },
+  {
     field: "actions",
     type: "actions",
     headerName: "Acciones",
