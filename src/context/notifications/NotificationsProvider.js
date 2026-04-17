@@ -67,9 +67,11 @@ export const NotificationsProvider = ({ children }) => {
     };
 
     socket.on("notification", handleNotification);
+    socket.on("contact-request", handleNotification);
 
     return () => {
       socket.off("notification", handleNotification);
+      socket.off("contact-request", handleNotification);
     };
   }, [socket, userId, addNotification]);
 

@@ -38,7 +38,9 @@ export default function NotificationsBell({ color }) {
     if (!notification.isRead) {
       await markAsRead(notification.id);
     }
-    if (notification.type === "inbox" && notification.data?.quoteId) {
+    if (notification.type === "contact-request" || notification.data?.contactRequestId) {
+      router.push("/admin/contact-requests");
+    } else if (notification.type === "inbox" && notification.data?.quoteId) {
       const role = session?.user?.role;
       if (role === "admin" || role === "superadmin") {
         router.push(`/admin/quotes/${notification.data.quoteId}`);
