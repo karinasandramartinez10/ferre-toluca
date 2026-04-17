@@ -1,5 +1,8 @@
 export interface Product {
   id: string;
+  retailPrice: string;
+  wholesalePrice: string | null;
+  isAvailable: boolean;
   [key: string]: unknown;
 }
 
