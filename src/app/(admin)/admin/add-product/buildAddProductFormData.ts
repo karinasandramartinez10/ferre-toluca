@@ -20,6 +20,8 @@ interface ProductRow {
   modelName: string;
   measureId: string | null;
   measureValue: string;
+  retailPrice?: string;
+  wholesalePrice?: string;
 }
 
 export function buildAddProductFormData(values: ProductFormValues, rows: ProductRow[]): FormData {
@@ -67,6 +69,13 @@ export function buildAddProductFormData(values: ProductFormValues, rows: Product
 
     formData.append(`products[${index}][measureId]`, product.measureId || "");
     formData.append(`products[${index}][measureValue]`, product.measureValue || "");
+
+    if (product.retailPrice) {
+      formData.append(`products[${index}][retailPrice]`, product.retailPrice);
+    }
+    if (product.wholesalePrice) {
+      formData.append(`products[${index}][wholesalePrice]`, product.wholesalePrice);
+    }
   });
 
   return formData;
