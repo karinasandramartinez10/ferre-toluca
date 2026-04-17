@@ -8,7 +8,7 @@ import type {
   OrderHistoryFilters,
   UpdateQuoteStatusVars,
 } from "../types/quote";
-import { getApiErrorMessage } from "../utils/apiError";
+import { getApiErrorMessage, createApiError } from "../utils/apiError";
 
 export const createQuote = async (body: Record<string, unknown>): Promise<AxiosResponse> => {
   try {
@@ -21,7 +21,7 @@ export const createQuote = async (body: Record<string, unknown>): Promise<AxiosR
     return resp;
   } catch (error) {
     console.error("Error creating quote:", error);
-    throw new Error(getApiErrorMessage(error));
+    throw createApiError(error);
   }
 };
 
