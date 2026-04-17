@@ -33,6 +33,8 @@ export const useCSVParser = () => {
       qualifier: row["Cualificador"] || row["Qualifier"] || "",
       secondaryMeasureValue: row["Valor2"] || "",
       secondaryMeasureId: resolveMeasureId(row["Unidad2"], index),
+      retailPrice: row["PrecioMenudeo"] || row["RetailPrice"] || "",
+      wholesalePrice: row["PrecioMayoreo"] || row["WholesalePrice"] || "",
       isNew: true,
     }));
 

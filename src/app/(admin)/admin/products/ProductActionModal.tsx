@@ -9,8 +9,10 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
+  FormControlLabel,
   MenuItem,
   Select,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -20,7 +22,11 @@ import * as yup from "yup";
 import { getBrands } from "../../../../api/admin/brands";
 import { getCategories } from "../../../../api/category";
 import { getProductTypes } from "../../../../api/productTypes";
-import { getProductById } from "../../../../api/products";
+import {
+  getProductById,
+  updateProductPricing,
+  updateProductAvailability,
+} from "../../../../api/products";
 import { getSubcategories } from "../../../../api/subcategories";
 import { useMeasures } from "../../../../hooks/catalog/useMeasures";
 import { useProductModels } from "../../../../hooks/catalog/useProductModels";
@@ -74,6 +80,9 @@ interface FormValues {
   modelName: string;
   modelId: string | null;
   image: File | null;
+  retailPrice: string;
+  wholesalePrice: string;
+  isAvailable: boolean;
 }
 
 interface Refs {
@@ -101,6 +110,9 @@ const Schema = yup.object().shape({
   modelName: yup.string().defined(),
   modelId: yup.string().nullable(),
   image: yup.mixed<File>().nullable(),
+  retailPrice: yup.string().defined(),
+  wholesalePrice: yup.string().defined(),
+  isAvailable: yup.boolean().defined(),
 });
 
 const defaultValues: FormValues = {
@@ -121,6 +133,9 @@ const defaultValues: FormValues = {
   modelName: "",
   modelId: "",
   image: null,
+  retailPrice: "",
+  wholesalePrice: "",
+  isAvailable: true,
 };
 
 const ProductActionModal = ({
@@ -226,6 +241,9 @@ const ProductActionModal = ({
             secondaryMeasureId: product.secondaryMeasureId ?? "",
             modelName: product.productModel?.name ?? "",
             modelId: product.productModel?.id ?? "",
+            retailPrice: product.retailPrice ?? "",
+            wholesalePrice: product.wholesalePrice ?? "",
+            isAvailable: product.isAvailable !== false,
           }),
         };
 
@@ -308,6 +326,32 @@ const ProductActionModal = ({
   const handleFormSubmit = async (data: Record<string, unknown>) => {
     const formData = buildProductFormData(data, selected);
     await onSubmit(formData);
+
+    if (selected?.id) {
+      const errors: string[] = [];
+
+      try {
+        const rp = data.retailPrice as string;
+        const wp = data.wholesalePrice as string;
+        const pricingBody: Record<string, unknown> = {};
+        if (rp !== undefined) pricingBody.retailPrice = rp ? parseFloat(rp) : 0;
+        if (wp !== undefined) pricingBody.wholesalePrice = wp ? parseFloat(wp) : null;
+        await updateProductPricing(selected.id, pricingBody);
+      } catch {
+        errors.push("precios");
+      }
+
+      try {
+        await updateProductAvailability(selected.id, data.isAvailable as boolean);
+      } catch {
+        errors.push("disponibilidad");
+      }
+
+      if (errors.length > 0) {
+        throw new Error(`Error al actualizar ${errors.join(" y ")}`);
+      }
+    }
+
     await fetchData();
     reset(defaultValues);
   };
@@ -553,6 +597,59 @@ const ProductActionModal = ({
             />
           ))}
         </Box>
+
+        {/* Precios */}
+        <Typography sx={sectionTitleSx}>Precios</Typography>
+        <Box sx={twoColumnGrid}>
+          <Controller
+            name="retailPrice"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Precio menudeo"
+                fullWidth
+                type="number"
+                inputProps={{ min: 0, step: "0.01" }}
+                disabled={loading}
+              />
+            )}
+          />
+          <Controller
+            name="wholesalePrice"
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label="Precio mayoreo (opcional)"
+                fullWidth
+                type="number"
+                inputProps={{ min: 0, step: "0.01" }}
+                helperText="Dejar vacío si no aplica mayoreo"
+                disabled={loading}
+              />
+            )}
+          />
+        </Box>
+
+        {/* Disponibilidad */}
+        <Typography sx={sectionTitleSx}>Disponibilidad</Typography>
+        <Controller
+          name="isAvailable"
+          control={control}
+          render={({ field }) => (
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={field.value}
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  color="success"
+                />
+              }
+              label={field.value ? "Disponible" : "No disponible (agotado)"}
+            />
+          )}
+        />
 
         {/* Imagen */}
         <Typography sx={sectionTitleSx}>Imagen</Typography>
