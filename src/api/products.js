@@ -1,14 +1,11 @@
 import { api } from "../config";
 import privateApi from "../config/private";
+import { withPricingMode } from "../utils/params";
 
-export const getProductsByBrand = async (id, page = 1, size = 10) => {
+export const getProductsByBrand = async (id, page = 1, size = 10, pricingMode) => {
   try {
-    const { data } = await api.get(`/product/brand/${id}`, {
-      params: {
-        page,
-        size,
-      },
-    });
+    const params = withPricingMode({ page, size }, pricingMode);
+    const { data } = await api.get(`/product/brand/${id}`, { params });
     return data.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch products by brand");
@@ -25,7 +22,10 @@ export const getProductsByBrand = async (id, page = 1, size = 10) => {
  * @returns {Promise<Object>} - Datos de productos agrupados.
  */
 
-export const getGroupedProducts = async (endpoint, { page = 1, size = 10, id, q } = {}) => {
+export const getGroupedProducts = async (
+  endpoint,
+  { page = 1, size = 10, id, q, pricingMode } = {}
+) => {
   try {
     const params = {
       page,
@@ -35,6 +35,8 @@ export const getGroupedProducts = async (endpoint, { page = 1, size = 10, id, q 
     if (q) {
       params.q = q;
     }
+
+    withPricingMode(params, pricingMode);
 
     const url = id ? `/product/${endpoint}/${id}` : `/product/${endpoint}`;
 
@@ -53,34 +55,30 @@ export const getGroupedProducts = async (endpoint, { page = 1, size = 10, id, q 
   }
 };
 
-export const getProductsByCategory = async (id, page = 1, size = 10) => {
+export const getProductsByCategory = async (id, page = 1, size = 10, pricingMode) => {
   try {
-    const { data } = await api.get(`/product/category/${id}`, {
-      params: {
-        page,
-        size,
-      },
-    });
+    const params = withPricingMode({ page, size }, pricingMode);
+    const { data } = await api.get(`/product/category/${id}`, { params });
     return data.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch products by categories");
   }
 };
 
-export const getProductsByQuery = async (query) => {
+export const getProductsByQuery = async (query, pricingMode) => {
   try {
-    const data = await api.get("/product/search", {
-      params: { q: query, size: 10, page: 1 },
-    });
+    const params = withPricingMode({ q: query, size: 10, page: 1 }, pricingMode);
+    const data = await api.get("/product/search", { params });
     return data.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch products by query");
   }
 };
 
-export const getProductById = async (id) => {
+export const getProductById = async (id, pricingMode) => {
   try {
-    const response = await api.get(`/product/${id}`);
+    const params = withPricingMode({}, pricingMode);
+    const response = await api.get(`/product/${id}`, { params });
 
     return response.data.data;
   } catch (error) {
@@ -142,6 +140,7 @@ export const getFilteredProducts = async (filters = {}) => {
       designIds,
       qualifiers,
       q,
+      pricingMode,
       page = 1,
       size = 10,
     } = filters;
@@ -158,6 +157,7 @@ export const getFilteredProducts = async (filters = {}) => {
     if (designIds?.length) params.designIds = designIds.join(",");
     if (qualifiers?.length) params.qualifiers = qualifiers.join(",");
     if (q) params.q = q;
+    withPricingMode(params, pricingMode);
 
     const { data } = await api.get("/product/grouped", { params });
 
@@ -182,9 +182,10 @@ export const getFilteredProducts = async (filters = {}) => {
  * Solo incluye categorías/subcategorías/tipos con productos.
  * @returns {Promise<Array>} - Árbol de categorías con subcategorías y tipos anidados.
  */
-export const getMenuTree = async () => {
+export const getMenuTree = async (pricingMode) => {
   try {
-    const { data } = await api.get("/product/menu-tree");
+    const params = withPricingMode({}, pricingMode);
+    const { data } = await api.get("/product/menu-tree", { params });
     return data.data;
   } catch (error) {
     console.error("Error fetching menu tree:", error);
@@ -192,7 +193,7 @@ export const getMenuTree = async () => {
   }
 };
 
-export const getFilterOptions = async (currentFilters = {}) => {
+export const getFilterOptions = async (currentFilters = {}, pricingMode) => {
   try {
     const {
       brandIds,
@@ -217,6 +218,7 @@ export const getFilterOptions = async (currentFilters = {}) => {
     if (secondaryMeasureIds?.length) params.secondaryMeasureIds = secondaryMeasureIds.join(",");
     if (designIds?.length) params.designIds = designIds.join(",");
     if (qualifiers?.length) params.qualifiers = qualifiers.join(",");
+    withPricingMode(params, pricingMode);
 
     const { data } = await api.get("/product/filter-options", { params });
 
@@ -224,5 +226,25 @@ export const getFilterOptions = async (currentFilters = {}) => {
   } catch (error) {
     console.error("Error fetching filter options:", error);
     throw new Error(error.response?.data?.message || "Failed to fetch filter options");
+  }
+};
+
+export const updateProductPricing = async (id, body) => {
+  try {
+    const { data } = await privateApi.patch(`/product/${id}/pricing`, body);
+    return data;
+  } catch (error) {
+    console.error("Error updating product pricing:", error);
+    throw error;
+  }
+};
+
+export const updateProductAvailability = async (id, isAvailable) => {
+  try {
+    const { data } = await privateApi.patch(`/product/${id}/availability`, { isAvailable });
+    return data;
+  } catch (error) {
+    console.error("Error updating product availability:", error);
+    throw error;
   }
 };

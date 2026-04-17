@@ -3,6 +3,7 @@ import { Box, Button, IconButton, Popover, Stack, Tooltip, Typography } from "@m
 import Link from "next/link";
 import Image from "next/image";
 import Cart from "../../components/Cart";
+import PricingModeToggle from "../../components/PricingModeToggle";
 import { logout } from "../../actions/logout";
 import { useState } from "react";
 import SearchComponent from "../../components/Search";
@@ -56,6 +57,7 @@ export const MainNavbarDesktop = ({ session }) => {
         <SearchComponent />
       </Box>
       <Box display="flex" alignItems="center" gap={1}>
+        <PricingModeToggle />
         {isAdmin && (
           <Tooltip title="Panel de administador" arrow>
             <IconButton
@@ -95,7 +97,7 @@ export const MainNavbarDesktop = ({ session }) => {
             ) : (
               <>
                 <Typography fontWeight={700} variant="body1" sx={{ mb: 1 }}>
-                  Accede o crea una cuenta
+                  Accede a tu cuenta
                 </Typography>
                 <Button variant="contained" component={Link} href="/auth/login" fullWidth>
                   Iniciar sesión
@@ -103,11 +105,11 @@ export const MainNavbarDesktop = ({ session }) => {
                 <Button
                   variant="outlined"
                   component={Link}
-                  href="/auth/signup"
+                  href="/contact"
                   fullWidth
                   sx={{ mt: 1 }}
                 >
-                  Crear una cuenta
+                  Contáctanos
                 </Button>
               </>
             )}

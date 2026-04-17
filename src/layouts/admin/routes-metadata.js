@@ -35,6 +35,19 @@ export const PAGE_METADATA = {
     title: "Tipos de Producto",
     subtitle: "Añade detalles como acabados, colores u otras variantes. Los tipos son opcionales.",
   },
+  "/admin/invitations": {
+    title: "Invitaciones",
+    subtitle: "Envía invitaciones de registro a nuevos clientes y gestiona su estado.",
+  },
+  "/admin/contact-requests": {
+    title: "Solicitudes de contacto",
+    subtitle:
+      "Revisa las solicitudes de contacto de visitantes interesados. Coordina y envía invitaciones.",
+  },
+  "/admin/settings": {
+    title: "Configuración",
+    subtitle: "Ajusta parámetros generales de la tienda como el monto mínimo de mayoreo.",
+  },
   "/user/profile/fiscal": {
     title: "Datos de facturación",
     subtitle: "Administra tus datos de facturación para emitir facturas y agilizar tus compras.",

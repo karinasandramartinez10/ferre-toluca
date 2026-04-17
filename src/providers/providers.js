@@ -8,6 +8,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { mainTheme } from "../theme/mainTheme";
 import { SocketProvider } from "../context/socket/SocketContext";
 import { NotificationsProvider } from "../context/notifications/NotificationsProvider";
+import { PricingProvider } from "../context/pricing/PricingProvider";
 import { OrderProvider } from "../context/order/OrderProvider";
 
 export function Providers({ children }) {
@@ -35,7 +36,9 @@ export function Providers({ children }) {
           <CssBaseline />
           <SocketProvider>
             <NotificationsProvider>
-              <OrderProvider>{children}</OrderProvider>
+              <PricingProvider>
+                <OrderProvider>{children}</OrderProvider>
+              </PricingProvider>
             </NotificationsProvider>
           </SocketProvider>
         </SnackbarProvider>

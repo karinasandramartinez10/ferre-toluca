@@ -11,14 +11,14 @@ export const noAuthSectionsMobile = [
   {
     items: [
       {
-        icon: <Person />,
-        text: "Crear cuenta",
-        href: `/auth/signup`,
-      },
-      {
         icon: <LoginOutlined />,
         text: "Iniciar sesión",
         href: "/auth/login",
+      },
+      {
+        icon: <Person />,
+        text: "Contáctanos",
+        href: "/contact",
       },
     ],
   },

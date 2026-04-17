@@ -2,6 +2,7 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { getFilterOptions } from "../../api/products";
 import { queryKeys } from "../../constants/queryKeys";
 import { staleTimes, gcTimes } from "../../constants/queryConfig";
+import { usePricingMode } from "../../context/pricing/usePricingMode";
 
 const emptyOptions = {
   brands: [],
@@ -23,9 +24,11 @@ const emptyOptions = {
  * @returns {Object} - Opciones de filtros, loading y error.
  */
 export default function useFilterOptions(currentFilters = {}) {
+  const { pricingMode } = usePricingMode();
+
   const { data, isLoading, error } = useQuery({
-    queryKey: queryKeys.filterOptions(currentFilters),
-    queryFn: () => getFilterOptions(currentFilters),
+    queryKey: queryKeys.filterOptions(currentFilters, pricingMode),
+    queryFn: () => getFilterOptions(currentFilters, pricingMode),
     placeholderData: keepPreviousData,
     staleTime: staleTimes.FREQUENT,
     gcTime: gcTimes.SHORT,

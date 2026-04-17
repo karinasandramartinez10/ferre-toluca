@@ -5,13 +5,17 @@ import { Card, CardActions, CardContent, Typography } from "@mui/material";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useOrderContext } from "../context/order/useOrderContext";
+import { usePricingMode } from "../context/pricing/usePricingMode";
 import ProductImage from "../app/(main)/product/[id]/ProductImage";
 import { toCapitalizeWords } from "../utils/cases";
 import ProductDesignChip from "./ProductDesignChip";
+import ProductPrice from "./ProductPrice";
 
 export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
   const [quantity] = useState(1);
   const { addToOrder } = useOrderContext();
+  const { pricingMode } = usePricingMode();
+  const isUnavailable = product?.isAvailable === false;
 
   const handleAddToOrder = () => {
     addToOrder(product, quantity);
@@ -105,14 +109,28 @@ export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
           </Tooltip>
         </CardContent>
         <ProductDesignChip designName={product?.design?.name} typeName={product?.type?.name} />
+        <Box sx={{ px: 1, pt: 0.5, pb: 1 }}>
+          <ProductPrice
+            retailPrice={product?.retailPrice}
+            wholesalePrice={product?.wholesalePrice}
+            pricingMode={pricingMode}
+            size="small"
+          />
+        </Box>
       </Link>
       {showBtns && (
         <CardActions sx={{ justifyContent: "space-between", flexDirection: "row" }}>
           <Button variant="outlined" fullWidth onClick={() => onViewMore(product.id)}>
             Ver más
           </Button>
-          <Button variant="contained" color="primary" fullWidth onClick={handleAddToOrder}>
-            Añadir a la orden
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={handleAddToOrder}
+            disabled={isUnavailable}
+          >
+            {isUnavailable ? "No disponible" : "Añadir a la orden"}
           </Button>
         </CardActions>
       )}

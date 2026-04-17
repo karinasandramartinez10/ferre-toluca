@@ -3,6 +3,7 @@ import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-quer
 import { getFilteredProducts } from "../../api/products";
 import { queryKeys } from "../../constants/queryKeys";
 import { staleTimes, gcTimes } from "../../constants/queryConfig";
+import { usePricingMode } from "../../context/pricing/usePricingMode";
 
 /**
  * Hook para obtener productos con filtros combinados.
@@ -14,6 +15,7 @@ import { staleTimes, gcTimes } from "../../constants/queryConfig";
 export default function useFilteredProducts(filters = {}, pageSize = 10) {
   const [currentPage, setCurrentPage] = useState(1);
   const queryClient = useQueryClient();
+  const { pricingMode } = usePricingMode();
 
   // Key estable para detectar cambios de filtros
   const filtersKey = JSON.stringify({
@@ -29,16 +31,17 @@ export default function useFilteredProducts(filters = {}, pageSize = 10) {
     q: filters.q || "",
   });
 
-  // Reset a página 1 cuando cambian los filtros
+  // Reset a página 1 cuando cambian los filtros o el pricing mode
   useEffect(() => {
     setCurrentPage(1);
-  }, [filtersKey]);
+  }, [filtersKey, pricingMode]);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: queryKeys.filteredProducts(filtersKey, currentPage, pageSize),
+    queryKey: queryKeys.filteredProducts(filtersKey, currentPage, pageSize, pricingMode),
     queryFn: () =>
       getFilteredProducts({
         ...filters,
+        pricingMode,
         page: currentPage,
         size: pageSize,
       }),
@@ -53,17 +56,18 @@ export default function useFilteredProducts(filters = {}, pageSize = 10) {
   useEffect(() => {
     if (currentPage < totalPages) {
       queryClient.prefetchQuery({
-        queryKey: queryKeys.filteredProducts(filtersKey, currentPage + 1, pageSize),
+        queryKey: queryKeys.filteredProducts(filtersKey, currentPage + 1, pageSize, pricingMode),
         queryFn: () =>
           getFilteredProducts({
             ...filters,
+            pricingMode,
             page: currentPage + 1,
             size: pageSize,
           }),
         staleTime: staleTimes.FREQUENT,
       });
     }
-  }, [currentPage, totalPages, filtersKey, pageSize, queryClient, filters]);
+  }, [currentPage, totalPages, filtersKey, pageSize, queryClient, filters, pricingMode]);
 
   return {
     products: data?.products || [],
