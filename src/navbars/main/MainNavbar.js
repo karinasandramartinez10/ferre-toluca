@@ -5,14 +5,11 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  adminSectionsMobile,
-  noAuthSectionsMobile,
-  userSectionsMobile,
-} from "./list-items";
+import { adminSectionsMobile, noAuthSectionsMobile, userSectionsMobile } from "./list-items";
 import { BurgerMenu } from "../../components/BurgerMenu";
 import { Menu } from "@mui/icons-material";
 import Cart from "../../components/Cart";
+import PricingModeToggle from "../../components/PricingModeToggle";
 import NotificationsBell from "../../components/NotificationsBell";
 import { MainNavbarDesktop } from "./MainNavbarDesktop";
 
@@ -23,14 +20,10 @@ const SearchInput = dynamic(() => import("../../components/Search"), {
 const MainNavbarMobile = ({ session }) => {
   const [openNavbar, setOpenNavbar] = useState(false);
   const isAuthenticated = !!session?.user;
-  const isAdmin =
-    session?.user?.role === "admin" || session?.user?.role === "superadmin";
+  const isAdmin = session?.user?.role === "admin" || session?.user?.role === "superadmin";
 
   const toggleDrawer = (open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
 
@@ -55,15 +48,11 @@ const MainNavbarMobile = ({ session }) => {
       sx={{ display: { xs: "flex", md: "none" } }}
     >
       <Link href="/">
-        <Image
-          src={"/images/texcocowhite.svg"}
-          alt="ferreteria texcoco"
-          width="90"
-          height="60"
-        />
+        <Image src={"/images/texcocowhite.svg"} alt="ferreteria texcoco" width="90" height="60" />
       </Link>
 
-      <Box display="flex" alignItems="center">
+      <Box display="flex" alignItems="center" gap={0.5}>
+        <PricingModeToggle />
         <SearchInput />
         {!isAdmin && <Cart />}
         {isAuthenticated && <NotificationsBell />}

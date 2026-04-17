@@ -5,6 +5,7 @@ import { useSnackbar } from "notistack";
 import { useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useFavorites } from "../../../../hooks/favorites/useFavorites";
+import { usePricingMode } from "../../../../context/pricing/usePricingMode";
 import ConfirmDeleteFavorite from "./ConfirmDeleteFavorite";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
 import { useOrderContext } from "../../../../context/order/useOrderContext";
@@ -16,6 +17,8 @@ import { MainSpecs } from "./MainSpecs";
 import { ProductActions } from "./ProductActions";
 import { ProductFeatures } from "./ProductFeatures";
 import { VariantSelector } from "./VariantSelector/VariantSelector";
+import ProductPrice from "../../../../components/ProductPrice";
+import { Alert } from "@mui/material";
 
 const ProductPage = ({ product }) => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -25,13 +28,18 @@ const ProductPage = ({ product }) => {
 
   const { addToOrder } = useOrderContext();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { pricingMode } = usePricingMode();
   const { enqueueSnackbar } = useSnackbar();
+  const isUnavailable = product?.isAvailable === false;
 
   const notify = (msg, variant) => enqueueSnackbar(msg, { variant });
 
-  const handleAdd = () => {
-    addToOrder(product, 1);
-    notify("Producto añadido al carrito", "success");
+  const handleAdd = (quantity = 1) => {
+    addToOrder(product, quantity);
+    notify(
+      `${quantity > 1 ? quantity + " productos añadidos" : "Producto añadido"} al carrito`,
+      "success"
+    );
   };
 
   const handleToggleFav = async () => {
@@ -72,6 +80,18 @@ const ProductPage = ({ product }) => {
         </Grid>
         <Grid item xs={12} md={8}>
           <ProductOverview brand={product.brand?.name} name={product.name} code={product.code} />
+          {isUnavailable && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              Este producto no está disponible actualmente
+            </Alert>
+          )}
+          <Box sx={{ mb: 2 }}>
+            <ProductPrice
+              retailPrice={product.retailPrice}
+              wholesalePrice={product.wholesalePrice}
+              pricingMode={pricingMode}
+            />
+          </Box>
           <Box display="flex" width="100%" gap={2}>
             <ProductAttributes
               subCategory={product.subCategory?.name}
@@ -87,6 +107,7 @@ const ProductPage = ({ product }) => {
               onToggleFav={handleToggleFav}
               isFav={isFavorite(product.id)}
               showFav={role === "user"}
+              disabled={isUnavailable}
             />
           </Stack>
         </Grid>
