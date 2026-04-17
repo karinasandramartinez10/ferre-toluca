@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getApiErrorMessage } from "../../utils/apiError";
+import { getApiErrorMessage, createApiError } from "../../utils/apiError";
 
 describe("getApiErrorMessage", () => {
   it("extracts message from response.data.message", () => {
@@ -32,5 +32,36 @@ describe("getApiErrorMessage", () => {
       response: { data: { message: "Specific" } },
     };
     expect(getApiErrorMessage(error)).toBe("Specific");
+  });
+});
+
+describe("createApiError", () => {
+  it("creates error with message from response", () => {
+    const error = { response: { status: 404, data: { message: "Not found" } } };
+    const result = createApiError(error);
+    expect(result.message).toBe("Not found");
+  });
+
+  it("attaches status from response", () => {
+    const error = { response: { status: 422, data: {} } };
+    const result = createApiError(error);
+    expect(result.status).toBe(422);
+  });
+
+  it("attaches data from response", () => {
+    const error = { response: { status: 400, data: { field: "email", reason: "taken" } } };
+    const result = createApiError(error);
+    expect(result.data).toEqual({ field: "email", reason: "taken" });
+  });
+
+  it("is instance of Error", () => {
+    const error = { response: { status: 500, data: { message: "Server error" } } };
+    expect(createApiError(error)).toBeInstanceOf(Error);
+  });
+
+  it("falls back when no response", () => {
+    const result = createApiError({});
+    expect(result.message).toBe("Error desconocido");
+    expect(result.status).toBeUndefined();
   });
 });
