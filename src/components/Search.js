@@ -12,8 +12,10 @@ import {
   SearchList,
 } from "./Search/SearchInputComponents";
 import { Search } from "@mui/icons-material";
+import { usePricingMode } from "../context/pricing/usePricingMode";
 
 export default function SearchComponent() {
+  const { pricingMode } = usePricingMode();
   const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -30,7 +32,7 @@ export default function SearchComponent() {
       if (debouncedSearchQuery.length >= 3) {
         setLoading(true);
         try {
-          const data = await getProductsByQuery(debouncedSearchQuery);
+          const data = await getProductsByQuery(debouncedSearchQuery, pricingMode);
           setProducts(data.products);
           setLoading(false);
         } catch (err) {
@@ -45,7 +47,7 @@ export default function SearchComponent() {
     };
 
     fetchProducts();
-  }, [debouncedSearchQuery]);
+  }, [debouncedSearchQuery, pricingMode]);
 
   const handleClickAway = () => {
     setAnchorEl(null);

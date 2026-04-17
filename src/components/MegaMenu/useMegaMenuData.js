@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getMenuTree } from "../../api/products";
 import { queryKeys } from "../../constants/queryKeys";
 import { staleTimes, gcTimes } from "../../constants/queryConfig";
+import { usePricingMode } from "../../context/pricing/usePricingMode";
 
 /**
  * Hook para manejar datos del mega menu.
@@ -17,11 +18,12 @@ import { staleTimes, gcTimes } from "../../constants/queryConfig";
 export default function useMegaMenuData(enabled = false, serverCategories = []) {
   const [activeCategoryId, setActiveCategoryId] = useState(null);
   const [activeSubcategoryId, setActiveSubcategoryId] = useState(null);
+  const { pricingMode } = usePricingMode();
 
   // Fetch del árbol completo en una sola llamada
   const { data: tree = [], isLoading: loadingTree } = useQuery({
-    queryKey: queryKeys.menuTree,
-    queryFn: getMenuTree,
+    queryKey: queryKeys.menuTree(pricingMode),
+    queryFn: () => getMenuTree(pricingMode),
     enabled,
     staleTime: staleTimes.STATIC,
     gcTime: gcTimes.LONG,
@@ -88,9 +90,7 @@ export default function useMegaMenuData(enabled = false, serverCategories = []) 
     : [];
 
   // Tipos de la subcategoría activa
-  const activeTypes = activeSubcategoryId
-    ? typesBySubcategory[activeSubcategoryId] || []
-    : [];
+  const activeTypes = activeSubcategoryId ? typesBySubcategory[activeSubcategoryId] || [] : [];
 
   const selectCategory = (categoryId) => {
     setActiveCategoryId(categoryId);

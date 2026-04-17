@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { getGroupedProducts } from "../../api/products";
+import { usePricingMode } from "../../context/pricing/usePricingMode";
 
 export default function useGroupedProducts({
   pageSize = 10,
@@ -9,6 +10,7 @@ export default function useGroupedProducts({
   typeId,
   query,
 }) {
+  const { pricingMode } = usePricingMode();
   const [currentPage, setCurrentPage] = useState(1);
   const [groupedResult, setGroupedResult] = useState({
     products: [],
@@ -24,6 +26,7 @@ export default function useGroupedProducts({
         id: brandId,
         page,
         size: pageSize,
+        pricingMode,
       });
       return data;
     },
@@ -32,6 +35,7 @@ export default function useGroupedProducts({
         id: categoryId,
         page,
         size: pageSize,
+        pricingMode,
       });
       return data;
     },
@@ -40,6 +44,7 @@ export default function useGroupedProducts({
         id: subcategoryId,
         page,
         size: pageSize,
+        pricingMode,
       });
       return data;
     },
@@ -48,6 +53,7 @@ export default function useGroupedProducts({
         id: typeId,
         page,
         size: pageSize,
+        pricingMode,
       });
       return data;
     },
@@ -56,6 +62,7 @@ export default function useGroupedProducts({
         q: query,
         page,
         size: pageSize,
+        pricingMode,
       });
       return data;
     },
@@ -63,6 +70,7 @@ export default function useGroupedProducts({
       const { data } = await getGroupedProducts("grouped", {
         page,
         size: pageSize,
+        pricingMode,
       });
       return data;
     },
@@ -96,7 +104,7 @@ export default function useGroupedProducts({
         setLoading(false);
       }
     },
-    [brandId, categoryId, subcategoryId, typeId, query, pageSize]
+    [brandId, categoryId, subcategoryId, typeId, query, pageSize, pricingMode]
   );
 
   useEffect(() => {
