@@ -12,7 +12,7 @@ import { revalidateTypePage } from "../../../../actions/revalidate";
 import ActionModal from "../../../../components/ActionModal";
 import { toSlug } from "../../../../utils/cases";
 import ProductTypesTable from "../../../../components/CrudAdminTable";
-import { productTypesColumns } from "./columns";
+import { productTypesColumns } from "./productTypesColumns";
 import type { ProductType, Subcategory } from "../../../../types/catalog";
 import type { GridPaginationModel } from "@mui/x-data-grid";
 

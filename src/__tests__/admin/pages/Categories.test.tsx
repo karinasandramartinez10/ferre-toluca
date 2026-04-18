@@ -34,7 +34,7 @@ vi.mock("@/actions/revalidate", () => ({
   revalidateCategoryPage: vi.fn(),
 }));
 
-import Categories from "@/app/(admin)/admin/categories/Categories";
+import Categories from "@/app/(admin)/admin/taxonomy/Categories";
 
 const sampleCategories = [
   { id: "c1", name: "herramientas", path: "herramientas" },
