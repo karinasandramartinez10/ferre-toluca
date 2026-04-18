@@ -26,8 +26,8 @@ import Papa from "papaparse";
 import { useSnackbar } from "notistack";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
-import { postBulkCSV } from "../../../../api/admin";
-import { getApiErrorMessage } from "../../../../utils/apiError";
+import { postBulkCSV } from "../../../../../api/admin";
+import { getApiErrorMessage } from "../../../../../utils/apiError";
 import { BulkCSVPreview } from "./BulkCSVPreview";
 
 const BulkCSVUpload = () => {

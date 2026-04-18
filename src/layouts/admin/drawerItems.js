@@ -1,89 +1,77 @@
 import {
-  AddBusiness,
-  AddCircleOutline,
-  Home,
   Storefront,
-  Category,
-  Inventory,
-  History,
-  MailOutline,
   ContactMail,
+  MailOutline,
+  Inventory,
+  AddBusiness,
+  Category,
   Settings,
 } from "@mui/icons-material";
 
-export const drawerItems = [
+export const drawerGroups = [
   {
-    text: "Inicio",
-    pathname: "/",
-    icon: <Home sx={{ fontSize: 20 }} />,
-    visibleFor: ["admin", "superadmin"],
+    label: "Ventas",
+    items: [
+      {
+        text: "Cotizaciones",
+        pathname: "/admin/quotes",
+        icon: <Storefront sx={{ fontSize: 20 }} />,
+        isDynamic: true,
+        visibleFor: ["admin", "superadmin"],
+        badgeType: "quotes",
+      },
+    ],
   },
   {
-    text: "Cotizaciones",
-    pathname: "/admin/quotes",
-    icon: <Storefront sx={{ fontSize: 20 }} />,
-    isDynamic: true,
-    visibleFor: ["admin", "superadmin"],
+    label: "Clientes",
+    items: [
+      {
+        text: "Solicitudes",
+        pathname: "/admin/contact-requests",
+        icon: <ContactMail sx={{ fontSize: 20 }} />,
+        visibleFor: ["admin", "superadmin"],
+        badgeType: "contact-requests",
+      },
+      {
+        text: "Invitaciones",
+        pathname: "/admin/invitations",
+        icon: <MailOutline sx={{ fontSize: 20 }} />,
+        visibleFor: ["superadmin"],
+      },
+    ],
   },
   {
-    text: "Cotizaciones enviadas",
-    pathname: "/admin/quote-history",
-    icon: <History sx={{ fontSize: 20 }} />,
-    isDynamic: true,
-    visibleFor: ["admin", "superadmin"],
+    label: "Catálogo",
+    items: [
+      {
+        text: "Productos",
+        pathname: "/admin/products",
+        icon: <Inventory sx={{ fontSize: 20 }} />,
+        visibleFor: ["admin", "superadmin"],
+      },
+      {
+        text: "Marcas",
+        pathname: "/admin/brands",
+        icon: <AddBusiness sx={{ fontSize: 20 }} />,
+        visibleFor: ["superadmin"],
+      },
+      {
+        text: "Clasificación",
+        pathname: "/admin/taxonomy",
+        icon: <Category sx={{ fontSize: 20 }} />,
+        visibleFor: ["superadmin"],
+      },
+    ],
   },
   {
-    text: "Agregar Productos",
-    pathname: "/admin/add-product",
-    icon: <AddCircleOutline sx={{ fontSize: 20 }} />,
-    visibleFor: ["superadmin"],
-  },
-  {
-    text: "Ver productos",
-    pathname: "/admin/products",
-    icon: <Inventory sx={{ fontSize: 20 }} />,
-    visibleFor: ["admin", "superadmin"],
-  },
-  {
-    text: "Marcas",
-    pathname: "/admin/brands",
-    icon: <AddBusiness sx={{ fontSize: 20 }} />,
-    visibleFor: ["superadmin"],
-  },
-  {
-    text: "Categorías",
-    pathname: "/admin/categories",
-    icon: <Category sx={{ fontSize: 20 }} />,
-    visibleFor: ["superadmin"],
-  },
-  {
-    text: "Subcategorías",
-    pathname: "/admin/subcategories",
-    icon: <Category sx={{ fontSize: 20 }} />,
-    visibleFor: ["superadmin"],
-  },
-  {
-    text: "Tipos de Producto",
-    pathname: "/admin/product-type",
-    icon: <Category sx={{ fontSize: 20 }} />,
-    visibleFor: ["superadmin"],
-  },
-  {
-    text: "Invitaciones",
-    pathname: "/admin/invitations",
-    icon: <MailOutline sx={{ fontSize: 20 }} />,
-    visibleFor: ["superadmin"],
-  },
-  {
-    text: "Solicitudes de contacto",
-    pathname: "/admin/contact-requests",
-    icon: <ContactMail sx={{ fontSize: 20 }} />,
-    visibleFor: ["admin", "superadmin"],
-  },
-  {
-    text: "Configuración",
-    pathname: "/admin/settings",
-    icon: <Settings sx={{ fontSize: 20 }} />,
-    visibleFor: ["superadmin"],
+    label: "Configuración",
+    items: [
+      {
+        text: "Ajustes",
+        pathname: "/admin/settings",
+        icon: <Settings sx={{ fontSize: 20 }} />,
+        visibleFor: ["superadmin"],
+      },
+    ],
   },
 ];

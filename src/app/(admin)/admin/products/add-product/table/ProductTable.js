@@ -5,7 +5,7 @@ import { DataGrid, GridRowModes, GridToolbarContainer } from "@mui/x-data-grid";
 import { v4 as uuidv4 } from "uuid";
 import { getAddProductColumns } from "./columns";
 import { isRowValid } from "../helpers";
-import { localeText } from "../../../../../constants/x-datagrid/localeText";
+import { localeText } from "../../../../../../constants/x-datagrid/localeText";
 
 function EditToolbar({ rows, setRows, setRowModesModel }) {
   const handleClick = () => {
@@ -93,12 +93,7 @@ export const ProductTable = ({
       <DataGrid
         localeText={localeText}
         rows={rows}
-        columns={getAddProductColumns(
-          handleDeleteClick,
-          measures,
-          productModels,
-          setRows
-        )}
+        columns={getAddProductColumns(handleDeleteClick, measures, productModels, setRows)}
         editMode="row"
         rowModesModel={rowModesModel}
         onRowModesModelChange={handleRowModesModelChange}

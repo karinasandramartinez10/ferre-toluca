@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildProductFormData } from "../../../app/(admin)/admin/products/buildProductFormData";
-import { buildAddProductFormData } from "../../../app/(admin)/admin/add-product/buildAddProductFormData";
+import { buildAddProductFormData } from "../../../app/(admin)/admin/products/add-product/buildAddProductFormData";
 
 describe("buildProductFormData", () => {
   describe("image handling", () => {

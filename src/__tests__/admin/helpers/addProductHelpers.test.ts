@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { validateRows, isRowValid } from "../../../app/(admin)/admin/add-product/helpers";
+import { validateRows, isRowValid } from "../../../app/(admin)/admin/products/add-product/helpers";
 
 const completeRow = {
   name: "Tornillo",

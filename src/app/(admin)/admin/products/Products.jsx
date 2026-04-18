@@ -96,6 +96,7 @@ const ProductsPage = () => {
     <>
       <DataGrid
         localeText={localeText}
+        density="compact"
         rows={Array.isArray(data.products) ? data.products : []}
         columns={getProductColumns(handleOpenEdit)}
         rowCount={Number.isFinite(data.count) ? data.count : 0}
@@ -108,20 +109,29 @@ const ProductsPage = () => {
           height: 900,
           "& .MuiDataGrid-columnHeaderTitle": {
             fontWeight: 700,
+            fontSize: "0.8rem",
           },
           "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
             outline: "none !important",
+          },
+          "& .MuiDataGrid-row:nth-of-type(even)": {
+            bgcolor: "grey.50",
+          },
+          "& .MuiDataGrid-panelContent": {
+            fontSize: "0.8rem",
+          },
+          "& .MuiDataGrid-columnsManagementRow": {
+            py: 0,
+          },
+          "& .MuiDataGrid-menuList .MuiMenuItem-root": {
+            fontSize: "0.8rem",
+            minHeight: 32,
           },
         }}
         slots={{
           toolbar: CustomToolbar,
           noRowsOverlay: CustomNoRowsOverlay,
           footer: CustomFooter,
-        }}
-        slotProps={{
-          columnMenu: {
-            labelledby: "asd",
-          },
         }}
       />
       <ProductActionModal

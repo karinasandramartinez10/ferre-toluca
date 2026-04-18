@@ -39,7 +39,7 @@ vi.mock("@/actions/revalidate", () => ({
   revalidateSubcategoryPage: vi.fn(),
 }));
 
-import Subcategories from "@/app/(admin)/admin/subcategories/Subcategories";
+import Subcategories from "@/app/(admin)/admin/taxonomy/Subcategories";
 
 const sampleSubcategories = [
   { id: "sc1", name: "taladros", category: { id: "c1", name: "herramientas" } },
