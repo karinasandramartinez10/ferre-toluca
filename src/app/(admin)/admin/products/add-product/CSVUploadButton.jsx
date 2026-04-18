@@ -30,12 +30,7 @@ const CSVUploadButton = ({ onCSVParsed }) => {
         O importa tus productos desde un archivo CSV:
       </Typography>
       <Stack direction="row" spacing={2}>
-        <Button
-          variant="outlined"
-          color="inherit"
-          href="/plantilla_upload_products.csv"
-          download
-        >
+        <Button variant="outlined" color="inherit" href="/plantilla_upload_products.csv" download>
           Descarga la plantilla
         </Button>
         <input

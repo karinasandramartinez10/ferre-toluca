@@ -1,31 +1,33 @@
 "use client";
 
 import { LoadingButton } from "@mui/lab";
-import { Box, Chip, Divider, Paper, Stack, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Chip, Divider, Paper, Stack, Typography } from "@mui/material";
+import { Inventory, UploadFile } from "@mui/icons-material";
+import MethodSelector from "../../../../../components/MethodSelector";
 
 import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Dropzone } from "../../../../components/Dropzone";
-import type { PhotoPreview } from "../../../../types/ui";
+import { Dropzone } from "../../../../../components/Dropzone";
+import type { PhotoPreview } from "../../../../../types/ui";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useSnackbar } from "notistack";
 import { v4 as uuidv4 } from "uuid";
-import { postProduct } from "../../../../api/admin";
-import { getCategories } from "../../../../api/category";
-import { getSubcategories } from "../../../../api/subcategories";
+import { postProduct } from "../../../../../api/admin";
+import { getCategories } from "../../../../../api/category";
+import { getSubcategories } from "../../../../../api/subcategories";
 import { validateRows } from "./helpers";
 import AddProductFields from "./AddProductFields";
-import { getBrands } from "../../../../api/admin/brands";
-import { useMeasures } from "../../../../hooks/catalog/useMeasures";
-import { useProductModels } from "../../../../hooks/catalog/useProductModels";
-import { useProductTypesBySubcategory } from "../../../../hooks/catalog/useProductTypesBySubcategory";
+import { getBrands } from "../../../../../api/admin/brands";
+import { useMeasures } from "../../../../../hooks/catalog/useMeasures";
+import { useProductModels } from "../../../../../hooks/catalog/useProductModels";
+import { useProductTypesBySubcategory } from "../../../../../hooks/catalog/useProductTypesBySubcategory";
 import { AddProductBanner } from "./AddProductBanner";
 import CSVUploadButton from "./CSVUploadButton";
 import { useCSVParser } from "./useCSVParser";
 import { buildAddProductFormData } from "./buildAddProductFormData";
-import type { Brand, Category, Subcategory, Measure } from "../../../../types/catalog";
+import type { Brand, Category, Subcategory, Measure } from "../../../../../types/catalog";
 import type { GridRowModesModel } from "@mui/x-data-grid";
 
 const ProductTable = dynamic(() => import("./table/ProductTable").then((mod) => mod.ProductTable), {
@@ -256,20 +258,24 @@ const AddProduct = () => {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Tabs
-        value={activeTab}
-        onChange={(_, newValue) => setActiveTab(newValue)}
-        variant="scrollable"
-        scrollButtons="auto"
-        allowScrollButtonsMobile
-        sx={{ mb: 3, borderBottom: 1, borderColor: "divider" }}
-      >
-        <Tab label="Lote con misma marca y categoría" sx={{ textTransform: "none" }} />
-        <Tab
-          label="Importar CSV (marcas y categorías independientes)"
-          sx={{ textTransform: "none" }}
+      <Box sx={{ mb: 3 }}>
+        <MethodSelector
+          options={[
+            {
+              icon: <Inventory sx={{ fontSize: 28 }} />,
+              title: "Lote",
+              description: "Misma marca y categoría para todos los productos",
+            },
+            {
+              icon: <UploadFile sx={{ fontSize: 28 }} />,
+              title: "Importar CSV",
+              description: "Marcas y categorías independientes por producto",
+            },
+          ]}
+          value={activeTab}
+          onChange={setActiveTab}
         />
-      </Tabs>
+      </Box>
 
       {activeTab === 0 && (
         <Stack spacing={3} sx={{ width: "100%" }}>

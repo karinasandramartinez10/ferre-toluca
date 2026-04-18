@@ -1,9 +1,5 @@
 import { Autocomplete, TextField } from "@mui/material";
-import {
-  commonCellSx,
-  commonInputInnerProps,
-  commonInputProps,
-} from "./styles";
+import { commonCellSx, commonInputInnerProps, commonInputProps } from "./styles";
 
 export const AutocompleteCell = ({ params, productModels, setRows }) => {
   const currentModelId = params.row.modelId;
@@ -25,9 +21,7 @@ export const AutocompleteCell = ({ params, productModels, setRows }) => {
       modelId,
     };
 
-    setRows((prevRows) =>
-      prevRows.map((r) => (r.id === params.row.id ? updatedRow : r))
-    );
+    setRows((prevRows) => prevRows.map((r) => (r.id === params.row.id ? updatedRow : r)));
   };
 
   const handleInputChange = (event, newInputValue) => {
@@ -36,9 +30,7 @@ export const AutocompleteCell = ({ params, productModels, setRows }) => {
       modelName: newInputValue,
     };
 
-    setRows((prevRows) =>
-      prevRows.map((r) => (r.id === params.row.id ? updatedRow : r))
-    );
+    setRows((prevRows) => prevRows.map((r) => (r.id === params.row.id ? updatedRow : r)));
   };
 
   return (
@@ -46,9 +38,7 @@ export const AutocompleteCell = ({ params, productModels, setRows }) => {
       freeSolo
       disableClearable
       options={productModels}
-      getOptionLabel={(option) =>
-        typeof option === "string" ? option : option.name
-      }
+      getOptionLabel={(option) => (typeof option === "string" ? option : option.name)}
       value={inputValue}
       onChange={handleChange}
       onInputChange={handleInputChange}
