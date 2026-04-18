@@ -31,7 +31,7 @@ export const adminSectionsMobile = [
       {
         icon: <AdminPanelSettings />,
         text: "Panel de administrador",
-        href: `/admin/add-product`,
+        href: `/admin/products`,
       },
     ],
   },

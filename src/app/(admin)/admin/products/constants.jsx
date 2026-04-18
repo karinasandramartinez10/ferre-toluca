@@ -1,4 +1,5 @@
 import { Edit } from "@mui/icons-material";
+import { Circle } from "@mui/icons-material";
 import { GridActionsCellItem } from "@mui/x-data-grid";
 import { toCapitalizeWords } from "../../../../utils/cases";
 import { formatPriceColumn } from "../../../../utils/currency";
@@ -64,9 +65,19 @@ export const getProductColumns = (onEdit) => [
   },
   {
     field: "isAvailable",
-    headerName: "Disponible",
-    width: 110,
-    renderCell: ({ value }) => (value !== false ? "Disponible" : "Agotado"),
+    headerName: "",
+    width: 50,
+    sortable: false,
+    filterable: false,
+    disableColumnMenu: true,
+    renderCell: ({ value }) => (
+      <Circle
+        sx={{
+          fontSize: 10,
+          color: value !== false ? "success.main" : "error.main",
+        }}
+      />
+    ),
   },
   {
     field: "name",

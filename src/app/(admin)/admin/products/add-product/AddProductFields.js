@@ -9,16 +9,9 @@ import {
   Typography,
 } from "@mui/material";
 import { Controller } from "react-hook-form";
-import { toCapitalizeWords } from "../../../../utils/cases";
+import { toCapitalizeWords } from "../../../../../utils/cases";
 
-const AddProductFields = ({
-  brands,
-  categories,
-  subcategories,
-  types,
-  control,
-  hasType,
-}) => {
+const AddProductFields = ({ brands, categories, subcategories, types, control, hasType }) => {
   return (
     <Grid container spacing={2}>
       {/* Marca */}
@@ -101,9 +94,7 @@ const AddProductFields = ({
       {/* Tipo (condicional) */}
       {hasType === "yes" && (
         <Grid item xs={12} md={6}>
-          <Typography fontWeight={600}>
-            Selecciona una variante del producto
-          </Typography>
+          <Typography fontWeight={600}>Selecciona una variante del producto</Typography>
           <Controller
             control={control}
             name="typeId"
