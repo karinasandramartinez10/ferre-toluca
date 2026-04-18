@@ -15,12 +15,13 @@ import { useRouter } from "next/navigation";
 import { useOrderContext } from "../../../context/order/useOrderContext";
 import { usePricingMode } from "../../../context/pricing/usePricingMode";
 import { formatPrice } from "../../../utils/currency";
+import { computeLinePricing } from "../../../utils/pricing";
 import Link from "next/link";
 import { useUserFiscals } from "../../../hooks/user/fiscal/useUserFiscals";
 import { useFiscalMutations } from "../../../hooks/user/fiscal/useFiscalMutations";
 import { useFiscalCatalogs } from "../../../hooks/user/fiscal/useFiscalCatalogs";
 import { getDefaultFiscalProfile } from "../../../utils/fiscal";
-import { getSettings } from "../../../api/admin/settings";
+import { getPublicSettings } from "../../../api/admin/settings";
 import OrderItemRow from "./OrderItemRow";
 import BillingSelect from "./BillingSelect";
 import MessageSection from "./MessageSection";
@@ -49,7 +50,7 @@ const ActionsRow = ({ onClear, onSubmit, disabled, loading }) => (
 );
 
 const QuoteSchema = yup.object().shape({
-  message: yup.string().required("El mensaje es requerido"),
+  message: yup.string().nullable(),
 });
 
 const CheckoutPage = () => {
@@ -67,19 +68,24 @@ const CheckoutPage = () => {
   const isAuthenticated = !!session?.user;
 
   const { orderItems, removeFromOrder, clearOrder, totalItems } = useOrderContext();
-  const { pricingMode } = usePricingMode();
-  const [wholesaleMinQty, setWholesaleMinQty] = useState(0);
+  const { isWholesale } = usePricingMode();
+  const [thresholds, setThresholds] = useState({ minTotal: 0, minSameProduct: 0 });
 
   useEffect(() => {
-    if (pricingMode === "wholesale") {
-      getSettings()
-        .then((settings) => {
-          const setting = settings.find((s) => s.key === "WHOLESALE_MIN_QUANTITY");
-          if (setting) setWholesaleMinQty(parseInt(setting.value, 10) || 0);
-        })
-        .catch(() => {});
-    }
-  }, [pricingMode]);
+    getPublicSettings()
+      .then(setThresholds)
+      .catch(() => {});
+  }, []);
+
+  const pricedLines = useMemo(
+    () => computeLinePricing(orderItems, thresholds),
+    [orderItems, thresholds]
+  );
+
+  const wholesaleCount = pricedLines.filter((l) => l.priceType === "wholesale").length;
+  const retailCount = pricedLines.filter((l) => l.priceType === "retail").length;
+  const anyLineQualifies = wholesaleCount > 0;
+  const allLinesQualify = retailCount === 0 && wholesaleCount > 0;
 
   const {
     control,
@@ -107,7 +113,6 @@ const CheckoutPage = () => {
 
         const requestBody = {
           message: values.message,
-          pricingMode,
           products,
           userFiscalProfileId: selectedFiscalId || undefined,
         };
@@ -136,7 +141,7 @@ const CheckoutPage = () => {
         setLoading(false);
       }
     },
-    [orderItems, selectedFiscalId, pricingMode, enqueueSnackbar, clearOrder, reset]
+    [orderItems, selectedFiscalId, enqueueSnackbar, clearOrder, reset]
   );
 
   // Default selected fiscal profile
@@ -215,34 +220,36 @@ const CheckoutPage = () => {
       </Typography>
 
       <Box sx={{ maxHeight: { xs: 350, md: 450 }, overflowY: "auto", pr: 1 }}>
-        {orderItems.map(({ product, quantity }) => {
-          const unitPrice =
-            pricingMode === "wholesale" ? product.wholesalePrice : product.retailPrice;
-          return (
-            <OrderItemRow
-              key={product.id}
-              product={product}
-              quantity={quantity}
-              unitPrice={unitPrice}
-              onRemove={() => removeFromOrder(product.id)}
-            />
-          );
-        })}
+        {pricedLines.map((line) => (
+          <OrderItemRow
+            key={line.product.id}
+            product={line.product}
+            quantity={line.quantity}
+            unitPrice={line.unitPrice}
+            priceType={anyLineQualifies ? line.priceType : null}
+            wholesaleHint={
+              isWholesale && line.priceType === "retail" && line.hasWholesale
+                ? line.missingForLineWholesale > 0
+                  ? `Agrega ${line.missingForLineWholesale} más para precio mayoreo`
+                  : null
+                : null
+            }
+            onRemove={() => removeFromOrder(line.product.id)}
+          />
+        ))}
       </Box>
 
       {isAuthenticated ? (
         <>
           <TotalRow
             totalItems={totalItems}
-            pricingMode={pricingMode}
-            wholesaleMinQty={wholesaleMinQty}
+            isWholesale={isWholesale}
+            anyLineQualifies={anyLineQualifies}
+            allLinesQualify={allLinesQualify}
+            retailCount={retailCount}
             orderTotal={formatPrice(
-              orderItems.reduce((sum, { product, quantity }) => {
-                const price =
-                  pricingMode === "wholesale"
-                    ? parseFloat(product.wholesalePrice || 0)
-                    : parseFloat(product.retailPrice || 0);
-                return sum + price * quantity;
+              pricedLines.reduce((sum, line) => {
+                return sum + parseFloat(line.unitPrice || 0) * line.quantity;
               }, 0)
             )}
           />
