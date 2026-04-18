@@ -2,38 +2,21 @@ export const PAGE_METADATA = {
   "/admin/products": {
     title: "Productos",
     subtitle:
-      "Revisa y edita los productos agregados. Puedes actualizar nombre, código, especificaciones o cambiar su imagen.",
-  },
-  "/admin/add-product": {
-    title: "Agregar productos",
-    subtitle: "Agrega productos por lote o importa masivamente desde un archivo CSV.",
+      "Consulta, edita y agrega productos. Gestiona precios, disponibilidad e importa por lote o CSV.",
   },
   "/admin/quotes": {
-    title: "Todas las cotizaciones",
+    title: "Cotizaciones",
     subtitle:
-      "Visualiza todas las órdenes de cotización enviadas por los clientes. Consulta los detalles, productos y datos de contacto.",
-  },
-  "/admin/quote-history": {
-    title: "Cotizaciones enviadas",
-    subtitle:
-      "Visualiza todas las cotizaciones enviadas. Consulta los detalles, productos y datos de contacto de las cotizaciones enviadas.",
+      "Gestiona las cotizaciones de los clientes. Revisa pendientes y consulta el historial de enviadas.",
   },
   "/admin/brands": {
     title: "Marcas",
     subtitle:
       "Gestiona las marcas disponibles en la tienda. Puedes crear nuevas o editar las existentes",
   },
-  "/admin/categories": {
-    title: "Categorías",
-    subtitle: "Crea y actualiza las categorías disponibles para organizar tus productos.",
-  },
-  "/admin/subcategories": {
-    title: "Subcategorías",
-    subtitle: "Asocia subcategorías a una categoría principal y edítalas cuando sea necesario.",
-  },
-  "/admin/product-type": {
-    title: "Tipos de Producto",
-    subtitle: "Añade detalles como acabados, colores u otras variantes. Los tipos son opcionales.",
+  "/admin/taxonomy": {
+    title: "Clasificación",
+    subtitle: "Gestiona categorías, subcategorías y tipos de producto para organizar tu catálogo.",
   },
   "/admin/invitations": {
     title: "Invitaciones",
@@ -68,13 +51,6 @@ export const getPageMetadata = (pathname) => {
       title: "Detalles de la cotización",
       subtitle:
         "Revisa y da seguimiento a la solicitud del cliente. Usa los botones de contacto y marca la cotización como leída una vez atendida.",
-    };
-  }
-
-  if (pathname.startsWith("/admin/quote-history/")) {
-    return {
-      title: "Detalles de la cotización enviada",
-      subtitle: "Revisa los detalles de la cotización enviada.",
     };
   }
 
