@@ -7,7 +7,7 @@ import { revalidateCategoryPage } from "../../../../actions/revalidate";
 import { getApiErrorMessage } from "../../../../utils/apiError";
 import ActionModal from "../../../../components/ActionModal";
 import CategoriesTable from "../../../../components/CrudAdminTable";
-import { categoriesColumns } from "./columns";
+import { categoriesColumns } from "./categoriesColumns";
 import type { Category } from "../../../../types/catalog";
 import type { ModalMode } from "../../../../types/ui";
 import type { GridPaginationModel } from "@mui/x-data-grid";

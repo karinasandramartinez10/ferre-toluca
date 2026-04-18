@@ -13,7 +13,7 @@ import { getApiErrorMessage } from "../../../../utils/apiError";
 import ActionModal from "../../../../components/ActionModal";
 import { toSlug } from "../../../../utils/cases";
 import SubcategoriesTable from "../../../../components/CrudAdminTable";
-import { subcategoriesColumns } from "./columns";
+import { subcategoriesColumns } from "./subcategoriesColumns";
 import type { Category, Subcategory } from "../../../../types/catalog";
 import type { GridPaginationModel } from "@mui/x-data-grid";
 
