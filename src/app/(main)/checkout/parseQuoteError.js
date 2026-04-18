@@ -1,11 +1,3 @@
-/**
- * Parsea errores de la API de cotización y retorna un mensaje legible.
- * Maneja los 4 tipos de error del backend:
- * 1. Productos no disponibles
- * 2. Productos sin precio mayoreo
- * 3. Cantidad mínima no alcanzada
- * 4. Perfil fiscal no autorizado / otros
- */
 export const parseQuoteError = (error) => {
   const data = error?.data;
 
@@ -14,12 +6,12 @@ export const parseQuoteError = (error) => {
     return `Productos no disponibles: ${names}. Quítalos del carrito para continuar.`;
   }
 
-  if (data?.productsWithoutWholesale) {
-    return "Algunos productos no tienen precio de mayoreo. Cambia a modo menudeo o quítalos del carrito.";
+  if (data?.missingProductIds) {
+    return `Algunos productos no fueron encontrados. Recarga la página e intenta de nuevo.`;
   }
 
-  if (data?.minQuantity) {
-    return `Cantidad mínima para mayoreo: ${data.minQuantity} piezas. Tienes ${data.currentQuantity}.`;
+  if (data?.productsWithoutWholesale) {
+    return "Algunos productos no tienen precio de mayoreo configurado.";
   }
 
   return error?.message || "Hubo un error al procesar la orden";
