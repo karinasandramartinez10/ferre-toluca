@@ -22,13 +22,12 @@ describe("parseQuoteError", () => {
     expect(result).toContain("precio de mayoreo");
   });
 
-  it("returns min quantity message with quantities", () => {
+  it("returns missing products message", () => {
     const error = {
-      data: { minQuantity: 10, currentQuantity: 3 },
+      data: { missingProductIds: [10, 24] },
     };
     const result = parseQuoteError(error);
-    expect(result).toContain("10");
-    expect(result).toContain("3");
+    expect(result).toContain("no fueron encontrados");
   });
 
   it("falls back to error.message", () => {

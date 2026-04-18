@@ -1,12 +1,12 @@
 "use client";
 
-import { Box, Typography, IconButton } from "@mui/material";
+import { Box, Typography, IconButton, Chip } from "@mui/material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import Image from "next/image";
 import { QuantityField } from "../../../components/QuantityField";
 import { formatPrice } from "../../../utils/currency";
 
-const OrderItemRow = ({ product, quantity, onRemove, unitPrice }) => {
+const OrderItemRow = ({ product, quantity, onRemove, unitPrice, priceType, wholesaleHint }) => {
   const formattedUnit = formatPrice(unitPrice);
   const subtotal = unitPrice ? formatPrice(parseFloat(unitPrice) * quantity) : null;
 
@@ -32,9 +32,20 @@ const OrderItemRow = ({ product, quantity, onRemove, unitPrice }) => {
       <Box sx={{ flexGrow: 1, minWidth: 0 }}>
         <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
           <Box sx={{ minWidth: 0 }}>
-            <Typography variant="subtitle2" noWrap>
-              {product.name}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <Typography variant="subtitle2" noWrap>
+                {product.name}
+              </Typography>
+              {priceType && (
+                <Chip
+                  label={priceType === "wholesale" ? "Mayoreo" : "Menudeo"}
+                  size="small"
+                  color={priceType === "wholesale" ? "success" : "default"}
+                  variant={priceType === "wholesale" ? "filled" : "outlined"}
+                  sx={{ height: 18, fontSize: "0.65rem" }}
+                />
+              )}
+            </Box>
             <Typography variant="caption" color="text.secondary">
               {product.code}
             </Typography>
@@ -45,6 +56,11 @@ const OrderItemRow = ({ product, quantity, onRemove, unitPrice }) => {
             >
               {formattedUnit ? `${formattedUnit} c/u` : "Precio por confirmar"}
             </Typography>
+            {wholesaleHint && (
+              <Typography variant="caption" color="info.main" display="block">
+                {wholesaleHint}
+              </Typography>
+            )}
           </Box>
           <IconButton size="small" color="error" onClick={onRemove} sx={{ flexShrink: 0 }}>
             <DeleteIcon fontSize="small" />

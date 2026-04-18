@@ -5,21 +5,20 @@ import { TextField } from "@mui/material";
 const MessageSection = ({ control }) => (
   <Stack mt={2} gap={1}>
     <Typography variant="h4">Checkout</Typography>
-    <Typography id="quote-modal-description">Agrega un mensaje</Typography>
+    <Typography id="quote-modal-description">Mensaje (opcional)</Typography>
     <Controller
       control={control}
       name="message"
       render={({ field, fieldState: { invalid, error } }) => (
         <TextField
-          label="Mensaje *"
+          label=""
           multiline
           fullWidth
-          placeholder="Quisiera saber si..."
+          placeholder="Ej: Necesito entrega para el viernes, es para un proyecto en Toluca..."
           error={invalid}
           helperText={error?.message || ""}
           variant="outlined"
           rows={4}
-          required
           inputProps={{
             form: { autocomplete: "off" },
           }}
