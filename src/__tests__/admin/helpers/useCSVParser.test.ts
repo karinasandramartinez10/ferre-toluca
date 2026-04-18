@@ -5,7 +5,7 @@ vi.mock("uuid", () => ({
   v4: vi.fn(() => "test-uuid"),
 }));
 
-import { useCSVParser } from "../../../app/(admin)/admin/add-product/useCSVParser";
+import { useCSVParser } from "../../../app/(admin)/admin/products/add-product/useCSVParser";
 
 const measures = [
   { id: "m1", abbreviation: "kg" },
