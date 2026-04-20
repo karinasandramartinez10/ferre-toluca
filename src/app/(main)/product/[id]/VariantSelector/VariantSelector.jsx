@@ -16,20 +16,29 @@ export const VariantSelector = ({ variants = [], initialId }) => {
     handleVariantChange,
   } = useVariantSelection(variants, initialId);
 
+  const hasMultipleColors = colorOptions.length > 1;
+  const hasMultipleVariants = variantOptions.length > 1;
+
+  if (!hasMultipleColors && !hasMultipleVariants) return null;
+
   return (
     <Stack spacing={1} mt={2} mb={2}>
       <Box display="flex" gap={2} flexDirection={{ xs: "column", md: "row" }}>
-        <ColorSelector
-          colorOptions={colorOptions}
-          selectedColor={selectedColor}
-          onColorChange={handleColorChange}
-        />
-        <VariantOptionSelector
-          variantOptions={variantOptions}
-          selectedVariantId={selectedVariantId}
-          variantLabel={variantLabel}
-          onVariantChange={handleVariantChange}
-        />
+        {hasMultipleColors && (
+          <ColorSelector
+            colorOptions={colorOptions}
+            selectedColor={selectedColor}
+            onColorChange={handleColorChange}
+          />
+        )}
+        {hasMultipleVariants && (
+          <VariantOptionSelector
+            variantOptions={variantOptions}
+            selectedVariantId={selectedVariantId}
+            variantLabel={variantLabel}
+            onVariantChange={handleVariantChange}
+          />
+        )}
       </Box>
     </Stack>
   );

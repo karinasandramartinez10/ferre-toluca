@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Tooltip, Typography } from "@mui/material";
 import { motion } from "framer-motion";
 import { resolveColorHex, getContrastColor } from "../helpers";
 
@@ -43,43 +43,49 @@ export function ColorSelector({ colorOptions, selectedColor, onColorChange }) {
       <Typography variant="body2" fontWeight={600}>
         Colores disponibles
       </Typography>
-      <Box display="flex" gap={1} flexWrap="wrap">
+      <Box display="flex" gap={1} flexWrap="wrap" role="radiogroup" aria-label="Color del producto">
         {colorOptions.map((color) => {
           const bg = resolveColorHex(color);
           const isSel = color === selectedColor;
 
-          const bgStyles = {
-            backgroundColor: bg,
+          const handleSelect = () => onColorChange(color);
+          const handleKeyDown = (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              handleSelect();
+            }
           };
 
-          // Borde de 2px fijo, sólo cambia de color
-          const borderColor = isSel ? "#000" : "rgba(0,0,0,0.1)";
-
           return (
-            <MotionBox
-              key={color}
-              onClick={() => onColorChange(color)}
-              title={color}
-              component="span"
-              tabIndex={0}
-              sx={{
-                ...bgStyles,
-                width: 28,
-                height: 28,
-                borderRadius: "50%",
-                border: `2px solid ${borderColor}`,
-                boxSizing: "border-box",
-                cursor: "pointer",
-                outline: "none",
-                transition: "transform 0.2s ease, border-color 0.2s ease",
-                "&:focus": {
-                  boxShadow: `0 0 0 3px ${borderColor}`,
-                },
-              }}
-              animate={{ scale: isSel ? 1.3 : 1 }}
-              whileHover={{ scale: isSel ? 1.3 : 1.1 }}
-              transition={{ type: "tween", duration: 0.15 }}
-            />
+            <Tooltip key={color} title={color} arrow placement="top">
+              <MotionBox
+                onClick={handleSelect}
+                onKeyDown={handleKeyDown}
+                role="radio"
+                aria-checked={isSel}
+                aria-label={color}
+                component="span"
+                tabIndex={0}
+                sx={{
+                  backgroundColor: bg,
+                  width: 32,
+                  height: 32,
+                  borderRadius: "50%",
+                  border: "2px solid",
+                  borderColor: isSel ? "primary.main" : "rgba(0,0,0,0.1)",
+                  boxSizing: "border-box",
+                  cursor: "pointer",
+                  outline: "none",
+                  transition: "transform 0.2s ease, border-color 0.2s ease",
+                  "&:focus-visible": {
+                    boxShadow: (theme) => `0 0 0 3px ${theme.palette.primary.main}`,
+                  },
+                }}
+                animate={{ scale: isSel ? 1.2 : 1 }}
+                whileHover={{ scale: isSel ? 1.2 : 1.1 }}
+                transition={{ type: "tween", duration: 0.15 }}
+              />
+            </Tooltip>
           );
         })}
       </Box>

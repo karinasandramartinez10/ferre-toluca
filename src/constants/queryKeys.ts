@@ -44,6 +44,10 @@ export const queryKeys = {
     pricingMode,
   ],
 
+  // RELATED — productos relacionados y vistos recientemente
+  relatedProducts: (productId: number, limit: number) => ["relatedProducts", productId, limit],
+  batchProducts: (ids: number[]) => ["batchProducts", ids.join(",")],
+
   // ADMIN — invitaciones, solicitudes de contacto, settings
   invitations: (page: number, size: number, status?: string) => [
     "invitations",
