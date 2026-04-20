@@ -1,6 +1,15 @@
-import { Box, List, ListItem, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Typography,
+} from "@mui/material";
 
 export const MainSpecs = ({
+  code,
   color,
   measureValue,
   measure,
@@ -8,54 +17,46 @@ export const MainSpecs = ({
   secondaryMeasureValue,
   secondaryMeasure,
 }) => {
-  if (!color && !measureValue && !qualifier && !secondaryMeasureValue) return null;
+  const rows = [
+    code && { label: "SKU", value: code },
+    color && { label: "Color", value: color },
+    measureValue && {
+      label: "Medida",
+      value: `${measureValue}${measure ? ` ${measure}` : ""}`,
+    },
+    qualifier && { label: "Cualificador", value: qualifier },
+    secondaryMeasureValue && {
+      label: "Medida secundaria",
+      value: `${secondaryMeasureValue}${secondaryMeasure ? ` ${secondaryMeasure}` : ""}`,
+    },
+  ].filter(Boolean);
+
+  if (rows.length === 0) return null;
 
   return (
     <Box mt={4}>
       <Typography variant="h5" gutterBottom>
-        Especificaciones principales
+        Especificaciones
       </Typography>
       <Box sx={{ borderBottom: "2px solid #e53935", width: "80px", mb: 2 }} />
-      <Stack>
-        <List>
-          {color && (
-            <ListItem disableGutters disablePadding sx={{ fontSize: "14px", gap: 0.5 }}>
-              <Typography variant="body2" fontWeight={600}>
-                Color:
-              </Typography>
-              <Typography variant="body2">{color}</Typography>
-            </ListItem>
-          )}
-          {measureValue && (
-            <ListItem disableGutters disablePadding sx={{ fontSize: "14px", gap: 0.5 }}>
-              <Typography variant="body2" fontWeight={600}>
-                Medida:
-              </Typography>
-              <Typography variant="body2">
-                {measureValue} {measure}
-              </Typography>
-            </ListItem>
-          )}
-          {qualifier && (
-            <ListItem disableGutters disablePadding sx={{ fontSize: "14px", gap: 0.5 }}>
-              <Typography variant="body2" fontWeight={600}>
-                Cualificador:
-              </Typography>
-              <Typography variant="body2">{qualifier}</Typography>
-            </ListItem>
-          )}
-          {secondaryMeasureValue && (
-            <ListItem disableGutters disablePadding sx={{ fontSize: "14px", gap: 0.5 }}>
-              <Typography variant="body2" fontWeight={600}>
-                Medida secundaria:
-              </Typography>
-              <Typography variant="body2">
-                {secondaryMeasureValue} {secondaryMeasure}
-              </Typography>
-            </ListItem>
-          )}
-        </List>
-      </Stack>
+      <TableContainer>
+        <Table size="small" aria-label="Especificaciones">
+          <TableBody>
+            {rows.map(({ label, value }) => (
+              <TableRow key={label}>
+                <TableCell
+                  component="th"
+                  scope="row"
+                  sx={{ width: "40%", fontWeight: 600, verticalAlign: "top" }}
+                >
+                  {label}
+                </TableCell>
+                <TableCell>{value}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };
