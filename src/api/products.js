@@ -229,6 +229,30 @@ export const getFilterOptions = async (currentFilters = {}, pricingMode) => {
   }
 };
 
+export const getRelatedProducts = async (id, limit = 8) => {
+  try {
+    const { data } = await api.get(`/product/${id}/related`, {
+      params: { limit },
+    });
+    return data;
+  } catch (error) {
+    console.error("Error fetching related products:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch related products");
+  }
+};
+
+export const getBatchProducts = async (ids) => {
+  try {
+    const { data } = await api.get("/product/batch", {
+      params: { ids: ids.join(",") },
+    });
+    return data;
+  } catch (error) {
+    console.error("Error fetching batch products:", error);
+    throw new Error(error.response?.data?.message || "Failed to fetch batch products");
+  }
+};
+
 export const updateProductPricing = async (id, body) => {
   try {
     const { data } = await privateApi.patch(`/product/${id}/pricing`, body);
