@@ -1,6 +1,7 @@
 "use client";
 
-import { Grid, Box, Stack } from "@mui/material";
+import { Grid, Box, Stack, Alert, Chip, Typography } from "@mui/material";
+import { CheckCircle } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import { useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
@@ -10,7 +11,7 @@ import ConfirmDeleteFavorite from "./ConfirmDeleteFavorite";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
 import { useOrderContext } from "../../../../context/order/useOrderContext";
 import { getBreadcrumbsItems } from "./BreadcrumbsItems";
-import ProductImage from "./ProductImage";
+import ProductGallery from "./ProductGallery";
 import { ProductOverview } from "./ProductOverview";
 import { ProductAttributes } from "./ProductAttributes";
 import { MainSpecs } from "./MainSpecs";
@@ -18,7 +19,9 @@ import { ProductActions } from "./ProductActions";
 import { ProductFeatures } from "./ProductFeatures";
 import { VariantSelector } from "./VariantSelector/VariantSelector";
 import ProductPrice from "../../../../components/ProductPrice";
-import { Alert } from "@mui/material";
+import ProductStickyBar from "./ProductStickyBar";
+import RelatedProducts from "./RelatedProducts";
+import RecentlyViewed from "./RecentlyViewed";
 
 const ProductPage = ({ product }) => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -69,39 +72,65 @@ const ProductPage = ({ product }) => {
   const breadcrumbItems = useMemo(() => getBreadcrumbsItems(product), [product]);
 
   return (
-    <Box width="100%">
+    <Box width="100%" sx={{ pb: { xs: 12, md: 0 } }}>
       <Box sx={{ position: "relative", zIndex: 1, mb: 2 }}>
         <BreadcrumbsNavigation items={breadcrumbItems} />
       </Box>
 
       <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
-          <ProductImage name={product.name} publicId={product.Files?.[0]?.publicId} />
+          <ProductGallery name={product.name} files={product.Files} />
         </Grid>
         <Grid item xs={12} md={8}>
-          <ProductOverview brand={product.brand?.name} name={product.name} code={product.code} />
-          {isUnavailable && (
-            <Alert severity="warning" sx={{ mb: 2 }}>
-              Este producto no está disponible actualmente
-            </Alert>
-          )}
-          <Box sx={{ mb: 2 }}>
+          <Stack spacing={2}>
+            <ProductOverview brand={product.brand?.name} name={product.name} />
+
+            {isUnavailable && (
+              <Alert severity="warning">Este producto no está disponible actualmente</Alert>
+            )}
+
+            {product.description && (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {product.description}
+              </Typography>
+            )}
+
             <ProductPrice
               retailPrice={product.retailPrice}
               wholesalePrice={product.wholesalePrice}
               pricingMode={pricingMode}
+              size="large"
             />
-          </Box>
-          <Box display="flex" width="100%" gap={2}>
+
             <ProductAttributes
               subCategory={product.subCategory?.name}
               model={product.productModel?.name}
               type={product.type?.name}
               design={product.design?.name}
             />
-          </Box>
-          <VariantSelector variants={product.variants} initialId={product.id} />
-          <Stack gap={2} mt={2}>
+
+            <VariantSelector variants={product.variants} initialId={product.id} />
+
+            {!isUnavailable && (
+              <Chip
+                icon={<CheckCircle fontSize="small" />}
+                label="En stock"
+                size="small"
+                color="success"
+                variant="outlined"
+                sx={{ alignSelf: "flex-start", fontWeight: 600 }}
+              />
+            )}
+
             <ProductActions
               onAdd={handleAdd}
               onToggleFav={handleToggleFav}
@@ -119,19 +148,31 @@ const ProductPage = ({ product }) => {
         onConfirm={handleConfirm}
       />
 
-      <ProductFeatures title="Acerca de este producto" description={product.description} />
-
-      {product.specifications && (
-        <ProductFeatures title="Características" description={product.specifications} />
-      )}
+      <ProductFeatures
+        title="Descripción"
+        description={product.description}
+        specifications={product.specifications}
+      />
 
       <MainSpecs
+        code={product.code}
         color={product.color}
         measureValue={product.measureValue}
         measure={product.measure?.abbreviation}
         qualifier={product.qualifier}
         secondaryMeasureValue={product.secondaryMeasureValue}
         secondaryMeasure={product.secondaryMeasure?.abbreviation}
+      />
+
+      <RelatedProducts productId={product.id} />
+      <RecentlyViewed productId={product.id} isAvailable={product.isAvailable} />
+
+      <ProductStickyBar
+        retailPrice={product.retailPrice}
+        wholesalePrice={product.wholesalePrice}
+        pricingMode={pricingMode}
+        onAdd={handleAdd}
+        disabled={isUnavailable}
       />
     </Box>
   );

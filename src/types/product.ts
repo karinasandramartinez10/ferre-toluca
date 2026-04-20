@@ -3,6 +3,7 @@ export interface Product {
   retailPrice: string;
   wholesalePrice: string | null;
   isAvailable: boolean;
+  discountPercentage?: number | null;
   [key: string]: unknown;
 }
 
