@@ -1,128 +1,218 @@
 "use client";
 
-import { Button, Box, Tooltip } from "@mui/material";
-import { Card, CardActions, CardContent, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  Chip,
+  IconButton,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useSnackbar } from "notistack";
 import { useOrderContext } from "../context/order/useOrderContext";
 import { usePricingMode } from "../context/pricing/usePricingMode";
-import ProductImage from "../app/(main)/product/[id]/ProductImage";
+import { useFavorites } from "../hooks/favorites/useFavorites";
+import { CloudinaryImage } from "./CloudinaryImage";
 import { toCapitalizeWords } from "../utils/cases";
-import ProductDesignChip from "./ProductDesignChip";
 import ProductPrice from "./ProductPrice";
 
-export const ProductCard = ({ product, onViewMore, showBtns = true }) => {
-  const [quantity] = useState(1);
+export const ProductCard = ({ product, showBtns = true }) => {
+  const { data: session } = useSession();
   const { addToOrder } = useOrderContext();
   const { pricingMode } = usePricingMode();
-  const isUnavailable = product?.isAvailable === false;
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const handleAddToOrder = () => {
-    addToOrder(product, quantity);
+  const isUnavailable = product?.isAvailable === false;
+  const canFavorite = session?.user?.role === "user";
+  const discount = pricingMode === "wholesale" ? (product?.discountPercentage ?? null) : null;
+  const isFav = isFavorite(product.id);
+  const imagePublicId = product?.Files?.[0]?.publicId;
+  const productHref = `/product/${product.id}`;
+
+  const handleAddToOrder = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    addToOrder(product, 1);
   };
 
-  const imagePublicId = product?.Files?.[0]?.publicId;
+  const handleToggleFav = async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    try {
+      await toggleFavorite(product);
+      enqueueSnackbar(isFav ? "Producto eliminado de favoritos" : "Producto añadido a favoritos", {
+        variant: "success",
+      });
+    } catch {
+      enqueueSnackbar("Error al actualizar favoritos", { variant: "error" });
+    }
+  };
 
   return (
     <Card
       sx={{
-        maxWidth: { xs: "100%", md: 330 },
+        height: "100%",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
-        minHeight: 350,
-        height: "432px",
         borderRadius: "12px",
         padding: "8px",
+        border: "1px solid",
+        borderColor: "divider",
+        boxShadow: "none",
+        transition: "transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease",
+        "&:hover:not(:has([data-fav-button]:hover))": {
+          transform: "translateY(-2px)",
+          boxShadow: 3,
+          borderColor: "primary.main",
+        },
       }}
     >
-      <Link href={`/product/${product.id}`} passHref>
-        <div style={{ position: "relative", width: "100%" }}>
-          {imagePublicId && (
-            <ProductImage publicId={imagePublicId} name={product.name} heightFactor={2.3} />
-          )}
-        </div>
-
-        <CardContent
+      <Box
+        sx={{
+          position: "relative",
+          width: "100%",
+          aspectRatio: "4 / 3",
+          bgcolor: "grey.50",
+          borderRadius: 1,
+          overflow: "hidden",
+          mb: 1,
+        }}
+      >
+        <Box
+          component={Link}
+          href={productHref}
           sx={{
-            flexGrow: 1,
-            paddingTop: 2,
-            paddingBottom: 0,
-            minHeight: "120px", // Fixed minimum height for content area
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
+            position: "absolute",
+            inset: 0,
+            display: "block",
+            filter: isUnavailable ? "grayscale(1)" : "none",
+            opacity: isUnavailable ? 0.55 : 1,
           }}
+          aria-label={product.name}
         >
-          <Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                fontSize="14px"
-                sx={{ fontWeight: "bold" }}
-              >
-                {toCapitalizeWords(product?.brand?.name)}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" fontSize="14px">
-                SKU {product.code}
-              </Typography>
-            </Box>
-            <Tooltip title={toCapitalizeWords(product?.name)}>
-              <Typography
-                gutterBottom
-                variant="subtitle1"
-                component="div"
-                color="#13161b"
-                fontSize="16px"
-                sx={{
-                  WebkitLineClamp: 1,
-                  WebkitBoxOrient: "vertical",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  display: "-webkit-box",
-                }}
-              >
-                {toCapitalizeWords(product?.name)}
-              </Typography>
-            </Tooltip>
-          </Box>
-          <Tooltip title={toCapitalizeWords(product?.name)}>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              fontSize="14px"
-              sx={{
-                display: "-webkit-box",
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                mb: 1,
-                cursor: "pointer",
-                height: "4.5rem", // Fixed height for 3 lines (1.5rem per line)
-                lineHeight: "1.5rem",
-              }}
-            >
-              {toCapitalizeWords(product?.description)}
-            </Typography>
-          </Tooltip>
-        </CardContent>
-        <ProductDesignChip designName={product?.design?.name} typeName={product?.type?.name} />
-        <Box sx={{ px: 1, pt: 0.5, pb: 1 }}>
-          <ProductPrice
-            retailPrice={product?.retailPrice}
-            wholesalePrice={product?.wholesalePrice}
-            pricingMode={pricingMode}
-            size="small"
+          <CloudinaryImage
+            publicId={imagePublicId}
+            alt={product.name}
+            fill
+            crop="fit"
+            quality="auto"
+            sizes="(max-width: 600px) 75vw, (max-width: 960px) 45vw, 330px"
+            style={{ objectFit: "contain" }}
           />
         </Box>
-      </Link>
+
+        {discount && !isUnavailable && (
+          <Chip
+            label={`-${discount}%`}
+            size="small"
+            color="primary"
+            sx={{
+              position: "absolute",
+              top: 8,
+              left: 8,
+              fontWeight: 700,
+              borderRadius: 1,
+            }}
+          />
+        )}
+
+        {isUnavailable && (
+          <Chip
+            label="Agotado"
+            size="small"
+            sx={{
+              position: "absolute",
+              top: 8,
+              left: 8,
+              bgcolor: "error.main",
+              color: "common.white",
+              fontWeight: 700,
+              borderRadius: 1,
+            }}
+          />
+        )}
+
+        {canFavorite && (
+          <IconButton
+            size="small"
+            aria-label={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}
+            onClick={handleToggleFav}
+            data-fav-button
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              bgcolor: "background.paper",
+              boxShadow: 1,
+              transition: "box-shadow 0.15s ease",
+              "&:hover": {
+                bgcolor: "background.paper",
+                boxShadow: (theme) => `0 0 0 2px ${theme.palette.primary.main}`,
+              },
+            }}
+          >
+            {isFav ? (
+              <Favorite fontSize="small" color="error" />
+            ) : (
+              <FavoriteBorder fontSize="small" />
+            )}
+          </IconButton>
+        )}
+      </Box>
+
+      <Box
+        component={Link}
+        href={productHref}
+        sx={{ display: "block", color: "inherit", textDecoration: "none", flexGrow: 1 }}
+      >
+        <Typography
+          variant="caption"
+          color="primary.main"
+          sx={{
+            display: "block",
+            fontWeight: 700,
+            letterSpacing: 0.5,
+            textTransform: "uppercase",
+          }}
+        >
+          {toCapitalizeWords(product?.brand?.name)}
+        </Typography>
+
+        <Tooltip title={toCapitalizeWords(product?.name)}>
+          <Typography
+            variant="subtitle2"
+            color="text.primary"
+            sx={{
+              fontWeight: 600,
+              mt: 0.25,
+              mb: 1,
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              minHeight: "2.6em",
+            }}
+          >
+            {toCapitalizeWords(product?.name)}
+          </Typography>
+        </Tooltip>
+
+        <ProductPrice
+          retailPrice={product?.retailPrice}
+          wholesalePrice={product?.wholesalePrice}
+          pricingMode={pricingMode}
+          size="small"
+        />
+      </Box>
+
       {showBtns && (
-        <CardActions sx={{ justifyContent: "space-between", flexDirection: "row" }}>
-          <Button variant="outlined" fullWidth onClick={() => onViewMore(product.id)}>
-            Ver más
-          </Button>
+        <CardActions sx={{ mt: 1, px: 0 }}>
           <Button
             variant="contained"
             color="primary"
