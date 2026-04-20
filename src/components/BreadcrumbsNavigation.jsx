@@ -16,7 +16,7 @@ const BreadcrumbsNavigation = ({ items = [] }) => {
               key={key}
               color="text.primary"
               aria-current={isLast ? "page" : undefined}
-              sx={{ fontSize: "15px" }}
+              sx={{ fontSize: "14px" }}
             >
               {item.label}
             </Typography>
@@ -29,7 +29,7 @@ const BreadcrumbsNavigation = ({ items = [] }) => {
             key={key}
             component={NextLink}
             underline="hover"
-            sx={{ cursor: "pointer", fontSize: "15px" }}
+            sx={{ cursor: "pointer", fontSize: "14px" }}
           >
             {item.label}
           </Link>
