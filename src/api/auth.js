@@ -6,13 +6,7 @@ export const registerUser = async (body) => {
     await api.post("/auth/signup", body);
     return null;
   } catch (error) {
-    console.log(error);
     return error;
-    // if (axios.isAxiosError(error)) return error
-    // return {
-    //   hasError: true,
-    //   message: "Account not created",
-    // };
   }
 };
 

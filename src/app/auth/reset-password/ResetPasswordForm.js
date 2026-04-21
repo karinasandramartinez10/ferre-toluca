@@ -1,9 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  AlternateEmailOutlined,
-  Visibility,
-  VisibilityOff,
-} from "@mui/icons-material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Grid, IconButton, InputAdornment, TextField } from "@mui/material";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";

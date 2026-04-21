@@ -65,7 +65,6 @@ export const fetchQuoteById = async (quoteId: QuoteId): Promise<Quote> => {
     });
     return data.data;
   } catch (error) {
-    console.log(error);
     throw new Error(getApiErrorMessage(error));
   }
 };

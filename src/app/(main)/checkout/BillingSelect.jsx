@@ -3,7 +3,6 @@
 import {
   Box,
   Typography,
-  Button,
   FormControl,
   InputLabel,
   Select,
@@ -43,10 +42,7 @@ const EmptyState = ({ onCreate }) => (
       <AddCircleOutline color="primary" />
       <Typography>Agregar datos de facturación</Typography>
     </Paper>
-    <Typography
-      variant="caption"
-      sx={{ mt: 1, color: "text.secondary", display: "block" }}
-    >
+    <Typography variant="caption" sx={{ mt: 1, color: "text.secondary", display: "block" }}>
       Opcional: Puedes agregar datos de facturación o continuar sin ellos.
     </Typography>
   </Stack>
@@ -92,10 +88,7 @@ const SelectState = ({ profiles, selectedId, onChange, onOpenCreate }) => (
           <OptionLabel profile={p} />
         </MenuItem>
       ))}
-      <MenuItem
-        value={ADD_OPTION_VALUE}
-        sx={{ color: "primary.main", fontWeight: 600 }}
-      >
+      <MenuItem value={ADD_OPTION_VALUE} sx={{ color: "primary.main", fontWeight: 600 }}>
         + Agregar nuevo
       </MenuItem>
     </Select>
@@ -105,13 +98,7 @@ const SelectState = ({ profiles, selectedId, onChange, onOpenCreate }) => (
   </FormControl>
 );
 
-const BillingSelect = ({
-  loading,
-  profiles,
-  selectedId,
-  onChange,
-  onOpenCreate,
-}) => {
+const BillingSelect = ({ loading, profiles, selectedId, onChange, onOpenCreate }) => {
   if (loading) {
     return <LoadingState />;
   }

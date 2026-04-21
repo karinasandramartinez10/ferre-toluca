@@ -13,7 +13,6 @@ interface GroupedProductsListProps {
   error: string | null;
   currentPage: number;
   onPageChange: (page: number) => void;
-  onProductClick: (id: string) => void;
   showBtns?: boolean;
 }
 
@@ -24,7 +23,6 @@ const GroupedProductsList = ({
   error,
   currentPage,
   onPageChange,
-  onProductClick,
   showBtns = true,
 }: GroupedProductsListProps) => {
   if (loading) return <Loading />;
@@ -40,7 +38,6 @@ const GroupedProductsList = ({
         <ProductCard
           key={representativeProduct.id}
           product={representativeProduct}
-          onViewMore={onProductClick}
           showBtns={showBtns}
         />
       </Grid>

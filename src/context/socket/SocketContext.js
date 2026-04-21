@@ -22,8 +22,7 @@ export const SocketProvider = ({ children }) => {
     if (!handlersRef.current) {
       handlersRef.current = {
         onConnect: () => setSocketStatus("connected"),
-        onDisconnect: (reason) => {
-          console.log("Socket.IO desconectado:", reason);
+        onDisconnect: () => {
           setSocketStatus("disconnected");
         },
         onConnectError: (error) => {
