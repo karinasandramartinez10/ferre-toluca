@@ -50,7 +50,6 @@ export const getGroupedProducts = async (
       },
     };
   } catch (error) {
-    console.log("er", error);
     throw new Error(error.response?.data?.message || `Failed to fetch from ${endpoint}`);
   }
 };

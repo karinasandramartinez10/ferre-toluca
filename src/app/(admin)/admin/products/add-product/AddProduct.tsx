@@ -232,7 +232,6 @@ const AddProduct = () => {
 
       return;
     } catch (error) {
-      console.log(error);
       setLoading(false);
       enqueueSnackbar("Hubo un error al agregar el producto", {
         variant: "error",

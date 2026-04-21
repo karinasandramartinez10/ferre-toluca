@@ -29,7 +29,6 @@ export const createSubcategory = async (body: SubcategoryBody): Promise<AxiosRes
     const resp = await privateApi.post("/subcategories", body);
     return resp;
   } catch (error) {
-    console.log(error);
     throw new Error(getApiErrorMessage(error));
   }
 };
@@ -42,7 +41,6 @@ export const updateSubcategory = async (
     const resp = await privateApi.put(`/subcategories/${id}`, body);
     return resp;
   } catch (error) {
-    console.log(error);
     throw new Error(getApiErrorMessage(error));
   }
 };
