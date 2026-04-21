@@ -9,7 +9,6 @@ export const getBrands = async (params: BrandsParams): Promise<BrandsResponse> =
     const { data } = await api.get("/brands", { params });
     return data.data;
   } catch (error) {
-    console.log(error);
     throw new Error(getApiErrorMessage(error));
   }
 };
@@ -19,7 +18,6 @@ export const createBrand = async (formData: FormData): Promise<AxiosResponse> =>
     const resp = await privateApi.post("/brands", formData);
     return resp;
   } catch (error) {
-    console.log(error);
     throw new Error(getApiErrorMessage(error));
   }
 };
@@ -29,7 +27,6 @@ export const updateBrand = async (id: string, formData: FormData): Promise<Axios
     const resp = await privateApi.put(`/brands/${id}`, formData);
     return resp;
   } catch (error) {
-    console.log(error);
     throw new Error(getApiErrorMessage(error));
   }
 };

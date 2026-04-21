@@ -6,7 +6,6 @@ export const postProduct = async (formData) => {
     const resp = await privateApi.post("/product", formData);
     return resp;
   } catch (error) {
-    console.log("err", error);
     throw new Error(getApiErrorMessage(error));
   }
 };

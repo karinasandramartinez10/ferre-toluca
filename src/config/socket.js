@@ -29,7 +29,6 @@ export const createSocketConnection = (token, options = {}) => {
 
 export const disconnectSocket = (socket) => {
   if (socket) {
-    console.log("Desconectando Socket.IO...");
     socket.disconnect();
   }
 };

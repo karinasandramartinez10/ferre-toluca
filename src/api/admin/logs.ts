@@ -19,7 +19,6 @@ export const fetchStatusLogsForQuote = async (quoteId: QuoteId): Promise<StatusL
     const { data } = await privateApi.get(`/quote/${quoteId}/logs`);
     return data.data;
   } catch (error) {
-    console.log(error);
     throw new Error(getApiErrorMessage(error));
   }
 };
