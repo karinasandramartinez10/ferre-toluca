@@ -9,7 +9,6 @@ export const getCategories = async (params: CategoriesParams): Promise<Categorie
     const { data } = await api.get("/category", { params });
     return data.data;
   } catch (error) {
-    console.log(error);
     throw new Error(getApiErrorMessage(error));
   }
 };
@@ -28,7 +27,6 @@ export const createCategory = async (body: CategoryBody): Promise<AxiosResponse>
     const resp = await privateApi.post("/category", body);
     return resp;
   } catch (error) {
-    console.log(error);
     throw new Error(getApiErrorMessage(error));
   }
 };
@@ -38,7 +36,6 @@ export const updateCategory = async (id: string, body: CategoryBody): Promise<Ax
     const resp = await privateApi.put(`/category/${id}`, body);
     return resp;
   } catch (error) {
-    console.log(error);
     throw new Error(getApiErrorMessage(error));
   }
 };
