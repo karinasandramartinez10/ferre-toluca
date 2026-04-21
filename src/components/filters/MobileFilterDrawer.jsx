@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Drawer,
-  Box,
-  IconButton,
-  Typography,
-  Button,
-  Divider,
-} from "@mui/material";
+import { Drawer, Box, IconButton, Typography, Button } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import FilterSidebar from "./FilterSidebar";
 
@@ -88,12 +81,7 @@ const MobileFilterDrawer = ({
           backgroundColor: "background.paper",
         }}
       >
-        <Button
-          variant="contained"
-          fullWidth
-          onClick={onClose}
-          size="large"
-        >
+        <Button variant="contained" fullWidth onClick={onClose} size="large">
           Ver {resultsCount} productos
         </Button>
       </Box>
