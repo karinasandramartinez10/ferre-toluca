@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Box, Grid, Button, Typography, useMediaQuery, useTheme, Chip, Stack } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -23,7 +22,6 @@ const ProductsWithFilters = ({
   fixedFilters = {},
   pageSize = 10,
 }: ProductsWithFiltersProps) => {
-  const router = useRouter();
   const { data: session } = useSession();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -199,7 +197,6 @@ const ProductsWithFilters = ({
             error={error}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
-            onProductClick={(id: string) => router.push(`/product/${id}`)}
             showBtns={!isAdmin}
           />
         </Grid>
