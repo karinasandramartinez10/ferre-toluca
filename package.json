@@ -9,7 +9,11 @@
     "lint": "next lint",
     "test": "vitest",
     "test:run": "vitest run",
-    "prepare": "husky"
+    "prepare": "husky",
+    "setup": "npm ci && npm run prepare"
+  },
+  "engines": {
+    "node": "24.x"
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",
