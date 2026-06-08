@@ -5,7 +5,7 @@ import {
   Inventory,
   AddBusiness,
   Category,
-  Settings,
+  Groups,
 } from "@mui/icons-material";
 
 export const adminSections = [
@@ -23,6 +23,12 @@ export const adminSections = [
   {
     title: "Clientes",
     items: [
+      {
+        icon: <Groups />,
+        text: "Tipos de cliente",
+        href: "/admin/clients",
+        visibleFor: ["admin", "superadmin"],
+      },
       {
         icon: <ContactMail />,
         text: "Solicitudes",
@@ -56,17 +62,6 @@ export const adminSections = [
         icon: <Category />,
         text: "Clasificación",
         href: "/admin/taxonomy",
-        visibleFor: ["superadmin"],
-      },
-    ],
-  },
-  {
-    title: "Configuración",
-    items: [
-      {
-        icon: <Settings />,
-        text: "Ajustes",
-        href: "/admin/settings",
         visibleFor: ["superadmin"],
       },
     ],
