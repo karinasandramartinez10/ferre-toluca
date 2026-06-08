@@ -1,24 +1,9 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { LoadingButton } from "@mui/lab";
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  MenuItem,
-  Select,
-  Switch,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import * as yup from "yup";
+import { useForm, type Resolver } from "react-hook-form";
+import { productSchema as Schema, productFormDefaults as defaultValues } from "./productFormSchema";
 import { getBrands } from "../../../../api/admin/brands";
 import { getCategories } from "../../../../api/category";
 import { getProductTypes } from "../../../../api/productTypes";
@@ -30,14 +15,11 @@ import {
 import { getSubcategories } from "../../../../api/subcategories";
 import { useMeasures } from "../../../../hooks/catalog/useMeasures";
 import { useProductModels } from "../../../../hooks/catalog/useProductModels";
-import { Dropzone } from "../../../../components/Dropzone";
 import type { PhotoPreview } from "../../../../types/ui";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
-import { getSelectOptions, multiLineFields, selectFields, textFields } from "./constants";
-import { sectionTitleSx, twoColumnGrid } from "./styles";
-import { toCapitalizeWords } from "../../../../utils/cases";
 import { buildProductFormData } from "./buildProductFormData";
+import ProductFormFields, { type FormValues } from "./ProductFormFields";
 import type {
   Brand,
   Category,
@@ -62,81 +44,12 @@ interface ProductActionModalProps {
   loading: boolean;
 }
 
-interface FormValues {
-  name: string;
-  code: string;
-  color: string;
-  qualifier: string;
-  description: string;
-  specifications: string;
-  brandId: string;
-  categoryId: string;
-  subCategoryId: string;
-  typeId: string;
-  measureValue: string | null;
-  measureId: string;
-  secondaryMeasureValue: string;
-  secondaryMeasureId: string;
-  modelName: string;
-  modelId: string | null;
-  image: File | null;
-  retailPrice: string;
-  wholesalePrice: string;
-  isAvailable: boolean;
-}
-
 interface Refs {
   brands: Brand[];
   categories: Category[];
   subcategories: Subcategory[];
   types: ProductType[];
 }
-
-const Schema = yup.object().shape({
-  name: yup.string().required("El nombre es requerido"),
-  description: yup.string().required("La descripción es requerida"),
-  code: yup.string().required("El código es requerido"),
-  brandId: yup.string().required("La marca es requerida"),
-  categoryId: yup.string().required("La categoría es requerida"),
-  specifications: yup.string(),
-  color: yup.string(),
-  qualifier: yup.string(),
-  secondaryMeasureValue: yup.string().nullable(),
-  secondaryMeasureId: yup.string(),
-  subCategoryId: yup.string().defined(),
-  typeId: yup.string().defined(),
-  measureValue: yup.string().nullable(),
-  measureId: yup.string().defined(),
-  modelName: yup.string().defined(),
-  modelId: yup.string().nullable(),
-  image: yup.mixed<File>().nullable(),
-  retailPrice: yup.string().defined(),
-  wholesalePrice: yup.string().defined(),
-  isAvailable: yup.boolean().defined(),
-});
-
-const defaultValues: FormValues = {
-  name: "",
-  code: "",
-  color: "",
-  qualifier: "",
-  description: "",
-  specifications: "",
-  brandId: "",
-  categoryId: "",
-  subCategoryId: "",
-  typeId: "",
-  measureValue: null,
-  measureId: "",
-  secondaryMeasureValue: "",
-  secondaryMeasureId: "",
-  modelName: "",
-  modelId: "",
-  image: null,
-  retailPrice: "",
-  wholesalePrice: "",
-  isAvailable: true,
-};
 
 const ProductActionModal = ({
   title = "",
@@ -166,8 +79,8 @@ const ProductActionModal = ({
     reset,
     watch,
     formState: { errors, isValid },
-  } = useForm({
-    resolver: yupResolver(Schema),
+  } = useForm<FormValues>({
+    resolver: yupResolver(Schema) as Resolver<FormValues>,
     mode: "onChange",
     defaultValues,
   });
@@ -241,8 +154,10 @@ const ProductActionModal = ({
             secondaryMeasureId: product.secondaryMeasureId ?? "",
             modelName: product.productModel?.name ?? "",
             modelId: product.productModel?.id ?? "",
-            retailPrice: product.retailPrice ?? "",
-            wholesalePrice: product.wholesalePrice ?? "",
+            priceA: product.priceA != null ? String(product.priceA) : "",
+            priceB: product.priceB != null ? String(product.priceB) : "",
+            priceC: product.priceC != null ? String(product.priceC) : "",
+            priceD: product.priceD != null ? String(product.priceD) : "",
             isAvailable: product.isAvailable !== false,
           }),
         };
@@ -323,19 +238,25 @@ const ProductActionModal = ({
     fetchTypesBySubcategory();
   }, [subCategoryId, selected, setValue]);
 
-  const handleFormSubmit = async (data: Record<string, unknown>) => {
-    const formData = buildProductFormData(data, selected);
+  const handleFormSubmit = async (data: FormValues) => {
+    const formData = buildProductFormData(data as unknown as Record<string, unknown>, selected);
     await onSubmit(formData);
 
     if (selected?.id) {
       const errors: string[] = [];
 
       try {
-        const rp = data.retailPrice as string;
-        const wp = data.wholesalePrice as string;
-        const pricingBody: Record<string, unknown> = {};
-        if (rp !== undefined) pricingBody.retailPrice = rp ? parseFloat(rp) : 0;
-        if (wp !== undefined) pricingBody.wholesalePrice = wp ? parseFloat(wp) : null;
+        // priceA requerido; B/C/D vacío → null limpia ese tier
+        const toTier = (v: unknown) => {
+          const s = v as string;
+          return s !== undefined && s !== "" ? parseFloat(s) : null;
+        };
+        const pricingBody: Record<string, unknown> = {
+          priceA: parseFloat(data.priceA as string),
+          priceB: toTier(data.priceB),
+          priceC: toTier(data.priceC),
+          priceD: toTier(data.priceD),
+        };
         await updateProductPricing(selected.id, pricingBody);
       } catch {
         errors.push("precios");
@@ -377,291 +298,19 @@ const ProductActionModal = ({
     );
   } else {
     content = (
-      <Box component="form" display="flex" flexDirection="column" noValidate>
-        {/* Identificación */}
-        <Typography sx={sectionTitleSx}>Identificación</Typography>
-        <Box sx={twoColumnGrid}>
-          {textFields.map(({ name, label }) => (
-            <Controller
-              key={name}
-              name={name as keyof FormValues}
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label={label}
-                  fullWidth
-                  error={!!errors[name as keyof FormValues]}
-                  helperText={errors[name as keyof FormValues]?.message}
-                  disabled={loading || loadingRefs}
-                />
-              )}
-            />
-          ))}
-        </Box>
-
-        {/* Medidas */}
-        <Typography sx={sectionTitleSx}>Medidas</Typography>
-        <Box sx={twoColumnGrid}>
-          <Controller
-            name="measureValue"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Valor"
-                fullWidth
-                error={!!errors.measureValue}
-                helperText={errors.measureValue?.message}
-                disabled={loading}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="measureId"
-            render={({ field }) => (
-              <FormControl size="small" fullWidth>
-                <Select {...field} value={field.value || ""} displayEmpty>
-                  <MenuItem disabled value="">
-                    Unidad
-                  </MenuItem>
-                  {(measures as Measure[]).map((option) => (
-                    <MenuItem key={option.id} value={option.id}>
-                      {option.abbreviation}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-          />
-        </Box>
-
-        {/* Medida secundaria */}
-        <Typography sx={sectionTitleSx}>Medida secundaria</Typography>
-        <Box sx={twoColumnGrid}>
-          <Controller
-            name="secondaryMeasureValue"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                value={field.value || ""}
-                label="Valor secundario"
-                fullWidth
-                error={!!errors.secondaryMeasureValue}
-                helperText={errors.secondaryMeasureValue?.message}
-                disabled={loading}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="secondaryMeasureId"
-            render={({ field }) => (
-              <FormControl size="small" fullWidth>
-                <Select {...field} value={field.value || ""} displayEmpty>
-                  <MenuItem disabled value="">
-                    Unidad secundaria
-                  </MenuItem>
-                  {(measures as Measure[]).map((option) => (
-                    <MenuItem key={option.id} value={option.id}>
-                      {option.abbreviation}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-          />
-        </Box>
-
-        {/* Clasificación */}
-        <Typography sx={sectionTitleSx}>Clasificación</Typography>
-        <Box sx={twoColumnGrid}>
-          {selectFields.map(({ name, label }) => (
-            <Controller
-              key={name}
-              name={name as keyof FormValues}
-              control={control}
-              render={({ field }) => (
-                <FormControl fullWidth size="small">
-                  <Typography fontWeight={500} fontSize="0.85rem" mb={0.5}>
-                    {label}
-                  </Typography>
-                  <Select {...field} value={field.value ?? ""}>
-                    <MenuItem disabled value="">
-                      {label}
-                    </MenuItem>
-                    {getSelectOptions(
-                      name,
-                      refs.brands,
-                      refs.categories,
-                      refs.subcategories,
-                      refs.types
-                    ).map((opt: { id: string; name: string }) => (
-                      <MenuItem key={opt.id} value={opt.id}>
-                        {toCapitalizeWords(opt.name)}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-            />
-          ))}
-        </Box>
-
-        {/* Modelo */}
-        <Typography sx={sectionTitleSx}>Modelo</Typography>
-        <Controller
-          name="modelName"
-          control={control}
-          render={({ field }) => {
-            const currentModelName = getValues("modelName");
-            const currentModelId = getValues("modelId");
-            return (
-              <Autocomplete
-                freeSolo
-                disableClearable
-                options={productModels as ProductModel[]}
-                getOptionLabel={(opt) =>
-                  typeof opt === "string" ? opt : (opt as ProductModel).name
-                }
-                value={
-                  (productModels as ProductModel[]).find((m) => m.name === field.value) ||
-                  field.value
-                }
-                onChange={(_, newVal) => {
-                  const isCustom = typeof newVal === "string";
-                  const newName = isCustom ? newVal : (newVal as ProductModel).name;
-                  const newId = isCustom ? null : (newVal as ProductModel).id;
-                  if (newName !== currentModelName) {
-                    setValue("modelName", newName, {
-                      shouldValidate: true,
-                      shouldDirty: true,
-                    });
-                  }
-                  if (newId !== currentModelId) {
-                    setValue("modelId", newId, {
-                      shouldValidate: true,
-                      shouldDirty: true,
-                    });
-                  }
-                }}
-                onInputChange={(_, newInputValue) => {
-                  const current = getValues("modelName");
-                  if (newInputValue !== current) {
-                    setValue("modelName", newInputValue, {
-                      shouldValidate: true,
-                      shouldDirty: true,
-                    });
-                    setValue("modelId", null, {
-                      shouldValidate: true,
-                      shouldDirty: true,
-                    });
-                  }
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    variant="standard"
-                    fullWidth
-                    error={!!errors.modelName}
-                    helperText={errors.modelName?.message}
-                  />
-                )}
-              />
-            );
-          }}
-        />
-
-        {/* Descripción */}
-        <Typography sx={sectionTitleSx}>Descripción</Typography>
-        <Box sx={twoColumnGrid}>
-          {multiLineFields.map(({ name, label }) => (
-            <Controller
-              key={name}
-              name={name as keyof FormValues}
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label={label}
-                  fullWidth
-                  multiline
-                  minRows={3}
-                  error={!!errors[name as keyof FormValues]}
-                  helperText={errors[name as keyof FormValues]?.message}
-                  disabled={loading}
-                />
-              )}
-            />
-          ))}
-        </Box>
-
-        {/* Precios */}
-        <Typography sx={sectionTitleSx}>Precios</Typography>
-        <Box sx={twoColumnGrid}>
-          <Controller
-            name="retailPrice"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Precio menudeo"
-                fullWidth
-                type="number"
-                inputProps={{ min: 0, step: "0.01" }}
-                disabled={loading}
-              />
-            )}
-          />
-          <Controller
-            name="wholesalePrice"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label="Precio mayoreo (opcional)"
-                fullWidth
-                type="number"
-                inputProps={{ min: 0, step: "0.01" }}
-                helperText="Dejar vacío si no aplica mayoreo"
-                disabled={loading}
-              />
-            )}
-          />
-        </Box>
-
-        {/* Disponibilidad */}
-        <Typography sx={sectionTitleSx}>Disponibilidad</Typography>
-        <Controller
-          name="isAvailable"
-          control={control}
-          render={({ field }) => (
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={field.value}
-                  onChange={(e) => field.onChange(e.target.checked)}
-                  color="success"
-                />
-              }
-              label={field.value ? "Disponible" : "No disponible (agotado)"}
-            />
-          )}
-        />
-
-        {/* Imagen */}
-        <Typography sx={sectionTitleSx}>Imagen</Typography>
-        <Dropzone
-          text="Arrastra o escoge una nueva imagen"
-          preview
-          photo={photo}
-          setPhoto={setPhoto}
-          setValue={setValue}
-          onRemove={() => setPhoto(null)}
-        />
-      </Box>
+      <ProductFormFields
+        control={control}
+        errors={errors}
+        setValue={setValue}
+        getValues={getValues}
+        refs={refs}
+        measures={measures as Measure[]}
+        productModels={productModels as ProductModel[]}
+        photo={photo}
+        setPhoto={setPhoto}
+        loading={loading}
+        loadingRefs={loadingRefs}
+      />
     );
   }
 

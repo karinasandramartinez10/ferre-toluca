@@ -2,24 +2,21 @@ import { Alert, Collapse, Button, Typography, Box } from "@mui/material";
 import { useState } from "react";
 
 const BANNER_CONTENT = {
-  batch: {
+  single: {
     summary: (
       <>
-        Todos los productos de este lote compartirán la misma{" "}
-        <b>marca, categoría, subcategoría, variante</b> e <b>imagen</b>. Primero selecciona los
-        datos generales, luego agrega cada producto como una fila en la tabla.
+        Da de alta <b>un producto</b> con todos sus datos: marca, categoría, medidas, modelo, imagen
+        y <b>precios por tipo de cliente</b> (Precio A público obligatorio; B, C y D opcionales).
       </>
     ),
     details: [
       <>
-        Puedes agregar filas manualmente o <b>importar un CSV</b> con la plantilla proporcionada. El
-        campo de <b>modelo</b> se autocompleta según la marca seleccionada. Si escribes un modelo
-        nuevo, se registrará automáticamente.
+        El campo de <b>modelo</b> se autocompleta según la marca seleccionada; si escribes uno nuevo
+        se registra automáticamente. La <b>categoría</b> filtra las subcategorías y tipos
+        disponibles.
       </>,
       <>
-        Presiona <b>Enter</b> o haz clic fuera de la tabla para guardar cada fila. Al finalizar,
-        presiona <b>&quot;Añadir productos&quot;</b> para guardar todo el grupo. Luego podrás
-        iniciar otro grupo con diferentes datos generales e imagen.
+        Si tienes muchos productos a la vez, usa <b>Carga masiva (CSV)</b> en la pestaña de arriba.
       </>,
     ],
   },
@@ -34,9 +31,9 @@ const BANNER_CONTENT = {
     ),
     details: [
       <>
-        Descarga la <b>plantilla CSV</b> para ver las 14 columnas disponibles. Los campos
-        obligatorios son <b>nombre, descripción, código, marca y categoría</b>. El resto son
-        opcionales.
+        Descarga la <b>plantilla CSV</b> para ver las columnas disponibles. Los campos obligatorios
+        son <b>nombre, descripción, código, marca, categoría y Precio A</b> (precio público). Los
+        precios B, C y D son opcionales (por tipo de cliente). El resto son opcionales.
       </>,
       <>
         Al subir el CSV verás una <b>vista previa</b> de las primeras filas para que confirmes que
@@ -47,7 +44,7 @@ const BANNER_CONTENT = {
   },
 };
 
-export const AddProductBanner = ({ variant = "batch" }) => {
+export const AddProductBanner = ({ variant = "single" }) => {
   const [open, setOpen] = useState(true);
   const [showFull, setShowFull] = useState(false);
 
