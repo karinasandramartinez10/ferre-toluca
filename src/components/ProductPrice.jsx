@@ -1,25 +1,15 @@
 "use client";
 
-import { Typography, Box, Chip } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { formatPrice } from "../utils/currency";
-import { PRICING_LABELS } from "../constants/pricing";
 
-const PricingModeChip = ({ pricingMode, size }) => (
-  <Chip
-    label={PRICING_LABELS[pricingMode]}
-    size="small"
-    color={pricingMode === "wholesale" ? "secondary" : "default"}
-    variant={size === "large" ? "filled" : "outlined"}
-  />
-);
+const ProductPrice = ({ price, priceList, discountPercentage, size = "medium" }) => {
+  const formattedPrice = formatPrice(price);
+  const hasDiscount =
+    discountPercentage != null && priceList != null && Number(priceList) > Number(price);
+  const formattedListStrike = hasDiscount ? formatPrice(priceList) : null;
 
-const ProductPrice = ({ retailPrice, wholesalePrice, pricingMode, size = "medium" }) => {
-  const isWholesale = pricingMode === "wholesale";
-  const activePrice = isWholesale ? wholesalePrice : retailPrice;
-  const formattedActive = formatPrice(activePrice);
-  const formattedRetailStrike = isWholesale ? formatPrice(retailPrice) : null;
-
-  if (!formattedActive) {
+  if (!formattedPrice) {
     if (size === "small") {
       return (
         <Typography variant="body2" color="text.primary" fontWeight={600}>
@@ -33,12 +23,9 @@ const ProductPrice = ({ retailPrice, wholesalePrice, pricingMode, size = "medium
 
     return (
       <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
-          <Typography variant={mainVariant} color="text.primary" fontWeight={700}>
-            Precio bajo cotización
-          </Typography>
-          <PricingModeChip pricingMode={pricingMode} size={size} />
-        </Box>
+        <Typography variant={mainVariant} color="text.primary" fontWeight={700}>
+          Precio bajo cotización
+        </Typography>
         <Typography variant={microVariant} color="text.secondary">
           Agrégalo a tu orden y te confirmamos el precio.
         </Typography>
@@ -51,19 +38,18 @@ const ProductPrice = ({ retailPrice, wholesalePrice, pricingMode, size = "medium
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
-      {formattedRetailStrike && (
+      {formattedListStrike && (
         <Typography
           variant={strikeVariant}
           color="text.disabled"
           sx={{ textDecoration: "line-through" }}
         >
-          {formattedRetailStrike}
+          {formattedListStrike}
         </Typography>
       )}
       <Typography variant={priceVariant} color="primary.main" fontWeight={700}>
-        {formattedActive}
+        {formattedPrice}
       </Typography>
-      {size !== "small" && <PricingModeChip pricingMode={pricingMode} size={size} />}
     </Box>
   );
 };

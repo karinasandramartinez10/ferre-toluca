@@ -15,7 +15,6 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useSnackbar } from "notistack";
 import { useOrderContext } from "../context/order/useOrderContext";
-import { usePricingMode } from "../context/pricing/usePricingMode";
 import { useFavorites } from "../hooks/favorites/useFavorites";
 import { CloudinaryImage } from "./CloudinaryImage";
 import { toCapitalizeWords } from "../utils/cases";
@@ -24,13 +23,12 @@ import ProductPrice from "./ProductPrice";
 export const ProductCard = ({ product, showBtns = true }) => {
   const { data: session } = useSession();
   const { addToOrder } = useOrderContext();
-  const { pricingMode } = usePricingMode();
   const { toggleFavorite, isFavorite } = useFavorites();
   const { enqueueSnackbar } = useSnackbar();
 
   const isUnavailable = product?.isAvailable === false;
   const canFavorite = session?.user?.role === "user";
-  const discount = pricingMode === "wholesale" ? (product?.discountPercentage ?? null) : null;
+  const discount = product?.discountPercentage ?? null;
   const isFav = isFavorite(product.id);
   const imagePublicId = product?.Files?.[0]?.publicId;
   const productHref = `/product/${product.id}`;
@@ -204,9 +202,9 @@ export const ProductCard = ({ product, showBtns = true }) => {
         </Tooltip>
 
         <ProductPrice
-          retailPrice={product?.retailPrice}
-          wholesalePrice={product?.wholesalePrice}
-          pricingMode={pricingMode}
+          price={product?.price}
+          priceList={product?.priceList}
+          discountPercentage={product?.discountPercentage}
           size="small"
         />
       </Box>

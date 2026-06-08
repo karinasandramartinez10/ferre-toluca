@@ -13,15 +13,12 @@ import LoginContainer from "../../auth/login/LoginContainer";
 import LoginForm from "../../auth/login/LoginForm";
 import { useRouter } from "next/navigation";
 import { useOrderContext } from "../../../context/order/useOrderContext";
-import { usePricingMode } from "../../../context/pricing/usePricingMode";
 import { formatPrice } from "../../../utils/currency";
-import { computeLinePricing } from "../../../utils/pricing";
 import Link from "next/link";
 import { useUserFiscals } from "../../../hooks/user/fiscal/useUserFiscals";
 import { useFiscalMutations } from "../../../hooks/user/fiscal/useFiscalMutations";
 import { useFiscalCatalogs } from "../../../hooks/user/fiscal/useFiscalCatalogs";
 import { getDefaultFiscalProfile } from "../../../utils/fiscal";
-import { getPublicSettings } from "../../../api/admin/settings";
 import OrderItemRow from "./OrderItemRow";
 import BillingSelect from "./BillingSelect";
 import MessageSection from "./MessageSection";
@@ -68,24 +65,15 @@ const CheckoutPage = () => {
   const isAuthenticated = !!session?.user;
 
   const { orderItems, removeFromOrder, clearOrder, totalItems } = useOrderContext();
-  const { isWholesale } = usePricingMode();
-  const [thresholds, setThresholds] = useState({ minTotal: 0, minSameProduct: 0 });
 
-  useEffect(() => {
-    getPublicSettings()
-      .then(setThresholds)
-      .catch(() => {});
-  }, []);
-
-  const pricedLines = useMemo(
-    () => computeLinePricing(orderItems, thresholds),
-    [orderItems, thresholds]
+  const orderTotal = useMemo(
+    () =>
+      orderItems.reduce(
+        (sum, item) => sum + parseFloat(item.product?.price || 0) * item.quantity,
+        0
+      ),
+    [orderItems]
   );
-
-  const wholesaleCount = pricedLines.filter((l) => l.priceType === "wholesale").length;
-  const retailCount = pricedLines.filter((l) => l.priceType === "retail").length;
-  const anyLineQualifies = wholesaleCount > 0;
-  const allLinesQualify = retailCount === 0 && wholesaleCount > 0;
 
   const {
     control,
@@ -220,39 +208,20 @@ const CheckoutPage = () => {
       </Typography>
 
       <Box sx={{ maxHeight: { xs: 350, md: 450 }, overflowY: "auto", pr: 1 }}>
-        {pricedLines.map((line) => (
+        {orderItems.map((item) => (
           <OrderItemRow
-            key={line.product.id}
-            product={line.product}
-            quantity={line.quantity}
-            unitPrice={line.unitPrice}
-            priceType={anyLineQualifies ? line.priceType : null}
-            wholesaleHint={
-              isWholesale && line.priceType === "retail" && line.hasWholesale
-                ? line.missingForLineWholesale > 0
-                  ? `Agrega ${line.missingForLineWholesale} más para precio mayoreo`
-                  : null
-                : null
-            }
-            onRemove={() => removeFromOrder(line.product.id)}
+            key={item.product.id}
+            product={item.product}
+            quantity={item.quantity}
+            unitPrice={item.product?.price}
+            onRemove={() => removeFromOrder(item.product.id)}
           />
         ))}
       </Box>
 
       {isAuthenticated ? (
         <>
-          <TotalRow
-            totalItems={totalItems}
-            isWholesale={isWholesale}
-            anyLineQualifies={anyLineQualifies}
-            allLinesQualify={allLinesQualify}
-            retailCount={retailCount}
-            orderTotal={formatPrice(
-              pricedLines.reduce((sum, line) => {
-                return sum + parseFloat(line.unitPrice || 0) * line.quantity;
-              }, 0)
-            )}
-          />
+          <TotalRow totalItems={totalItems} orderTotal={formatPrice(orderTotal)} />
           <BillingSelect
             loading={loadingFiscals}
             profiles={sortedProfiles}

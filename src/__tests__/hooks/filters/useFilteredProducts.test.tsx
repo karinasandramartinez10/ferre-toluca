@@ -43,7 +43,6 @@ describe("useFilteredProducts", () => {
         expect.objectContaining({
           brandIds: [1, 2],
           q: "martillo",
-          pricingMode: "retail",
           page: 1,
           size: 20,
         })

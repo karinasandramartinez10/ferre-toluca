@@ -8,7 +8,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { mainTheme } from "../theme/mainTheme";
 import { SocketProvider } from "../context/socket/SocketContext";
 import { NotificationsProvider } from "../context/notifications/NotificationsProvider";
-import { PricingProvider } from "../context/pricing/PricingProvider";
 import { OrderProvider } from "../context/order/OrderProvider";
 
 export function Providers({ children }) {
@@ -19,6 +18,12 @@ export function Providers({ children }) {
           queries: {
             staleTime: 5 * 60 * 1000,
             refetchOnWindowFocus: false,
+            retry: (failureCount, error) => {
+              const status = error?.response?.status;
+              // No reintentar rate-limit ni auth: amplifican la tormenta de requests
+              if (status === 429 || status === 401) return false;
+              return failureCount < 2;
+            },
           },
         },
       })
@@ -36,9 +41,7 @@ export function Providers({ children }) {
           <CssBaseline />
           <SocketProvider>
             <NotificationsProvider>
-              <PricingProvider>
-                <OrderProvider>{children}</OrderProvider>
-              </PricingProvider>
+              <OrderProvider>{children}</OrderProvider>
             </NotificationsProvider>
           </SocketProvider>
         </SnackbarProvider>

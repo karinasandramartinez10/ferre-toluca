@@ -10,9 +10,5 @@ export const parseQuoteError = (error) => {
     return `Algunos productos no fueron encontrados. Recarga la página e intenta de nuevo.`;
   }
 
-  if (data?.productsWithoutWholesale) {
-    return "Algunos productos no tienen precio de mayoreo configurado.";
-  }
-
   return error?.message || "Hubo un error al procesar la orden";
 };

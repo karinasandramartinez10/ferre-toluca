@@ -43,7 +43,7 @@ describe("useFilterOptions", () => {
     renderHook(() => useFilterOptions(filters), { wrapper });
 
     await waitFor(() => {
-      expect(mockGetFilterOptions).toHaveBeenCalledWith(filters, "retail");
+      expect(mockGetFilterOptions).toHaveBeenCalledWith(filters);
     });
   });
 

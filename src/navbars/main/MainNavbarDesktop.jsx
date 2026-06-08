@@ -3,7 +3,6 @@ import { Box, Button, IconButton, Popover, Stack, Tooltip, Typography } from "@m
 import Link from "next/link";
 import Image from "next/image";
 import Cart from "../../components/Cart";
-import PricingModeToggle from "../../components/PricingModeToggle";
 import { logout } from "../../actions/logout";
 import { useState } from "react";
 import SearchComponent from "../../components/Search";
@@ -57,7 +56,6 @@ export const MainNavbarDesktop = ({ session }) => {
         <SearchComponent />
       </Box>
       <Box display="flex" alignItems="center" gap={1}>
-        <PricingModeToggle />
         {isAdmin && (
           <Tooltip title="Panel de administador" arrow>
             <IconButton

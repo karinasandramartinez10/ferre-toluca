@@ -1,10 +1,9 @@
 import type { QuoteId, OrderHistoryFilters } from "../types/quote";
 import type { SelectedFilters } from "../types/filters";
-import type { PricingMode } from "../types/pricing";
 
 export const queryKeys = {
   // STATIC — catálogos, estructura de navegación
-  menuTree: (pricingMode: PricingMode = "retail") => ["menu-tree", pricingMode],
+  menuTree: ["menu-tree"],
   fiscalCatalogs: ["fiscalCatalogs"],
   measures: ["measures"],
   productModels: (brandId?: string) => ["productModels", brandId ?? "all"],
@@ -22,13 +21,13 @@ export const queryKeys = {
   orderHistory: (filters: OrderHistoryFilters) => ["orderHistory", filters] as const,
 
   // FREQUENT — dependen de filtros, cambian con cada interacción
-  filteredProducts: (
-    filtersKey: string,
-    page: number,
-    pageSize: number,
-    pricingMode: PricingMode = "retail"
-  ) => ["filteredProducts", filtersKey, page, pageSize, pricingMode],
-  filterOptions: (filters: SelectedFilters, pricingMode: PricingMode = "retail") => [
+  filteredProducts: (filtersKey: string, page: number, pageSize: number) => [
+    "filteredProducts",
+    filtersKey,
+    page,
+    pageSize,
+  ],
+  filterOptions: (filters: SelectedFilters) => [
     "filterOptions",
     {
       brandIds: filters.brandIds || [],
@@ -41,10 +40,10 @@ export const queryKeys = {
       designIds: filters.designIds || [],
       qualifiers: filters.qualifiers || [],
     },
-    pricingMode,
   ],
 
   // RELATED — productos relacionados y vistos recientemente
+  productPrice: (productId: string | number) => ["productPrice", productId],
   relatedProducts: (productId: number, limit: number) => ["relatedProducts", productId, limit],
   batchProducts: (ids: number[]) => ["batchProducts", ids.join(",")],
 

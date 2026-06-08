@@ -20,29 +20,18 @@ describe("queryKeys factory functions", () => {
   });
 
   describe("filteredProducts", () => {
-    it("returns a key with filtersKey, page, pageSize, and default pricingMode", () => {
+    it("returns a key with filtersKey, page and pageSize", () => {
       expect(queryKeys.filteredProducts("key1", 2, 10)).toEqual([
         "filteredProducts",
         "key1",
         2,
         10,
-        "retail",
-      ]);
-    });
-
-    it("returns a key with explicit pricingMode", () => {
-      expect(queryKeys.filteredProducts("key1", 2, 10, "wholesale")).toEqual([
-        "filteredProducts",
-        "key1",
-        2,
-        10,
-        "wholesale",
       ]);
     });
   });
 
   describe("filterOptions", () => {
-    it("returns a key with normalized filters and default pricingMode", () => {
+    it("returns a key with normalized filters", () => {
       const filters = { brandIds: [1, 2], categoryIds: [3] };
       const result = queryKeys.filterOptions(filters);
       expect(result[0]).toBe("filterOptions");
@@ -57,7 +46,6 @@ describe("queryKeys factory functions", () => {
         designIds: [],
         qualifiers: [],
       });
-      expect(result[2]).toBe("retail");
     });
 
     it("defaults all filter arrays to empty", () => {
@@ -74,17 +62,11 @@ describe("queryKeys factory functions", () => {
         qualifiers: [],
       });
     });
-
-    it("includes explicit pricingMode", () => {
-      const result = queryKeys.filterOptions({}, "wholesale");
-      expect(result[2]).toBe("wholesale");
-    });
   });
 
   describe("static keys", () => {
     it("has correct static keys", () => {
-      expect(queryKeys.menuTree()).toEqual(["menu-tree", "retail"]);
-      expect(queryKeys.menuTree("wholesale")).toEqual(["menu-tree", "wholesale"]);
+      expect(queryKeys.menuTree).toEqual(["menu-tree"]);
       expect(queryKeys.fiscalCatalogs).toEqual(["fiscalCatalogs"]);
       expect(queryKeys.favorites).toEqual(["favorites"]);
       expect(queryKeys.userFiscals).toEqual(["userFiscals"]);

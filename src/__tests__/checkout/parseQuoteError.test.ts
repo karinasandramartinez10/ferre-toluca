@@ -14,14 +14,6 @@ describe("parseQuoteError", () => {
     expect(result).toContain("no disponibles");
   });
 
-  it("returns wholesale missing message", () => {
-    const error = {
-      data: { productsWithoutWholesale: [10, 24] },
-    };
-    const result = parseQuoteError(error);
-    expect(result).toContain("precio de mayoreo");
-  });
-
   it("returns missing products message", () => {
     const error = {
       data: { missingProductIds: [10, 24] },

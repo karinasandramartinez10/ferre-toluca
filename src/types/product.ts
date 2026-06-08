@@ -1,9 +1,16 @@
+import type { PriceTier } from "./pricing";
+
 export interface Product {
   id: string;
-  retailPrice: string;
-  wholesalePrice: string | null;
-  isAvailable: boolean;
+  price: number;
+  priceList: number;
+  appliedTier: PriceTier;
   discountPercentage?: number | null;
+  isAvailable: boolean;
+  priceA?: number;
+  priceB?: number | null;
+  priceC?: number | null;
+  priceD?: number | null;
   [key: string]: unknown;
 }
 

@@ -52,15 +52,27 @@ export const getProductColumns = (onEdit) => [
   },
   { field: "code", headerName: "Código", width: 125 },
   {
-    field: "retailPrice",
-    headerName: "Precio menudeo",
-    width: 140,
+    field: "priceA",
+    headerName: "Precio A",
+    width: 110,
     valueFormatter: (value) => formatPriceColumn(value),
   },
   {
-    field: "wholesalePrice",
-    headerName: "Precio mayoreo",
-    width: 140,
+    field: "priceB",
+    headerName: "Precio B",
+    width: 110,
+    valueFormatter: (value) => formatPriceColumn(value),
+  },
+  {
+    field: "priceC",
+    headerName: "Precio C",
+    width: 110,
+    valueFormatter: (value) => formatPriceColumn(value),
+  },
+  {
+    field: "priceD",
+    headerName: "Precio D",
+    width: 110,
     valueFormatter: (value) => formatPriceColumn(value),
   },
   {

@@ -9,7 +9,6 @@ import { adminSectionsMobile, noAuthSectionsMobile, userSectionsMobile } from ".
 import { BurgerMenu } from "../../components/BurgerMenu";
 import { Menu } from "@mui/icons-material";
 import Cart from "../../components/Cart";
-import PricingModeToggle from "../../components/PricingModeToggle";
 import NotificationsBell from "../../components/NotificationsBell";
 import { MainNavbarDesktop } from "./MainNavbarDesktop";
 
@@ -52,7 +51,6 @@ const MainNavbarMobile = ({ session }) => {
       </Link>
 
       <Box display="flex" alignItems="center" gap={0.5}>
-        <PricingModeToggle />
         <SearchInput />
         {!isAdmin && <Cart />}
         {isAuthenticated && <NotificationsBell />}

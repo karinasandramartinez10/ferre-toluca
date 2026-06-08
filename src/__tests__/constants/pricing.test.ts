@@ -1,27 +1,21 @@
 import { describe, it, expect } from "vitest";
-import { PRICING_MODES, PRICING_LABELS } from "../../constants/pricing";
+import { PRICE_TIERS, TIER_LABELS } from "../../constants/pricing";
 
-describe("PRICING_MODES", () => {
-  it("has wholesale and retail values", () => {
-    expect(PRICING_MODES).toEqual({ WHOLESALE: "wholesale", RETAIL: "retail" });
-  });
-
-  it("values are lowercase strings", () => {
-    Object.values(PRICING_MODES).forEach((v) => {
-      expect(v).toMatch(/^[a-z]+$/);
-    });
+describe("PRICE_TIERS", () => {
+  it("contains the four tiers A-D in order", () => {
+    expect(PRICE_TIERS).toEqual(["A", "B", "C", "D"]);
   });
 });
 
-describe("PRICING_LABELS", () => {
-  it("maps each pricing mode to a Spanish label", () => {
-    expect(PRICING_LABELS.wholesale).toBe("Mayoreo");
-    expect(PRICING_LABELS.retail).toBe("Menudeo");
+describe("TIER_LABELS", () => {
+  it("has a label for every tier", () => {
+    PRICE_TIERS.forEach((tier) => {
+      expect(TIER_LABELS[tier]).toBeDefined();
+      expect(typeof TIER_LABELS[tier]).toBe("string");
+    });
   });
 
-  it("has a label for every mode value", () => {
-    Object.values(PRICING_MODES).forEach((mode) => {
-      expect(PRICING_LABELS[mode]).toBeDefined();
-    });
+  it("labels tier A as the public price", () => {
+    expect(TIER_LABELS.A).toBe("Público");
   });
 });

@@ -6,7 +6,7 @@ import { useSnackbar } from "notistack";
 import { useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useFavorites } from "../../../../hooks/favorites/useFavorites";
-import { usePricingMode } from "../../../../context/pricing/usePricingMode";
+import { useProductPrice } from "../../../../hooks/useProductPrice";
 import ConfirmDeleteFavorite from "./ConfirmDeleteFavorite";
 import BreadcrumbsNavigation from "../../../../components/BreadcrumbsNavigation";
 import { useOrderContext } from "../../../../context/order/useOrderContext";
@@ -31,7 +31,7 @@ const ProductPage = ({ product }) => {
 
   const { addToOrder } = useOrderContext();
   const { toggleFavorite, isFavorite } = useFavorites();
-  const { pricingMode } = usePricingMode();
+  const { price, priceList, discountPercentage } = useProductPrice(product.id, product);
   const { enqueueSnackbar } = useSnackbar();
   const isUnavailable = product?.isAvailable === false;
 
@@ -105,9 +105,9 @@ const ProductPage = ({ product }) => {
             )}
 
             <ProductPrice
-              retailPrice={product.retailPrice}
-              wholesalePrice={product.wholesalePrice}
-              pricingMode={pricingMode}
+              price={price}
+              priceList={priceList}
+              discountPercentage={discountPercentage}
               size="large"
             />
 
@@ -168,9 +168,9 @@ const ProductPage = ({ product }) => {
       <RecentlyViewed productId={product.id} isAvailable={product.isAvailable} />
 
       <ProductStickyBar
-        retailPrice={product.retailPrice}
-        wholesalePrice={product.wholesalePrice}
-        pricingMode={pricingMode}
+        price={price}
+        priceList={priceList}
+        discountPercentage={discountPercentage}
         onAdd={handleAdd}
         disabled={isUnavailable}
       />

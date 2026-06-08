@@ -1,9 +1,8 @@
-export const PRICING_MODES = {
-  WHOLESALE: "wholesale",
-  RETAIL: "retail",
-};
+export const PRICE_TIERS = ["A", "B", "C", "D"];
 
-export const PRICING_LABELS = {
-  wholesale: "Mayoreo",
-  retail: "Menudeo",
+export const TIER_LABELS = {
+  A: "Público",
+  B: "Cliente B",
+  C: "Cliente C",
+  D: "Cliente D",
 };
