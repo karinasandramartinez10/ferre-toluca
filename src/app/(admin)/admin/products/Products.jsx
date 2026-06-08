@@ -20,11 +20,11 @@ const ProductsPage = () => {
     products: [],
     count: 0,
     page: 0,
-    pageSize: 10,
+    pageSize: 100,
   });
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 10,
+    pageSize: 100,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
