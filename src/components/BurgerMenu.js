@@ -47,17 +47,19 @@ const BurgerMenuItem = ({ icon, text, href, onClose }) => {
 const BurgerMenuSection = ({ title, items, onClose }) => {
   return (
     <List sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-      <ListItemText
-        sx={{
-          paddingLeft: 2,
-        }}
-        primary={title ? title : null}
-        primaryTypographyProps={{
-          color: "primary.main",
-          fontWeight: "medium",
-          variant: "body3",
-        }}
-      />
+      {title && (
+        <ListItemText
+          sx={{
+            paddingLeft: 2,
+          }}
+          primary={title}
+          primaryTypographyProps={{
+            color: "primary.main",
+            fontWeight: "medium",
+            variant: "body3",
+          }}
+        />
+      )}
       {items.map((option, index) => (
         <BurgerMenuItem key={`${option.text}-${index}`} {...option} onClose={onClose} />
       ))}

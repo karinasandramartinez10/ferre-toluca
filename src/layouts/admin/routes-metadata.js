@@ -27,9 +27,10 @@ export const PAGE_METADATA = {
     subtitle:
       "Revisa las solicitudes de contacto de visitantes interesados. Coordina y envía invitaciones.",
   },
-  "/admin/settings": {
-    title: "Configuración",
-    subtitle: "Ajusta parámetros generales de la tienda como el monto mínimo de mayoreo.",
+  "/admin/clients": {
+    title: "Clientes",
+    subtitle:
+      "Gestiona el ciclo de vida de tus clientes: solicitudes, invitaciones y clasificación por tipo de precio.",
   },
   "/user/profile/fiscal": {
     title: "Datos de facturación",
