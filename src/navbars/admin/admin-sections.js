@@ -16,11 +16,6 @@ export const adminSections = [
         href: "/admin/clients",
         visibleFor: ["admin", "superadmin"],
       },
-    ],
-  },
-  {
-    title: "Catálogo",
-    items: [
       {
         icon: <Inventory />,
         text: "Productos",

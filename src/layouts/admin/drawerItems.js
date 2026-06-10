@@ -19,11 +19,6 @@ export const drawerGroups = [
         visibleFor: ["admin", "superadmin"],
         badgeType: "contact-requests",
       },
-    ],
-  },
-  {
-    label: "Catálogo",
-    items: [
       {
         text: "Productos",
         pathname: "/admin/products",
