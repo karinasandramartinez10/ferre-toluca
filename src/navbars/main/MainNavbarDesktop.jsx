@@ -3,10 +3,11 @@ import { Box, Button, IconButton, Popover, Stack, Tooltip, Typography } from "@m
 import Link from "next/link";
 import Image from "next/image";
 import Cart from "../../components/Cart";
-import { logout } from "../../actions/logout";
+import { signOut } from "next-auth/react";
 import { useState } from "react";
 import SearchComponent from "../../components/Search";
 import NotificationsBell from "../../components/NotificationsBell";
+import PricesLegendChip from "../../components/PricesLegendChip";
 import useResponsive from "../../hooks/use-responsive";
 
 export const MainNavbarDesktop = ({ session }) => {
@@ -26,7 +27,7 @@ export const MainNavbarDesktop = ({ session }) => {
   };
 
   const Logout = () => {
-    logout();
+    signOut({ callbackUrl: "/" });
   };
 
   const open = Boolean(anchorEl);
@@ -56,6 +57,7 @@ export const MainNavbarDesktop = ({ session }) => {
         <SearchComponent />
       </Box>
       <Box display="flex" alignItems="center" gap={1}>
+        {isAuthenticated && !isAdmin && <PricesLegendChip />}
         {isAdmin && (
           <Tooltip title="Panel de administador" arrow>
             <IconButton
