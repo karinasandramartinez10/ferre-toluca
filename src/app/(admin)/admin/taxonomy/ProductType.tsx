@@ -10,13 +10,18 @@ import {
 import { getSubcategories } from "../../../../api/subcategories";
 import { revalidateTypePage } from "../../../../actions/revalidate";
 import ActionModal from "../../../../components/ActionModal";
-import { toSlug } from "../../../../utils/cases";
+import { toSlug, toCapitalizeWords } from "../../../../utils/cases";
 import ProductTypesTable from "../../../../components/CrudAdminTable";
 import { productTypesColumns } from "./productTypesColumns";
 import type { ProductType, Subcategory } from "../../../../types/catalog";
 import type { GridPaginationModel } from "@mui/x-data-grid";
 
-const ProductTypes = () => {
+interface ProductTypesProps {
+  parentId?: string;
+  parentName?: string;
+}
+
+const ProductTypes = ({ parentId, parentName }: ProductTypesProps) => {
   const [rows, setRows] = useState<ProductType[]>([]);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -34,6 +39,7 @@ const ProductTypes = () => {
   const fetchInitialData = useCallback(async () => {
     try {
       const data = await getProductTypes({
+        ...(parentId ? { subcategoryId: parentId } : {}),
         page: paginationModel.page + 1,
         size: paginationModel.pageSize,
       });
@@ -42,13 +48,15 @@ const ProductTypes = () => {
     } catch (error) {
       console.error("Error fetching product types:", error);
     }
-  }, [paginationModel]);
+  }, [paginationModel, parentId]);
 
   useEffect(() => {
     fetchInitialData();
   }, [fetchInitialData]);
 
+  // El selector de subcategoría solo se usa en modo standalone (sin padre del contexto)
   useEffect(() => {
+    if (parentId) return;
     const fetchSubcategories = async () => {
       try {
         const data = await getSubcategories({ size: 1000 });
@@ -59,12 +67,15 @@ const ProductTypes = () => {
     };
 
     fetchSubcategories();
-  }, []);
+  }, [parentId]);
 
-  const handleAddProductType = async (data: { name: string; subcategoryId: string }) => {
+  const handleAddProductType = async (data: { name: string; subcategoryId?: string }) => {
     try {
       setLoading(true);
-      const response = await createProductType(data);
+      const response = await createProductType({
+        name: data.name,
+        subcategoryId: parentId ?? data.subcategoryId,
+      });
       if (response.status === 201) {
         const { productType } = response.data;
         const newProductType = {
@@ -93,13 +104,13 @@ const ProductTypes = () => {
     }
   };
 
-  const handleEditProductType = async (data: { name: string; subcategoryId: string }) => {
+  const handleEditProductType = async (data: { name: string; subcategoryId?: string }) => {
     try {
       setLoading(true);
 
       const body = {
         name: data.name,
-        subcategoryId: data.subcategoryId,
+        subcategoryId: parentId ?? data.subcategoryId,
       };
 
       const response = await updateProductType(selectedProductType!.id, body);
@@ -142,6 +153,8 @@ const ProductTypes = () => {
     setIsModalOpen(true);
   };
 
+  const scopeName = parentName ? toCapitalizeWords(parentName) : "";
+
   return (
     <>
       <ProductTypesTable
@@ -153,13 +166,18 @@ const ProductTypes = () => {
         rowCount={rowCount}
         title="variante"
         handleClick={openAddModal}
+        scopeLabel={parentName ? `Tipos de ${scopeName}` : undefined}
       />
       <ActionModal
         title="Tipo de Producto"
-        optionTitle="Selecciona la subcategoría a asociar"
-        option="subcategoryId"
-        options={subcategories}
-        groupBy={(opt: Subcategory) => opt.category?.name || "Sin categoría"}
+        {...(parentId
+          ? {}
+          : {
+              optionTitle: "Selecciona la subcategoría a asociar",
+              option: "subcategoryId",
+              options: subcategories,
+              groupBy: (opt: Subcategory) => opt.category?.name || "Sin categoría",
+            })}
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={mode === "create" ? handleAddProductType : handleEditProductType}
