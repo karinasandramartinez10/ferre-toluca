@@ -1,9 +1,15 @@
 "use client";
 
-import { Typography, Box } from "@mui/material";
+import { Box, Chip, Typography } from "@mui/material";
 import { formatPrice } from "../utils/currency";
 
-const ProductPrice = ({ price, priceList, discountPercentage, size = "medium" }) => {
+const ProductPrice = ({
+  price,
+  priceList,
+  discountPercentage,
+  size = "medium",
+  showDiscountPercentage = false,
+}) => {
   const formattedPrice = formatPrice(price);
   const hasDiscount =
     discountPercentage != null && priceList != null && Number(priceList) > Number(price);
@@ -50,6 +56,9 @@ const ProductPrice = ({ price, priceList, discountPercentage, size = "medium" })
       <Typography variant={priceVariant} color="primary.main" fontWeight={700}>
         {formattedPrice}
       </Typography>
+      {showDiscountPercentage && hasDiscount && (
+        <Chip label={`-${discountPercentage}%`} size="small" color="primary" />
+      )}
     </Box>
   );
 };

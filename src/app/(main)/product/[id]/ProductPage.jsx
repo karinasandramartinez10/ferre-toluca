@@ -109,6 +109,7 @@ const ProductPage = ({ product }) => {
               priceList={priceList}
               discountPercentage={discountPercentage}
               size="large"
+              showDiscountPercentage
             />
 
             <ProductAttributes

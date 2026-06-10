@@ -29,6 +29,7 @@ const ProductStickyBar = ({ price, priceList, discountPercentage, onAdd, disable
         priceList={priceList}
         discountPercentage={discountPercentage}
         size="small"
+        showDiscountPercentage
       />
     </Box>
     <Button
