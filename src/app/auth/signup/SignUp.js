@@ -211,6 +211,7 @@ const SignUp = ({ token }) => {
                     render={({ field, fieldState: { invalid, error } }) => (
                       <TextField
                         fullWidth
+                        type="email"
                         error={invalid}
                         helperText={error?.message && error.message}
                         label="Correo electrónico"

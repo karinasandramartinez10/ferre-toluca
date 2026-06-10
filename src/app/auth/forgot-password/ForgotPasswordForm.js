@@ -11,10 +11,7 @@ const defaultFormValues = {
 };
 
 const ForgotPasswordSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email("Email no es válido")
-    .required("Email es obligatorio"),
+  email: yup.string().email("Email no es válido").required("Email es obligatorio"),
 });
 
 export const ForgotPasswordForm = ({ onSubmit, children, loading, error }) => {
@@ -44,6 +41,7 @@ export const ForgotPasswordForm = ({ onSubmit, children, loading, error }) => {
             render={({ field, fieldState: { invalid, error } }) => (
               <TextField
                 fullWidth
+                type="email"
                 error={invalid}
                 helperText={error?.message && error.message}
                 label="Correo electrónico"
