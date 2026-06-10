@@ -5,3 +5,6 @@ export const formatDateDayAbrev = (createdAt: string): string => {
   const date = parse(createdAt, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", new Date());
   return format(date, "dd 'de' MMM yy", { locale: es });
 };
+
+export const formatShortDate = (value?: string | null): string =>
+  value ? new Date(value).toLocaleDateString("es-MX") : "—";
