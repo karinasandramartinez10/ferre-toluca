@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box, Chip, CircularProgress, MenuItem, Select, Stack, TextField } from "@mui/material";
+import { Button, Chip, Stack, TextField } from "@mui/material";
+import { Edit } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
 import { getAllUsers, updateUserTier } from "../../../../api/admin/users";
 import { useDebounce } from "../../../../hooks/use-debounce";
@@ -13,9 +14,18 @@ import { localeText } from "../../../../constants/x-datagrid/localeText";
 import { Loading } from "../../../../components/Loading";
 import { ErrorUI } from "../../../../components/Error";
 import useServerPagination from "../../../../hooks/admin/useServerPagination";
+import useProcessingIds from "../../../../hooks/admin/useProcessingIds";
+import FilterSelect from "../../../../components/FilterSelect";
+import { formatShortDate } from "../../../../utils/date";
 import { PRICE_TIERS, TIER_LABELS } from "../../../../constants/pricing";
+import TierChangeDialog from "./TierChangeDialog";
 
-const getColumns = (onTierChange, processingIds) => [
+const TIER_FILTER_OPTIONS = [
+  { value: "", label: "Todos los tipos" },
+  ...PRICE_TIERS.map((t) => ({ value: t, label: `${t} — ${TIER_LABELS[t]}` })),
+];
+
+const getColumns = (onEdit, processingIds) => [
   {
     field: "fullName",
     headerName: "Nombre",
@@ -23,37 +33,29 @@ const getColumns = (onTierChange, processingIds) => [
     valueGetter: (_, row) => `${row.firstName ?? ""} ${row.lastName ?? ""}`.trim() || "—",
   },
   { field: "email", headerName: "Email", width: 230 },
-  { field: "companyName", headerName: "Empresa", width: 170, valueFormatter: (v) => v || "—" },
-  { field: "phoneNumber", headerName: "Teléfono", width: 140, valueFormatter: (v) => v || "—" },
   {
     field: "priceTier",
     headerName: "Tipo de cliente",
     width: 200,
     renderCell: ({ row }) => {
-      const isProcessing = processingIds.has(row.id);
+      const tier = row.priceTier || "A";
       return (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {isProcessing && <CircularProgress size={16} />}
-          <Select
-            value={row.priceTier || "A"}
-            size="small"
-            disabled={isProcessing}
-            onChange={(e) => onTierChange(row, e.target.value)}
-            sx={{
-              minWidth: 150,
-              "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-            }}
-          >
-            {PRICE_TIERS.map((t) => (
-              <MenuItem key={t} value={t}>
-                {`${t} — ${TIER_LABELS[t]}`}
-              </MenuItem>
-            ))}
-          </Select>
-        </Box>
+        <Button
+          size="small"
+          variant="outlined"
+          color="inherit"
+          endIcon={<Edit sx={{ fontSize: 16 }} />}
+          disabled={processingIds.has(row.id)}
+          onClick={() => onEdit(row)}
+          sx={{ textTransform: "none", fontWeight: 600 }}
+        >
+          {tier} · {TIER_LABELS[tier]}
+        </Button>
       );
     },
   },
+  { field: "companyName", headerName: "Empresa", width: 170, valueFormatter: (v) => v || "—" },
+  { field: "phoneNumber", headerName: "Teléfono", width: 140, valueFormatter: (v) => v || "—" },
   {
     field: "role",
     headerName: "Rol",
@@ -65,7 +67,7 @@ const getColumns = (onTierChange, processingIds) => [
     field: "createdAt",
     headerName: "Alta",
     width: 130,
-    valueFormatter: (v) => (v ? new Date(v).toLocaleDateString("es-MX") : "—"),
+    valueFormatter: (v) => formatShortDate(v),
   },
 ];
 
@@ -74,7 +76,8 @@ const Clients = () => {
   const [search, setSearch] = useState("");
   const [tier, setTier] = useState("");
   const debouncedSearch = useDebounce(search, 500);
-  const [processingIds, setProcessingIds] = useState(new Set());
+  const { processingIds, addProcessing, removeProcessing } = useProcessingIds();
+  const [editingClient, setEditingClient] = useState(null);
 
   const fetchUsers = useCallback(
     (page, size) =>
@@ -93,14 +96,6 @@ const Clients = () => {
   useEffect(() => {
     setPaginationModel((prev) => (prev.page === 0 ? prev : { ...prev, page: 0 }));
   }, [debouncedSearch, tier, setPaginationModel]);
-
-  const addProcessing = (id) => setProcessingIds((prev) => new Set(prev).add(id));
-  const removeProcessing = (id) =>
-    setProcessingIds((prev) => {
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
 
   const handleTierChange = useCallback(
     async (row, newTier) => {
@@ -122,8 +117,10 @@ const Clients = () => {
         removeProcessing(row.id);
       }
     },
-    [enqueueSnackbar, updateRow]
+    [enqueueSnackbar, updateRow, addProcessing, removeProcessing]
   );
+
+  const handleEdit = useCallback((row) => setEditingClient(row), []);
 
   if (loading && !data) return <Loading />;
   if (error) return <ErrorUI onRetry={reload} message="No pudimos cargar los clientes" />;
@@ -138,26 +135,13 @@ const Clients = () => {
           size="small"
           fullWidth
         />
-        <Select
-          value={tier}
-          size="small"
-          displayEmpty
-          onChange={(e) => setTier(e.target.value)}
-          sx={{ minWidth: 180 }}
-        >
-          <MenuItem value="">Todos los tipos</MenuItem>
-          {PRICE_TIERS.map((t) => (
-            <MenuItem key={t} value={t}>
-              {`${t} — ${TIER_LABELS[t]}`}
-            </MenuItem>
-          ))}
-        </Select>
+        <FilterSelect value={tier} onChange={setTier} options={TIER_FILTER_OPTIONS} />
       </Stack>
 
       <DataGrid
         localeText={localeText}
         rows={data?.users || []}
-        columns={getColumns(handleTierChange, processingIds)}
+        columns={getColumns(handleEdit, processingIds)}
         rowCount={data?.count || 0}
         paginationMode="server"
         paginationModel={paginationModel}
@@ -174,6 +158,13 @@ const Clients = () => {
           footer: CustomFooter,
         }}
         slotProps={{ noRowsOverlay: { message: "Aún no hay clientes" } }}
+      />
+
+      <TierChangeDialog
+        open={Boolean(editingClient)}
+        client={editingClient}
+        onClose={() => setEditingClient(null)}
+        onConfirm={(newTier) => handleTierChange(editingClient, newTier)}
       />
     </Stack>
   );

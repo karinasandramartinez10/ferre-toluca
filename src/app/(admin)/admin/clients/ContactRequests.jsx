@@ -1,142 +1,72 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { DataGrid } from "@mui/x-data-grid";
-import { Chip, Select, MenuItem, CircularProgress, Box } from "@mui/material";
+import { Box, CircularProgress, Stack, Typography } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { AnimatePresence, motion } from "framer-motion";
 import { useSnackbar } from "notistack";
 import { getContactRequests, updateContactRequestStatus } from "../../../../api/contactRequests";
 import { createInvitation } from "../../../../api/invitations";
 import { queryKeys } from "../../../../constants/queryKeys";
-import { CustomToolbar } from "../../../../components/DataGrid/CustomToolbar";
-import { CustomFooter } from "../../../../components/DataGrid/CustomFooter";
-import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
-import { localeText } from "../../../../constants/x-datagrid/localeText";
-import { Loading } from "../../../../components/Loading";
 import { ErrorUI } from "../../../../components/Error";
-import useServerPagination from "../../../../hooks/admin/useServerPagination";
-import {
-  CONTACT_REQUEST_STATUS_COLORS,
-  CONTACT_REQUEST_STATUS_LABELS,
-  CONTACT_REQUEST_STATUS_OPTIONS,
-  CONTACT_REQUEST_TERMINAL_STATUSES,
-} from "../../../../constants/statusMaps";
+import FilterSelect from "../../../../components/FilterSelect";
+import useProcessingIds from "../../../../hooks/admin/useProcessingIds";
+import ContactRequestCard from "./ContactRequestCard";
 
-const isTerminal = (status) => CONTACT_REQUEST_TERMINAL_STATUSES.includes(status);
+const PAGE_SIZE = 10;
 
-const getColumns = (onStatusChange, processingIds) => [
-  {
-    field: "fullName",
-    headerName: "Nombre",
-    width: 180,
-    valueGetter: (_, row) => `${row.firstName} ${row.lastName}`,
-  },
-  { field: "email", headerName: "Email", width: 230 },
-  { field: "phoneNumber", headerName: "Teléfono", width: 150, valueFormatter: (v) => v || "—" },
-  { field: "companyName", headerName: "Empresa", width: 160, valueFormatter: (v) => v || "—" },
-  {
-    field: "message",
-    headerName: "Mensaje",
-    width: 200,
-    valueFormatter: (v) => (v ? (v.length > 50 ? v.slice(0, 50) + "..." : v) : "—"),
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    width: 160,
-    renderCell: ({ row }) => {
-      const isProcessing = processingIds.has(row.id);
-
-      if (isProcessing) {
-        return (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <CircularProgress size={16} />
-            <Chip
-              label={CONTACT_REQUEST_STATUS_LABELS[row.status]}
-              size="small"
-              color={CONTACT_REQUEST_STATUS_COLORS[row.status] || "default"}
-              variant="filled"
-            />
-          </Box>
-        );
-      }
-
-      if (isTerminal(row.status)) {
-        return (
-          <Chip
-            label={CONTACT_REQUEST_STATUS_LABELS[row.status]}
-            size="small"
-            color={CONTACT_REQUEST_STATUS_COLORS[row.status] || "default"}
-            variant="filled"
-          />
-        );
-      }
-
-      return (
-        <Select
-          value={row.status}
-          size="small"
-          onChange={(e) => onStatusChange(row, e.target.value)}
-          sx={{
-            minWidth: 130,
-            "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-          }}
-        >
-          {CONTACT_REQUEST_STATUS_OPTIONS.map((s) => (
-            <MenuItem key={s} value={s}>
-              <Chip
-                label={CONTACT_REQUEST_STATUS_LABELS[s]}
-                size="small"
-                color={CONTACT_REQUEST_STATUS_COLORS[s] || "default"}
-                variant="filled"
-              />
-            </MenuItem>
-          ))}
-        </Select>
-      );
-    },
-  },
-  {
-    field: "createdAt",
-    headerName: "Fecha",
-    width: 140,
-    valueFormatter: (v) => (v ? new Date(v).toLocaleDateString("es-MX") : "—"),
-  },
+const STATUS_FILTERS = [
+  { value: "pending", label: "Pendientes" },
+  { value: "contacted", label: "Contactadas" },
+  { value: "", label: "Todas" },
 ];
 
-const fetchContactRequests = (page, size) => getContactRequests(page, size);
-
 const ContactRequests = () => {
-  const { data, loading, error, paginationModel, setPaginationModel, reload, updateRow } =
-    useServerPagination(fetchContactRequests, { rowsKey: "contactRequests" });
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
-  const [processingIds, setProcessingIds] = useState(new Set());
+  const [statusFilter, setStatusFilter] = useState("pending");
+  const [items, setItems] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState(false);
+  const { processingIds, addProcessing, removeProcessing } = useProcessingIds();
 
-  const addProcessing = (id) => setProcessingIds((prev) => new Set(prev).add(id));
-  const removeProcessing = (id) =>
-    setProcessingIds((prev) => {
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
+  const fetchPage = useCallback(
+    async (pageToLoad, append) => {
+      append ? setLoadingMore(true) : setLoading(true);
+      setError(false);
+      try {
+        const res = await getContactRequests(pageToLoad, PAGE_SIZE, statusFilter || undefined);
+        setCount(res.count);
+        setPage(pageToLoad);
+        setItems((prev) => (append ? [...prev, ...res.contactRequests] : res.contactRequests));
+      } catch {
+        setError(true);
+      } finally {
+        append ? setLoadingMore(false) : setLoading(false);
+      }
+    },
+    [statusFilter]
+  );
 
-  const handleStatusChange = useCallback(
-    async (row, newStatus) => {
-      const prevStatus = row.status;
+  useEffect(() => {
+    fetchPage(1, false);
+  }, [fetchPage]);
 
-      // Optimistic update
-      updateRow(row.id, { status: newStatus });
-      addProcessing(row.id);
-
+  const handleAction = useCallback(
+    async (request, newStatus) => {
+      addProcessing(request.id);
       try {
         if (newStatus === "invited") {
           await createInvitation({
-            email: row.email,
-            companyName: row.companyName || undefined,
+            email: request.email,
+            companyName: request.companyName || undefined,
           });
           try {
-            await updateContactRequestStatus(row.id, "invited");
+            await updateContactRequestStatus(request.id, "invited");
           } catch {
             enqueueSnackbar(
               "Invitación enviada pero no se pudo actualizar el status. Recarga la página.",
@@ -144,50 +74,93 @@ const ContactRequests = () => {
             );
             return;
           }
-          enqueueSnackbar(`Invitación enviada a ${row.email}`, { variant: "success" });
+          enqueueSnackbar(`Invitación enviada a ${request.email}`, { variant: "success" });
         } else {
-          await updateContactRequestStatus(row.id, newStatus);
+          await updateContactRequestStatus(request.id, newStatus);
           enqueueSnackbar("Status actualizado", { variant: "success" });
         }
-        // Refresca los badges del funnel (solicitudes/invitaciones)
+
         queryClient.invalidateQueries({ queryKey: queryKeys.funnelCounts });
+
+        // Si la solicitud ya no pertenece al filtro activo, sale de la lista;
+        // si estamos en "Todas", solo actualiza su estado en sitio.
+        if (statusFilter && newStatus !== statusFilter) {
+          setItems((prev) => prev.filter((r) => r.id !== request.id));
+          setCount((c) => Math.max(0, c - 1));
+        } else {
+          setItems((prev) =>
+            prev.map((r) => (r.id === request.id ? { ...r, status: newStatus } : r))
+          );
+        }
       } catch (err) {
-        updateRow(row.id, { status: prevStatus });
         enqueueSnackbar(err?.message || "Error al actualizar", { variant: "error" });
       } finally {
-        removeProcessing(row.id);
+        removeProcessing(request.id);
       }
     },
-    [enqueueSnackbar, updateRow, queryClient]
+    [enqueueSnackbar, queryClient, statusFilter, addProcessing, removeProcessing]
   );
 
-  if (loading && !data) return <Loading />;
-  if (error) return <ErrorUI onRetry={reload} message="No pudimos cargar las solicitudes" />;
+  const hasMore = items.length < count;
 
   return (
-    <DataGrid
-      localeText={localeText}
-      rows={data?.contactRequests || []}
-      columns={getColumns(handleStatusChange, processingIds)}
-      rowCount={data?.count || 0}
-      paginationMode="server"
-      paginationModel={paginationModel}
-      onPaginationModelChange={setPaginationModel}
-      pageSizeOptions={[10, 20, 50]}
-      disableRowSelectionOnClick
-      getRowClassName={({ row }) => (isTerminal(row.status) ? "row-terminal" : "")}
-      sx={{
-        height: 700,
-        "& .MuiDataGrid-columnHeaderTitle": { fontWeight: 700 },
-        "& .row-terminal": { opacity: 0.5, pointerEvents: "none" },
-      }}
-      slots={{
-        toolbar: CustomToolbar,
-        noRowsOverlay: CustomNoRowsOverlay,
-        footer: CustomFooter,
-      }}
-      slotProps={{ noRowsOverlay: { message: "Aún no hay solicitudes" } }}
-    />
+    <Stack spacing={2} sx={{ maxWidth: 820 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <FilterSelect value={statusFilter} onChange={setStatusFilter} options={STATUS_FILTERS} />
+        {!loading && (
+          <Typography variant="body2" color="text.secondary">
+            {count} {count === 1 ? "solicitud" : "solicitudes"}
+          </Typography>
+        )}
+      </Stack>
+
+      {loading ? (
+        <Box sx={{ py: 8, display: "flex", justifyContent: "center" }}>
+          <CircularProgress />
+        </Box>
+      ) : error ? (
+        <ErrorUI onRetry={() => fetchPage(1, false)} message="No pudimos cargar las solicitudes" />
+      ) : items.length === 0 ? (
+        <Box sx={{ py: 8, textAlign: "center" }}>
+          <Typography color="text.secondary">No hay solicitudes en esta vista</Typography>
+        </Box>
+      ) : (
+        <>
+          <Stack spacing={1.5}>
+            <AnimatePresence initial={false}>
+              {items.map((request) => (
+                <motion.div
+                  key={request.id}
+                  layout
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.18 }}
+                >
+                  <ContactRequestCard
+                    request={request}
+                    processing={processingIds.has(request.id)}
+                    onAction={handleAction}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </Stack>
+
+          {hasMore && (
+            <Box sx={{ textAlign: "center" }}>
+              <LoadingButton
+                onClick={() => fetchPage(page + 1, true)}
+                loading={loadingMore}
+                variant="outlined"
+              >
+                Cargar más
+              </LoadingButton>
+            </Box>
+          )}
+        </>
+      )}
+    </Stack>
   );
 };
 
