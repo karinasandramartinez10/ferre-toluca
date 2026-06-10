@@ -197,6 +197,7 @@ export const Quotes = ({
       }}
       slotProps={{
         toolbar: { onPrint: handlePrint },
+        noRowsOverlay: { message: "Aún no hay cotizaciones" },
       }}
     />
   );
