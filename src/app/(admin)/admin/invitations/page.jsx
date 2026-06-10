@@ -1,5 +1,5 @@
-import Invitations from "./Invitations";
+import { redirect } from "next/navigation";
 
 export default function InvitationsPage() {
-  return <Invitations />;
+  redirect("/admin/clients?tab=invitaciones");
 }

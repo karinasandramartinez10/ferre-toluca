@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { DataGrid } from "@mui/x-data-grid";
 import { Chip, Select, MenuItem, CircularProgress, Box } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { getContactRequests, updateContactRequestStatus } from "../../../../api/contactRequests";
 import { createInvitation } from "../../../../api/invitations";
+import { queryKeys } from "../../../../constants/queryKeys";
 import { CustomToolbar } from "../../../../components/DataGrid/CustomToolbar";
 import { CustomFooter } from "../../../../components/DataGrid/CustomFooter";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
@@ -108,6 +110,7 @@ const ContactRequests = () => {
   const { data, loading, error, paginationModel, setPaginationModel, reload, updateRow } =
     useServerPagination(fetchContactRequests, { rowsKey: "contactRequests" });
   const { enqueueSnackbar } = useSnackbar();
+  const queryClient = useQueryClient();
   const [processingIds, setProcessingIds] = useState(new Set());
 
   const addProcessing = (id) => setProcessingIds((prev) => new Set(prev).add(id));
@@ -146,6 +149,8 @@ const ContactRequests = () => {
           await updateContactRequestStatus(row.id, newStatus);
           enqueueSnackbar("Status actualizado", { variant: "success" });
         }
+        // Refresca los badges del funnel (solicitudes/invitaciones)
+        queryClient.invalidateQueries({ queryKey: queryKeys.funnelCounts });
       } catch (err) {
         updateRow(row.id, { status: prevStatus });
         enqueueSnackbar(err?.message || "Error al actualizar", { variant: "error" });
@@ -153,7 +158,7 @@ const ContactRequests = () => {
         removeProcessing(row.id);
       }
     },
-    [enqueueSnackbar, updateRow]
+    [enqueueSnackbar, updateRow, queryClient]
   );
 
   if (loading && !data) return <Loading />;
@@ -181,6 +186,7 @@ const ContactRequests = () => {
         noRowsOverlay: CustomNoRowsOverlay,
         footer: CustomFooter,
       }}
+      slotProps={{ noRowsOverlay: { message: "Aún no hay solicitudes" } }}
     />
   );
 };

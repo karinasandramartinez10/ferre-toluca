@@ -1,5 +1,10 @@
-import Clients from "./Clients";
+import { Suspense } from "react";
+import CustomersHub from "./CustomersHub";
 
 export default function ClientsPage() {
-  return <Clients />;
+  return (
+    <Suspense>
+      <CustomersHub />
+    </Suspense>
+  );
 }

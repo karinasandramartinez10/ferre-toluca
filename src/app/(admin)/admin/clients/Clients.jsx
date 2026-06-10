@@ -173,6 +173,7 @@ const Clients = () => {
           noRowsOverlay: CustomNoRowsOverlay,
           footer: CustomFooter,
         }}
+        slotProps={{ noRowsOverlay: { message: "Aún no hay clientes" } }}
       />
     </Stack>
   );

@@ -55,6 +55,8 @@ export const queryKeys = {
     status ?? "all",
   ],
   invitationValidation: (token: string) => ["invitationValidation", token],
+  funnelCounts: ["funnelCounts"] as const,
+  funnelCount: (stage: string) => ["funnelCounts", stage] as const,
   contactRequests: (page: number, size: number, status?: string) => [
     "contactRequests",
     page,
