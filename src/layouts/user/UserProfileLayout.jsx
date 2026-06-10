@@ -21,7 +21,7 @@ import { ArrowBackIosNewRounded } from "@mui/icons-material";
 import { getPageMetadata } from "../admin/routes-metadata";
 import NotificationsBell from "../../components/NotificationsBell";
 import { UserNavbarMobile } from "../../navbars/user/UserNavbarMobile";
-import { logout } from "../../actions/logout";
+import { signOut } from "next-auth/react";
 import NextLink from "next/link";
 import { userDrawerItems } from "./userDrawerItems";
 import Image from "next/image";
@@ -95,7 +95,12 @@ export default function UserProfileLayout({ children, session }) {
         </Box>
         <Divider sx={{ mx: 2 }} />
         <Box sx={{ p: 2 }}>
-          <Button variant="outlined" color="primary" fullWidth onClick={() => logout()}>
+          <Button
+            variant="outlined"
+            color="primary"
+            fullWidth
+            onClick={() => signOut({ callbackUrl: "/" })}
+          >
             Cerrar sesión
           </Button>
         </Box>
