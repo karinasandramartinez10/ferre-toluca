@@ -38,7 +38,7 @@ export const getProductColumns = (onEdit) => [
   {
     field: "actions",
     type: "actions",
-    headerName: "Acciones",
+    headerName: "Editar",
     width: 90,
     getActions: ({ row }) => [
       <GridActionsCellItem

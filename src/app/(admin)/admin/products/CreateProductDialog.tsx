@@ -1,27 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { Box, Divider, Paper, Stack } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { useForm } from "react-hook-form";
 import type { Resolver } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useSnackbar } from "notistack";
-import { postProduct } from "../../../../../api/admin";
-import { getApiErrorMessage } from "../../../../../utils/apiError";
-import { useMeasures } from "../../../../../hooks/catalog/useMeasures";
-import { useProductModels } from "../../../../../hooks/catalog/useProductModels";
-import { useProductFormRefs } from "../../../../../hooks/admin/useProductFormRefs";
-import { Loading } from "../../../../../components/Loading";
-import { ErrorUI } from "../../../../../components/Error";
-import type { PhotoPreview } from "../../../../../types/ui";
-import type { Measure, ProductModel } from "../../../../../types/catalog";
-import ProductFormFields, { type FormValues } from "../ProductFormFields";
-import { productSchema, productFormDefaults } from "../productFormSchema";
-import { buildAddProductFormData } from "./buildAddProductFormData";
-import { AddProductBanner } from "./AddProductBanner";
+import { postProduct } from "../../../../api/admin";
+import { getApiErrorMessage } from "../../../../utils/apiError";
+import { useMeasures } from "../../../../hooks/catalog/useMeasures";
+import { useProductModels } from "../../../../hooks/catalog/useProductModels";
+import { useProductFormRefs } from "../../../../hooks/admin/useProductFormRefs";
+import { Loading } from "../../../../components/Loading";
+import { ErrorUI } from "../../../../components/Error";
+import type { PhotoPreview } from "../../../../types/ui";
+import type { Measure, ProductModel } from "../../../../types/catalog";
+import ProductFormFields, { type FormValues } from "./ProductFormFields";
+import { productSchema, productFormDefaults } from "./productFormSchema";
+import { buildAddProductFormData } from "./add-product/buildAddProductFormData";
 
-const AddProductSingle = () => {
+interface CreateProductDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onCreated: () => void;
+}
+
+const CreateProductDialog = ({ open, onClose, onCreated }: CreateProductDialogProps) => {
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = useState(false);
   const [photo, setPhoto] = useState<PhotoPreview | null>(null);
@@ -51,6 +56,12 @@ const AddProductSingle = () => {
     subCategoryId,
     setValue,
   });
+
+  const handleClose = () => {
+    reset(productFormDefaults);
+    setPhoto(null);
+    onClose();
+  };
 
   const onSubmit = async (values: FormValues) => {
     setLoading(true);
@@ -95,6 +106,7 @@ const AddProductSingle = () => {
       });
       reset(productFormDefaults);
       setPhoto(null);
+      onCreated();
     } catch (error) {
       enqueueSnackbar(getApiErrorMessage(error), {
         variant: "error",
@@ -106,50 +118,50 @@ const AddProductSingle = () => {
     }
   };
 
-  if (loadingRefs) return <Loading />;
-  if (errorRefs) {
-    return (
-      <ErrorUI
-        onRetry={() => window.location.reload()}
-        message="No pudimos cargar marcas y categorías. Intenta de nuevo."
-      />
-    );
-  }
-
   return (
-    <Stack spacing={3} sx={{ width: "100%" }}>
-      <AddProductBanner variant="single" />
-
-      <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 2 }}>
-        <ProductFormFields
-          control={control}
-          errors={errors}
-          setValue={setValue}
-          getValues={getValues}
-          refs={refs}
-          measures={measures as Measure[]}
-          productModels={productModels as ProductModel[]}
-          photo={photo}
-          setPhoto={setPhoto}
-          loading={loading}
-          loadingRefs={loadingRefs}
-        />
-      </Paper>
-
-      <Divider />
-      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
+      <DialogTitle sx={{ fontWeight: 600 }}>Agregar producto</DialogTitle>
+      <DialogContent>
+        {loadingRefs ? (
+          <Box sx={{ py: 4 }}>
+            <Loading />
+          </Box>
+        ) : errorRefs ? (
+          <ErrorUI
+            onRetry={() => window.location.reload()}
+            message="No pudimos cargar marcas y categorías. Intenta de nuevo."
+          />
+        ) : (
+          <ProductFormFields
+            control={control}
+            errors={errors}
+            setValue={setValue}
+            getValues={getValues}
+            refs={refs}
+            measures={measures as Measure[]}
+            productModels={productModels as ProductModel[]}
+            photo={photo}
+            setPhoto={setPhoto}
+            loading={loading}
+            loadingRefs={loadingRefs}
+          />
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} variant="outlined" disabled={loading}>
+          Cancelar
+        </Button>
         <LoadingButton
-          loading={loading}
-          disabled={loading || !isValid}
           onClick={handleSubmit(onSubmit)}
+          loading={loading}
+          disabled={loading || loadingRefs || !isValid}
           variant="contained"
-          size="large"
         >
           Agregar producto
         </LoadingButton>
-      </Box>
-    </Stack>
+      </DialogActions>
+    </Dialog>
   );
 };
 
-export default AddProductSingle;
+export default CreateProductDialog;

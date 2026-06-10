@@ -1,5 +1,5 @@
-import ProductsTabs from "./ProductsTabs";
+import Products from "./Products";
 
 export default async function ProductsPage() {
-  return <ProductsTabs />;
+  return <Products />;
 }
