@@ -70,6 +70,7 @@ const InvitationModal = ({ open, onClose, onSubmit }) => {
               <TextField
                 {...field}
                 label="Email"
+                type="email"
                 fullWidth
                 error={!!error}
                 helperText={error?.message}

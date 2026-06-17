@@ -9,8 +9,8 @@ import { adminSectionsMobile, noAuthSectionsMobile, userSectionsMobile } from ".
 import { BurgerMenu } from "../../components/BurgerMenu";
 import { Menu } from "@mui/icons-material";
 import Cart from "../../components/Cart";
-import PricingModeToggle from "../../components/PricingModeToggle";
 import NotificationsBell from "../../components/NotificationsBell";
+import PricesLegendChip from "../../components/PricesLegendChip";
 import { MainNavbarDesktop } from "./MainNavbarDesktop";
 
 const SearchInput = dynamic(() => import("../../components/Search"), {
@@ -52,7 +52,7 @@ const MainNavbarMobile = ({ session }) => {
       </Link>
 
       <Box display="flex" alignItems="center" gap={0.5}>
-        <PricingModeToggle />
+        {isAuthenticated && !isAdmin && <PricesLegendChip compact />}
         <SearchInput />
         {!isAdmin && <Cart />}
         {isAuthenticated && <NotificationsBell />}

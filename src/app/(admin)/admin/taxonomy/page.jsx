@@ -1,5 +1,5 @@
-import TaxonomyTabs from "./TaxonomyTabs";
+import TaxonomyDrilldown from "./TaxonomyDrilldown";
 
 export default function TaxonomyPage() {
-  return <TaxonomyTabs />;
+  return <TaxonomyDrilldown />;
 }

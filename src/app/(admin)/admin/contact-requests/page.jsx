@@ -1,5 +1,5 @@
-import ContactRequests from "./ContactRequests";
+import { redirect } from "next/navigation";
 
 export default function ContactRequestsPage() {
-  return <ContactRequests />;
+  redirect("/admin/clients?tab=solicitudes");
 }

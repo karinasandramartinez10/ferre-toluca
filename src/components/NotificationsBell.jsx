@@ -39,7 +39,7 @@ export default function NotificationsBell({ color }) {
       await markAsRead(notification.id);
     }
     if (notification.type === "contact-request" || notification.data?.contactRequestId) {
-      router.push("/admin/contact-requests");
+      router.push("/admin/clients?tab=solicitudes");
     } else if (notification.type === "inbox" && notification.data?.quoteId) {
       const role = session?.user?.role;
       if (role === "admin" || role === "superadmin") {

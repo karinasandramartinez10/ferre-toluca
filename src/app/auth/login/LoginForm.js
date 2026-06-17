@@ -1,14 +1,10 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { Grid, IconButton, InputAdornment, TextField } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import {
-  AlternateEmailOutlined,
-  Visibility,
-  VisibilityOff,
-} from "@mui/icons-material";
+import { AlternateEmailOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoginSchema } from "../../../schemas/auth/login";
 import { runIfFn } from "../../../utils/function";
 
@@ -43,6 +39,7 @@ const LoginForm = ({ onSubmit, loading, error, children }) => {
             render={({ field, fieldState: { invalid, error } }) => (
               <TextField
                 fullWidth
+                type="email"
                 error={invalid}
                 helperText={error?.message && error.message}
                 label="Correo electrónico"
@@ -107,4 +104,4 @@ const LoginForm = ({ onSubmit, loading, error, children }) => {
   );
 };
 
-export default LoginForm
+export default LoginForm;

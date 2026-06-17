@@ -1,7 +1,7 @@
 import { Box, Card, Typography, Tooltip, Chip, Stack } from "@mui/material";
 import { CloudinaryImage } from "../../../../../components/CloudinaryImage";
 import { formatPrice } from "../../../../../utils/currency";
-import { PRICING_LABELS } from "../../../../../constants/pricing";
+import { TIER_LABELS } from "../../../../../constants/pricing";
 
 export const ProductItem = ({ product }) => {
   const name = product.name;
@@ -52,10 +52,10 @@ export const ProductItem = ({ product }) => {
             )}
             {priceType && unitPrice && (
               <Chip
-                label={PRICING_LABELS[priceType] || priceType}
+                label={TIER_LABELS[priceType] || priceType}
                 size="small"
                 variant="outlined"
-                color={priceType === "wholesale" ? "secondary" : "default"}
+                color={priceType === "A" ? "default" : "secondary"}
               />
             )}
           </Box>

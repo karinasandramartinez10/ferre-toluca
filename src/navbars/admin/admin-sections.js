@@ -1,16 +1,8 @@
-import {
-  Storefront,
-  ContactMail,
-  MailOutline,
-  Inventory,
-  AddBusiness,
-  Category,
-  Settings,
-} from "@mui/icons-material";
+import { Storefront, Inventory, AddBusiness, Category, Groups } from "@mui/icons-material";
 
 export const adminSections = [
   {
-    title: "Ventas",
+    title: null,
     items: [
       {
         icon: <Storefront />,
@@ -18,28 +10,12 @@ export const adminSections = [
         href: "/admin/quotes",
         visibleFor: ["admin", "superadmin"],
       },
-    ],
-  },
-  {
-    title: "Clientes",
-    items: [
       {
-        icon: <ContactMail />,
-        text: "Solicitudes",
-        href: "/admin/contact-requests",
+        icon: <Groups />,
+        text: "Clientes",
+        href: "/admin/clients",
         visibleFor: ["admin", "superadmin"],
       },
-      {
-        icon: <MailOutline />,
-        text: "Invitaciones",
-        href: "/admin/invitations",
-        visibleFor: ["superadmin"],
-      },
-    ],
-  },
-  {
-    title: "Catálogo",
-    items: [
       {
         icon: <Inventory />,
         text: "Productos",
@@ -56,17 +32,6 @@ export const adminSections = [
         icon: <Category />,
         text: "Clasificación",
         href: "/admin/taxonomy",
-        visibleFor: ["superadmin"],
-      },
-    ],
-  },
-  {
-    title: "Configuración",
-    items: [
-      {
-        icon: <Settings />,
-        text: "Ajustes",
-        href: "/admin/settings",
         visibleFor: ["superadmin"],
       },
     ],

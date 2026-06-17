@@ -13,7 +13,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import Image from "next/image";
 import NextLink from "next/link";
-import { logout } from "../actions/logout";
+import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 const BurgerMenuItem = ({ icon, text, href, onClose }) => {
@@ -47,17 +47,19 @@ const BurgerMenuItem = ({ icon, text, href, onClose }) => {
 const BurgerMenuSection = ({ title, items, onClose }) => {
   return (
     <List sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-      <ListItemText
-        sx={{
-          paddingLeft: 2,
-        }}
-        primary={title ? title : null}
-        primaryTypographyProps={{
-          color: "primary.main",
-          fontWeight: "medium",
-          variant: "body3",
-        }}
-      />
+      {title && (
+        <ListItemText
+          sx={{
+            paddingLeft: 2,
+          }}
+          primary={title}
+          primaryTypographyProps={{
+            color: "primary.main",
+            fontWeight: "medium",
+            variant: "body3",
+          }}
+        />
+      )}
       {items.map((option, index) => (
         <BurgerMenuItem key={`${option.text}-${index}`} {...option} onClose={onClose} />
       ))}
@@ -66,7 +68,7 @@ const BurgerMenuSection = ({ title, items, onClose }) => {
 };
 
 export const BurgerMenu = ({ toggleDrawer, sections, showLogout, src }) => {
-  const logoutButton = <Button onClick={() => logout()}>Cerrar sesión</Button>;
+  const logoutButton = <Button onClick={() => signOut({ callbackUrl: "/" })}>Cerrar sesión</Button>;
 
   return (
     <Box sx={{ pt: 1, px: 2, pb: 2, height: 1 }}>

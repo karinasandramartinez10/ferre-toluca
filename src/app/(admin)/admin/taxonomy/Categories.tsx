@@ -12,7 +12,11 @@ import type { Category } from "../../../../types/catalog";
 import type { ModalMode } from "../../../../types/ui";
 import type { GridPaginationModel } from "@mui/x-data-grid";
 
-const Categories = () => {
+interface CategoriesProps {
+  onDrill?: (row: Category) => void;
+}
+
+const Categories = ({ onDrill }: CategoriesProps) => {
   const [rows, setRows] = useState<Category[]>([]);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -152,6 +156,8 @@ const Categories = () => {
         rowCount={rowCount}
         title="categoría"
         handleClick={openAddModal}
+        onDrillClick={onDrill}
+        drillLabel="Ver subcategorías"
       />
       <ActionModal
         title="Categoría"

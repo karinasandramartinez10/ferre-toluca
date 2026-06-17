@@ -2,7 +2,7 @@ import { Card, CardContent, Typography, Chip, Box } from "@mui/material";
 import { CloudinaryImage } from "../../../../../components/CloudinaryImage";
 import { toCapitalizeWords } from "../../../../../utils/cases";
 import { formatPrice } from "../../../../../utils/currency";
-import { PRICING_LABELS } from "../../../../../constants/pricing";
+import { TIER_LABELS } from "../../../../../constants/pricing";
 import type { QuoteProduct } from "../../../../../types/quote";
 
 interface QuoteProductCardProps {
@@ -45,10 +45,10 @@ const QuoteProductCard = ({ product }: QuoteProductCardProps) => {
             </Typography>
             {priceType && (
               <Chip
-                label={PRICING_LABELS[priceType] || priceType}
+                label={TIER_LABELS[priceType] || priceType}
                 size="small"
                 variant="outlined"
-                color={priceType === "wholesale" ? "secondary" : "default"}
+                color={priceType === "A" ? "default" : "secondary"}
               />
             )}
           </Box>

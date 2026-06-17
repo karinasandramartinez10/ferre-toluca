@@ -2,35 +2,47 @@
 
 import {
   AppBar,
+  Avatar,
   Badge,
   Box,
-  Button,
+  Chip,
   Collapse,
   Divider,
   Drawer,
-  Grid,
-  List,
-  ListItem,
-  ListItemButton,
-  ListSubheader,
-  Stack,
-  Toolbar,
-  Typography,
   IconButton,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  ListSubheader,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Tooltip,
+  Typography,
+  useMediaQuery,
 } from "@mui/material";
-import { ArrowBackIosNewRounded, ExpandLess, ExpandMore } from "@mui/icons-material";
+import { useTheme } from "@mui/material/styles";
+import {
+  ArrowBackIosNewRounded,
+  ExpandLess,
+  ExpandMore,
+  Logout,
+  Menu as MenuIcon,
+} from "@mui/icons-material";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import NextLink from "next/link";
-import AdminNavbarMobile from "../../navbars/admin/AdminNavbarMobile";
 import { getPageMetadata } from "./routes-metadata";
 import { drawerGroups } from "./drawerItems";
-import { logout } from "../../actions/logout";
+import { signOut } from "next-auth/react";
 import NotificationsBell from "../../components/NotificationsBell";
 import { useNotificationsContext } from "../../context/notifications/useNotificationsContext";
 
-const drawerWidth = 200;
+const FULL_WIDTH = 220;
+const MINI_WIDTH = 72;
+const APPBAR_HEIGHT = 60;
 
 const isItemActive = (pathname, item) =>
   pathname === item.pathname || (item.isDynamic && pathname.startsWith(item.pathname));
@@ -49,209 +61,254 @@ const getBadgeCount = (notifications, badgeType) => {
 export const AdminLayout = ({ children, session }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { notifications } = useNotificationsContext();
 
   const { title, subtitle } = getPageMetadata(pathname);
-
   const role = session?.user?.role;
+  const email = session?.user?.email || "";
 
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [userAnchor, setUserAnchor] = useState(null);
   const [openGroups, setOpenGroups] = useState(() => {
     const initial = {};
     drawerGroups.forEach((group) => {
-      const hasActiveItem = group.items.some(
-        (item) => item.visibleFor.includes(role) && isItemActive(pathname, item)
-      );
-      initial[group.label] = hasActiveItem;
+      if (group.label) initial[group.label] = true;
     });
     return initial;
   });
 
-  const toggleGroup = (label) => {
-    setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
+  const mini = collapsed && !isMobile;
+  const sidebarWidth = mini ? MINI_WIDTH : FULL_WIDTH;
+
+  const toggleGroup = (label) => setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
+  const handleNavClick = () => {
+    if (isMobile) setMobileOpen(false);
   };
 
-  const drawer = useMemo(
-    () => (
-      <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-        <Box sx={{ flexGrow: 1, overflowY: "auto", px: 1 }}>
-          <Box width="100%" padding={2} position="relative" height="80px">
-            <NextLink href="/">
-              <Image src={"/images/texcoco_logo2.svg"} alt="ferreteria texcoco" fill />
-            </NextLink>
-          </Box>
-          <List sx={{ pt: 0 }}>
-            {drawerGroups.map((group) => {
-              const visibleItems = group.items.filter((item) => item.visibleFor.includes(role));
-              if (visibleItems.length === 0) return null;
-
-              const isOpen = openGroups[group.label] ?? false;
-
-              return (
-                <Box key={group.label}>
-                  <ListSubheader
-                    onClick={() => toggleGroup(group.label)}
-                    sx={{
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      bgcolor: "transparent",
-                      fontSize: "0.7rem",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      color: "text.disabled",
-                      lineHeight: "32px",
-                      px: 2,
-                      mt: 1,
-                      userSelect: "none",
-                    }}
-                  >
-                    {group.label}
-                    {isOpen ? (
-                      <ExpandLess sx={{ fontSize: 16 }} />
-                    ) : (
-                      <ExpandMore sx={{ fontSize: 16 }} />
-                    )}
-                  </ListSubheader>
-                  <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                    <Stack gap={0.5} sx={{ px: 1 }}>
-                      {visibleItems.map((item) => {
-                        const active = isItemActive(pathname, item);
-                        const badgeCount = getBadgeCount(notifications, item.badgeType);
-
-                        return (
-                          <NextLink key={item.text} href={item.pathname}>
-                            <ListItem disablePadding>
-                              <ListItemButton
-                                sx={(theme) => ({
-                                  color: active ? "#FFF" : theme.palette.primary.main,
-                                  borderRadius: 2,
-                                  gap: 1,
-                                  py: 0.75,
-                                  fontSize: "0.85rem",
-                                  backgroundColor: active
-                                    ? theme.palette.primary.hover
-                                    : "transparent",
-                                  "&:hover": {
-                                    color: "#FFF",
-                                    backgroundColor: theme.palette.primary.hover,
-                                    transition: "background-color 0.2s ease",
-                                  },
-                                })}
-                              >
-                                {item.icon}
-                                {item.text}
-                                {badgeCount > 0 && (
-                                  <Badge
-                                    badgeContent={badgeCount}
-                                    color="error"
-                                    sx={{ ml: "auto" }}
-                                  />
-                                )}
-                              </ListItemButton>
-                            </ListItem>
-                          </NextLink>
-                        );
-                      })}
-                    </Stack>
-                  </Collapse>
-                </Box>
-              );
-            })}
-          </List>
-        </Box>
-        <Divider sx={{ mx: 2 }} />
-        <Box sx={{ p: 2 }}>
-          <Button variant="outlined" color="primary" fullWidth onClick={() => logout()}>
-            Cerrar sesión
-          </Button>
-        </Box>
-      </Box>
-    ),
-    [pathname, role, openGroups, notifications]
-  );
-
   const pathSegments = pathname.split("/").filter(Boolean);
-  // por ejemplo: si hay más de 2 segmentos (p.ej. /admin/quotes/123)
   const showBackButton = pathSegments.length > 2;
 
+  const renderItem = (item) => {
+    const active = isItemActive(pathname, item);
+    const badgeCount = getBadgeCount(notifications, item.badgeType);
+
+    const button = (
+      <NextLink
+        key={item.text}
+        href={item.pathname}
+        onClick={handleNavClick}
+        style={{ textDecoration: "none" }}
+      >
+        <ListItemButton
+          sx={(t) => ({
+            color: active ? "#FFF" : t.palette.primary.main,
+            borderRadius: 2,
+            mb: 0.5,
+            justifyContent: mini ? "center" : "flex-start",
+            px: mini ? 1 : 1.5,
+            py: 0.75,
+            backgroundColor: active ? t.palette.primary.hover : "transparent",
+            "&:hover": { color: "#FFF", backgroundColor: t.palette.primary.hover },
+          })}
+        >
+          <ListItemIcon sx={{ minWidth: 0, mr: mini ? 0 : 1.5, color: "inherit" }}>
+            {item.icon}
+          </ListItemIcon>
+          {!mini && (
+            <ListItemText primary={item.text} primaryTypographyProps={{ fontSize: "0.85rem" }} />
+          )}
+          {!mini && badgeCount > 0 && (
+            <Badge badgeContent={badgeCount} color="error" sx={{ ml: "auto", mr: 1 }} />
+          )}
+        </ListItemButton>
+      </NextLink>
+    );
+
+    return mini ? (
+      <Tooltip key={item.text} title={item.text} placement="right">
+        <Box>{button}</Box>
+      </Tooltip>
+    ) : (
+      button
+    );
+  };
+
+  const navContent = (
+    <List sx={{ pt: 1 }}>
+      {drawerGroups.map((group, groupIndex) => {
+        const visibleItems = group.items.filter((item) => item.visibleFor.includes(role));
+        if (visibleItems.length === 0) return null;
+
+        // En mini, o grupo sin título → items directos (sin header)
+        if (mini || !group.label) {
+          return (
+            <Box key={group.label || `top-${groupIndex}`} sx={{ px: 1, mt: group.label ? 1 : 0 }}>
+              {visibleItems.map(renderItem)}
+            </Box>
+          );
+        }
+
+        const isOpen = openGroups[group.label] ?? true;
+        return (
+          <Box key={group.label}>
+            <ListSubheader
+              onClick={() => toggleGroup(group.label)}
+              sx={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                bgcolor: "transparent",
+                fontSize: "0.7rem",
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                color: "text.disabled",
+                lineHeight: "32px",
+                px: 2,
+                mt: 1,
+                userSelect: "none",
+              }}
+            >
+              {group.label}
+              {isOpen ? <ExpandLess sx={{ fontSize: 16 }} /> : <ExpandMore sx={{ fontSize: 16 }} />}
+            </ListSubheader>
+            <Collapse in={isOpen} timeout="auto" unmountOnExit>
+              <Box sx={{ px: 1 }}>{visibleItems.map(renderItem)}</Box>
+            </Collapse>
+          </Box>
+        );
+      })}
+    </List>
+  );
+
   return (
-    <Box
-      component="section"
-      sx={{
-        margin: "0 auto",
-        maxWidth: "1440px",
-      }}
-    >
-      <Box component="nav" sx={{ display: { xs: "block", sm: "none" } }}>
-        <AppBar>
-          <Toolbar sx={{ paddingRight: "8px" }}>
-            <AdminNavbarMobile role={role} />
-            <Box flexGrow={1} />
-          </Toolbar>
-        </AppBar>
-      </Box>
-      <main>
-        <Box
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+      <AppBar
+        position="fixed"
+        elevation={0}
+        sx={{
+          height: APPBAR_HEIGHT,
+          justifyContent: "center",
+          bgcolor: "background.paper",
+          color: "text.primary",
+          borderBottom: "1px solid",
+          borderColor: "divider",
+          zIndex: (t) => t.zIndex.drawer + 1,
+        }}
+      >
+        <Toolbar sx={{ minHeight: `${APPBAR_HEIGHT}px !important`, gap: 1 }}>
+          <IconButton
+            edge="start"
+            onClick={() => (isMobile ? setMobileOpen(true) : setCollapsed((c) => !c))}
+            aria-label="Abrir/cerrar menú"
+          >
+            <MenuIcon />
+          </IconButton>
+          <Box sx={{ position: "relative", width: 100, height: 34 }}>
+            <Image
+              src="/images/texcoco_logo2.svg"
+              alt="Ferre Toluca"
+              fill
+              sizes="100px"
+              style={{ objectFit: "contain" }}
+            />
+          </Box>
+          <Box sx={{ flexGrow: 1 }} />
+          <NotificationsBell color="primary.main" />
+          <IconButton onClick={(e) => setUserAnchor(e.currentTarget)} aria-label="Cuenta">
+            <Avatar sx={{ width: 32, height: 32, bgcolor: "primary.main", fontSize: "0.9rem" }}>
+              {(email[0] || "A").toUpperCase()}
+            </Avatar>
+          </IconButton>
+          <Menu
+            anchorEl={userAnchor}
+            open={!!userAnchor}
+            onClose={() => setUserAnchor(null)}
+            anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            transformOrigin={{ vertical: "top", horizontal: "right" }}
+          >
+            <Box sx={{ px: 2, py: 1, minWidth: 220 }}>
+              <Typography variant="body2" fontWeight={600} noWrap>
+                {email || "Administrador"}
+              </Typography>
+              {role && <Chip label={role} size="small" variant="outlined" sx={{ mt: 0.5 }} />}
+            </Box>
+            <Divider />
+            <MenuItem onClick={() => signOut({ callbackUrl: "/" })}>
+              <Logout fontSize="small" sx={{ mr: 1 }} />
+              Cerrar sesión
+            </MenuItem>
+          </Menu>
+        </Toolbar>
+      </AppBar>
+
+      {isMobile ? (
+        <Drawer
+          anchor="left"
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          ModalProps={{ keepMounted: true }}
+          sx={{ "& .MuiDrawer-paper": { width: FULL_WIDTH, boxSizing: "border-box" } }}
+        >
+          <Toolbar sx={{ minHeight: `${APPBAR_HEIGHT}px !important` }} />
+          {navContent}
+        </Drawer>
+      ) : (
+        <Drawer
+          variant="permanent"
           sx={{
-            width: { xs: "100%", sm: `calc(100% - ${drawerWidth}px)` },
-            marginLeft: { xs: 0, sm: `${drawerWidth}px` },
-            padding: { xs: "16px", sm: "24px" },
+            width: sidebarWidth,
+            flexShrink: 0,
+            whiteSpace: "nowrap",
+            "& .MuiDrawer-paper": {
+              width: sidebarWidth,
+              boxSizing: "border-box",
+              overflowX: "hidden",
+              borderRight: "1px solid",
+              borderColor: "divider",
+              transition: theme.transitions.create("width", {
+                duration: theme.transitions.duration.shorter,
+              }),
+            },
           }}
         >
-          <Drawer
-            variant="permanent"
-            sx={{
-              display: { xs: "none", sm: "block" },
-              width: "100%",
-              flexShrink: 0,
-              [`& .MuiDrawer-paper`]: {
-                width: drawerWidth,
-                boxSizing: "border-box",
-              },
-            }}
-          >
-            {drawer}
-          </Drawer>
+          <Toolbar sx={{ minHeight: `${APPBAR_HEIGHT}px !important` }} />
+          {navContent}
+        </Drawer>
+      )}
 
-          <Grid
-            sx={{ marginTop: { xs: "50px", md: "0px" } }}
-            display="flex"
-            flexDirection="column"
-            gap={2}
-          >
-            <Grid item xs={12} display="flex" alignItems="center" gap={1}>
-              <Box width="100%">
-                <Box display="flex" gap={1.5} justifyContent="space-between">
-                  <Box display="flex" gap={1}>
-                    {showBackButton && (
-                      <IconButton onClick={() => router.back()}>
-                        <ArrowBackIosNewRounded
-                          sx={{
-                            color: "primary.main",
-                          }}
-                        />
-                      </IconButton>
-                    )}
-                    <Typography variant="h1">{title}</Typography>
-                  </Box>
-                  <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                    <NotificationsBell color="primary.main" />
-                  </Box>
-                </Box>
-                <Typography sx={{ color: "#838383", fontWeight: 500 }} variant="body">
-                  {subtitle}
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12}>
-              {children}
-            </Grid>
-          </Grid>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          minWidth: 0,
+          mt: `${APPBAR_HEIGHT}px`,
+          p: { xs: 2, sm: 3 },
+        }}
+      >
+        <Box sx={{ maxWidth: 1440, mx: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
+          <Box>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              {showBackButton && (
+                <IconButton onClick={() => router.back()}>
+                  <ArrowBackIosNewRounded sx={{ color: "primary.main" }} />
+                </IconButton>
+              )}
+              <Typography variant="h1">{title}</Typography>
+            </Box>
+            {subtitle && (
+              <Typography sx={{ color: "text.secondary", fontWeight: 500 }} variant="body">
+                {subtitle}
+              </Typography>
+            )}
+          </Box>
+          <Box>{children}</Box>
         </Box>
-      </main>
-      <footer></footer>
+      </Box>
     </Box>
   );
 };

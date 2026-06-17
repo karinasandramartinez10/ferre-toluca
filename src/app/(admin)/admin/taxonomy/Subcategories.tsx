@@ -11,13 +11,19 @@ import {
 import { revalidateSubcategoryPage } from "../../../../actions/revalidate";
 import { getApiErrorMessage } from "../../../../utils/apiError";
 import ActionModal from "../../../../components/ActionModal";
-import { toSlug } from "../../../../utils/cases";
+import { toSlug, toCapitalizeWords } from "../../../../utils/cases";
 import SubcategoriesTable from "../../../../components/CrudAdminTable";
 import { subcategoriesColumns } from "./subcategoriesColumns";
 import type { Category, Subcategory } from "../../../../types/catalog";
 import type { GridPaginationModel } from "@mui/x-data-grid";
 
-const Subcategories = () => {
+interface SubcategoriesProps {
+  parentId?: string;
+  parentName?: string;
+  onDrill?: (row: Subcategory) => void;
+}
+
+const Subcategories = ({ parentId, parentName, onDrill }: SubcategoriesProps) => {
   const [rows, setRows] = useState<Subcategory[]>([]);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -35,6 +41,7 @@ const Subcategories = () => {
   const fetchInitialData = useCallback(async () => {
     try {
       const data = await getSubcategories({
+        ...(parentId ? { categoryId: parentId } : {}),
         page: paginationModel.page + 1,
         size: paginationModel.pageSize,
       });
@@ -43,13 +50,15 @@ const Subcategories = () => {
     } catch (error) {
       console.error("Error fetching initial data:", error);
     }
-  }, [paginationModel]);
+  }, [paginationModel, parentId]);
 
   useEffect(() => {
     fetchInitialData();
   }, [fetchInitialData]);
 
+  // El selector de categoría solo se usa en modo standalone (sin padre del contexto)
   useEffect(() => {
+    if (parentId) return;
     const fetchCategories = async () => {
       try {
         const categoriesData = await getCategories({ size: 1000 });
@@ -60,15 +69,15 @@ const Subcategories = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, [parentId]);
 
-  const handleAddSubcategory = async (data: { name: string; categoryId: string }) => {
+  const handleAddSubcategory = async (data: { name: string; categoryId?: string }) => {
     try {
       setLoading(true);
 
       const body = {
         name: data.name,
-        categoryId: data.categoryId,
+        categoryId: parentId ?? data.categoryId,
       };
 
       const response = await createSubcategory(body);
@@ -107,13 +116,13 @@ const Subcategories = () => {
     }
   };
 
-  const handleEditSubcategory = async (data: { name: string; categoryId: string }) => {
+  const handleEditSubcategory = async (data: { name: string; categoryId?: string }) => {
     try {
       setLoading(true);
 
       const body = {
         name: data.name,
-        categoryId: data.categoryId,
+        categoryId: parentId ?? data.categoryId,
       };
 
       const response = await updateSubcategory(selectedSubcategory!.id, body);
@@ -163,6 +172,8 @@ const Subcategories = () => {
     setIsModalOpen(true);
   };
 
+  const scopeName = parentName ? toCapitalizeWords(parentName) : "";
+
   return (
     <>
       <SubcategoriesTable
@@ -174,19 +185,25 @@ const Subcategories = () => {
         rowCount={rowCount}
         title="subcategoría"
         handleClick={openAddModal}
+        onDrillClick={onDrill}
+        drillLabel="Ver tipos"
+        scopeLabel={parentName ? `Subcategorías de ${scopeName}` : undefined}
       />
       <ActionModal
         title="Subcategoría"
-        optionTitle="Selecciona la categoría a asociar"
-        option="categoryId"
+        {...(parentId
+          ? {}
+          : {
+              optionTitle: "Selecciona la categoría a asociar",
+              option: "categoryId",
+              options: categories,
+            })}
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={mode === "create" ? handleAddSubcategory : handleEditSubcategory}
         mode={mode}
         selected={selectedSubcategory}
         loading={loading}
-        options={categories}
-        groupBy={undefined}
       />
     </>
   );

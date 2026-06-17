@@ -1,46 +1,26 @@
 import { api } from "../config";
 import privateApi from "../config/private";
-import { withPricingMode } from "../utils/params";
 
-export const getProductsByBrand = async (id, page = 1, size = 10, pricingMode) => {
+export const getProductsByBrand = async (id, page = 1, size = 10) => {
   try {
-    const params = withPricingMode({ page, size }, pricingMode);
-    const { data } = await api.get(`/product/brand/${id}`, { params });
+    const { data } = await privateApi.get(`/product/brand/${id}`, { params: { page, size } });
     return data.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch products by brand");
   }
 };
 
-/**
- * Obtiene productos agrupados usando el endpoint especificado.
- * @param {string} endpoint - Endpoint dinámico: 'groupedBrand', 'groupedCategory', 'grouped', etc.
- * @param {Object} options - Parámetros opcionales.
- * @param {number} [options.page=1] - Página.
- * @param {number} [options.size=10] - Tamaño de página.
- * @param {string|number} [options.id] - ID para brand o category, según aplique.
- * @returns {Promise<Object>} - Datos de productos agrupados.
- */
-
-export const getGroupedProducts = async (
-  endpoint,
-  { page = 1, size = 10, id, q, pricingMode } = {}
-) => {
+export const getGroupedProducts = async (endpoint, { page = 1, size = 10, id, q } = {}) => {
   try {
-    const params = {
-      page,
-      size,
-    };
+    const params = { page, size };
 
     if (q) {
       params.q = q;
     }
 
-    withPricingMode(params, pricingMode);
-
     const url = id ? `/product/${endpoint}/${id}` : `/product/${endpoint}`;
 
-    const { data } = await api.get(url, { params });
+    const { data } = await privateApi.get(url, { params });
 
     return {
       data: {
@@ -54,31 +34,29 @@ export const getGroupedProducts = async (
   }
 };
 
-export const getProductsByCategory = async (id, page = 1, size = 10, pricingMode) => {
+export const getProductsByCategory = async (id, page = 1, size = 10) => {
   try {
-    const params = withPricingMode({ page, size }, pricingMode);
-    const { data } = await api.get(`/product/category/${id}`, { params });
+    const { data } = await privateApi.get(`/product/category/${id}`, { params: { page, size } });
     return data.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch products by categories");
   }
 };
 
-export const getProductsByQuery = async (query, pricingMode) => {
+export const getProductsByQuery = async (query) => {
   try {
-    const params = withPricingMode({ q: query, size: 10, page: 1 }, pricingMode);
-    const data = await api.get("/product/search", { params });
+    const data = await privateApi.get("/product/search", {
+      params: { q: query, size: 10, page: 1 },
+    });
     return data.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Failed to fetch products by query");
   }
 };
 
-export const getProductById = async (id, pricingMode) => {
+export const getProductById = async (id) => {
   try {
-    const params = withPricingMode({}, pricingMode);
-    const response = await api.get(`/product/${id}`, { params });
-
+    const response = await privateApi.get(`/product/${id}`);
     return response.data.data;
   } catch (error) {
     return {};
@@ -111,21 +89,6 @@ export const fetchAllProducts = async (page = 1, size = 10) => {
   }
 };
 
-/**
- * Obtiene productos con filtros combinados.
- * @param {Object} filters - Filtros a aplicar.
- * @param {number[]} [filters.brandIds] - IDs de marcas.
- * @param {number[]} [filters.categoryIds] - IDs de categorías.
- * @param {number[]} [filters.subcategoryIds] - IDs de subcategorías.
- * @param {number[]} [filters.typeIds] - IDs de tipos.
- * @param {number[]} [filters.modelIds] - IDs de modelos.
- * @param {number[]} [filters.measureIds] - IDs de medidas.
- * @param {number[]} [filters.designIds] - IDs de diseños.
- * @param {string} [filters.q] - Búsqueda por texto.
- * @param {number} [filters.page=1] - Página.
- * @param {number} [filters.size=10] - Tamaño de página.
- * @returns {Promise<Object>} - Datos de productos filtrados.
- */
 export const getFilteredProducts = async (filters = {}) => {
   try {
     const {
@@ -139,7 +102,6 @@ export const getFilteredProducts = async (filters = {}) => {
       designIds,
       qualifiers,
       q,
-      pricingMode,
       page = 1,
       size = 10,
     } = filters;
@@ -156,9 +118,8 @@ export const getFilteredProducts = async (filters = {}) => {
     if (designIds?.length) params.designIds = designIds.join(",");
     if (qualifiers?.length) params.qualifiers = qualifiers.join(",");
     if (q) params.q = q;
-    withPricingMode(params, pricingMode);
 
-    const { data } = await api.get("/product/grouped", { params });
+    const { data } = await privateApi.get("/product/grouped", { params });
 
     return {
       products: data.products,
@@ -171,20 +132,10 @@ export const getFilteredProducts = async (filters = {}) => {
   }
 };
 
-/**
- * Obtiene las opciones disponibles para los filtros.
- * @param {Object} currentFilters - Filtros actuales para contexto.
- * @returns {Promise<Object>} - Opciones de filtros con conteos.
- */
-/**
- * Obtiene el árbol jerárquico del mega menu.
- * Solo incluye categorías/subcategorías/tipos con productos.
- * @returns {Promise<Array>} - Árbol de categorías con subcategorías y tipos anidados.
- */
-export const getMenuTree = async (pricingMode) => {
+export const getMenuTree = async () => {
   try {
-    const params = withPricingMode({}, pricingMode);
-    const { data } = await api.get("/product/menu-tree", { params });
+    // Navegación, sin precios → no requiere token (evita carga autenticada extra)
+    const { data } = await api.get("/product/menu-tree");
     return data.data;
   } catch (error) {
     console.error("Error fetching menu tree:", error);
@@ -192,7 +143,7 @@ export const getMenuTree = async (pricingMode) => {
   }
 };
 
-export const getFilterOptions = async (currentFilters = {}, pricingMode) => {
+export const getFilterOptions = async (currentFilters = {}) => {
   try {
     const {
       brandIds,
@@ -217,8 +168,8 @@ export const getFilterOptions = async (currentFilters = {}, pricingMode) => {
     if (secondaryMeasureIds?.length) params.secondaryMeasureIds = secondaryMeasureIds.join(",");
     if (designIds?.length) params.designIds = designIds.join(",");
     if (qualifiers?.length) params.qualifiers = qualifiers.join(",");
-    withPricingMode(params, pricingMode);
 
+    // Facetas de filtros, sin precios → no requiere token
     const { data } = await api.get("/product/filter-options", { params });
 
     return data.data;
@@ -230,7 +181,7 @@ export const getFilterOptions = async (currentFilters = {}, pricingMode) => {
 
 export const getRelatedProducts = async (id, limit = 8) => {
   try {
-    const { data } = await api.get(`/product/${id}/related`, {
+    const { data } = await privateApi.get(`/product/${id}/related`, {
       params: { limit },
     });
     return data;
@@ -242,7 +193,7 @@ export const getRelatedProducts = async (id, limit = 8) => {
 
 export const getBatchProducts = async (ids) => {
   try {
-    const { data } = await api.get("/product/batch", {
+    const { data } = await privateApi.get("/product/batch", {
       params: { ids: ids.join(",") },
     });
     return data;

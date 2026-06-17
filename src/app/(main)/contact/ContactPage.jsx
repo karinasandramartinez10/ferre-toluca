@@ -145,6 +145,7 @@ const ContactPage = () => {
               <TextField
                 {...field}
                 label="Correo electrónico"
+                type="email"
                 fullWidth
                 error={!!error}
                 helperText={error?.message}

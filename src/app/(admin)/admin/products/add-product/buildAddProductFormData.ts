@@ -20,8 +20,11 @@ interface ProductRow {
   modelName: string;
   measureId: string | null;
   measureValue: string;
-  retailPrice?: string;
-  wholesalePrice?: string;
+  priceA?: string;
+  priceB?: string;
+  priceC?: string;
+  priceD?: string;
+  isAvailable?: boolean;
 }
 
 export function buildAddProductFormData(values: ProductFormValues, rows: ProductRow[]): FormData {
@@ -70,11 +73,20 @@ export function buildAddProductFormData(values: ProductFormValues, rows: Product
     formData.append(`products[${index}][measureId]`, product.measureId || "");
     formData.append(`products[${index}][measureValue]`, product.measureValue || "");
 
-    if (product.retailPrice) {
-      formData.append(`products[${index}][retailPrice]`, product.retailPrice);
+    if (product.priceA) {
+      formData.append(`products[${index}][priceA]`, product.priceA);
     }
-    if (product.wholesalePrice) {
-      formData.append(`products[${index}][wholesalePrice]`, product.wholesalePrice);
+    if (product.priceB) {
+      formData.append(`products[${index}][priceB]`, product.priceB);
+    }
+    if (product.priceC) {
+      formData.append(`products[${index}][priceC]`, product.priceC);
+    }
+    if (product.priceD) {
+      formData.append(`products[${index}][priceD]`, product.priceD);
+    }
+    if (typeof product.isAvailable === "boolean") {
+      formData.append(`products[${index}][isAvailable]`, String(product.isAvailable));
     }
   });
 

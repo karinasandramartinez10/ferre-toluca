@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { getMenuTree } from "../../api/products";
 import { queryKeys } from "../../constants/queryKeys";
 import { staleTimes, gcTimes } from "../../constants/queryConfig";
-import { usePricingMode } from "../../context/pricing/usePricingMode";
 
 /**
  * Hook para manejar datos del mega menu.
@@ -18,12 +17,11 @@ import { usePricingMode } from "../../context/pricing/usePricingMode";
 export default function useMegaMenuData(enabled = false, serverCategories = []) {
   const [activeCategoryId, setActiveCategoryId] = useState(null);
   const [activeSubcategoryId, setActiveSubcategoryId] = useState(null);
-  const { pricingMode } = usePricingMode();
 
   // Fetch del árbol completo en una sola llamada
   const { data: tree = [], isLoading: loadingTree } = useQuery({
-    queryKey: queryKeys.menuTree(pricingMode),
-    queryFn: () => getMenuTree(pricingMode),
+    queryKey: queryKeys.menuTree,
+    queryFn: () => getMenuTree(),
     enabled,
     staleTime: staleTimes.STATIC,
     gcTime: gcTimes.LONG,

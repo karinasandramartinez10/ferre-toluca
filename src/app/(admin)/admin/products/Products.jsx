@@ -3,10 +3,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSnackbar } from "notistack";
 import { DataGrid } from "@mui/x-data-grid";
+import { Box, Button, Menu, MenuItem } from "@mui/material";
+import { Add, ArrowDropDown } from "@mui/icons-material";
 import { fetchAllProducts, updateProduct } from "../../../../api/products";
 import { revalidateProduct } from "../../../../actions/revalidate";
 import { getProductColumns } from "./constants";
 import ProductActionModal from "./ProductActionModal";
+import CreateProductDialog from "./CreateProductDialog";
+import BulkCsvDialog from "./add-product/BulkCsvDialog";
 import { CustomNoRowsOverlay } from "../../../../components/CustomNoRows";
 import { localeText } from "../../../../constants/x-datagrid/localeText";
 import { CustomToolbar } from "../../../../components/DataGrid/CustomToolbar";
@@ -20,11 +24,11 @@ const ProductsPage = () => {
     products: [],
     count: 0,
     page: 0,
-    pageSize: 10,
+    pageSize: 100,
   });
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 10,
+    pageSize: 100,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -32,6 +36,10 @@ const ProductsPage = () => {
   // Modal
   const [selected, setSelected] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Crear (menú + dialogs)
+  const [createMode, setCreateMode] = useState(null);
+  const [menuAnchor, setMenuAnchor] = useState(null);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -56,6 +64,13 @@ const ProductsPage = () => {
     setSelected(row);
     setIsModalOpen(true);
   };
+
+  const chooseCreate = (mode) => {
+    setCreateMode(mode);
+    setMenuAnchor(null);
+  };
+
+  const refetchList = () => loadPage(data.page, data.pageSize);
 
   const handleEditProduct = async (formData) => {
     try {
@@ -94,6 +109,22 @@ const ProductsPage = () => {
 
   return (
     <>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<Add />}
+          endIcon={<ArrowDropDown />}
+          onClick={(e) => setMenuAnchor(e.currentTarget)}
+        >
+          Agregar productos
+        </Button>
+        <Menu anchorEl={menuAnchor} open={!!menuAnchor} onClose={() => setMenuAnchor(null)}>
+          <MenuItem onClick={() => chooseCreate("individual")}>Producto individual</MenuItem>
+          <MenuItem onClick={() => chooseCreate("csv")}>Importar CSV</MenuItem>
+        </Menu>
+      </Box>
+
       <DataGrid
         localeText={localeText}
         density="compact"
@@ -133,6 +164,7 @@ const ProductsPage = () => {
           noRowsOverlay: CustomNoRowsOverlay,
           footer: CustomFooter,
         }}
+        slotProps={{ noRowsOverlay: { message: "Aún no hay productos" } }}
       />
       <ProductActionModal
         title="Producto"
@@ -142,6 +174,23 @@ const ProductsPage = () => {
         fetchData={() => loadPage(data.page, data.pageSize)}
         selected={selected}
         loading={loading}
+      />
+
+      <CreateProductDialog
+        open={createMode === "individual"}
+        onClose={() => setCreateMode(null)}
+        onCreated={() => {
+          setCreateMode(null);
+          refetchList();
+        }}
+      />
+
+      <BulkCsvDialog
+        open={createMode === "csv"}
+        onClose={() => {
+          setCreateMode(null);
+          refetchList();
+        }}
       />
     </>
   );

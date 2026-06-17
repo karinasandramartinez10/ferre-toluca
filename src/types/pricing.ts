@@ -1,3 +1,3 @@
-export type PricingMode = "wholesale" | "retail";
+export type PriceTier = "A" | "B" | "C" | "D";
 
-export type PriceType = "wholesale" | "retail";
+export type PriceType = PriceTier;
