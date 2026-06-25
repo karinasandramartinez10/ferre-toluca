@@ -98,47 +98,45 @@ const BrandCarousel = ({ brands }) => {
   return (
     <Box
       sx={{
-        backgroundColor: "#AE2424",
         width: "100vw",
         position: "relative",
         left: "calc(-50vw + 50%)",
+        pt: 2,
       }}
     >
-      <Box
-        sx={{
-          maxWidth: "1440px",
-          margin: "0 auto",
-          paddingX: "40px",
-          paddingTop: {
-            md: "16px !important",
-          },
-          paddingBottom: {
-            md: "32px !important",
-          },
-          ".slick-dots li button:before": {
-            color: "#FFF",
-          },
-          ".slick-dots li.slick-active button:before": {
-            color: "#FFF",
-          },
-        }}
-      >
-        <Typography component="h1" variant="h1" sx={{ color: "#FFF", marginBottom: "16px" }}>
-          Marcas
-        </Typography>
-        <Slider {...settings(handleBeforeChange, handleAfterChange)}>
-          {brands.map((brand, index) => (
-            <Box key={`${brand.id}-${index}`} mt={1} mb={2} px={1}>
-              <BannerCard
-                height="120px"
-                publicId={brand?.File?.publicId}
-                onClick={() => handleBrandClick(brand.codeName, brand.id)}
-                alt={brand.name}
-                index={index}
-              />
-            </Box>
-          ))}
-        </Slider>
+      <Box sx={{ maxWidth: "1440px", margin: "0 auto", paddingX: { xs: 3, xl: 0 } }}>
+        <Box
+          sx={{
+            backgroundColor: "#AE2424",
+            borderRadius: "12px",
+            px: { xs: 2, md: 4 },
+            pt: 3,
+            pb: 4,
+            ".slick-dots li button:before": {
+              color: "#FFF",
+            },
+            ".slick-dots li.slick-active button:before": {
+              color: "#FFF",
+            },
+          }}
+        >
+          <Typography component="h1" variant="h1" sx={{ color: "#FFF", marginBottom: "16px" }}>
+            Marcas
+          </Typography>
+          <Slider {...settings(handleBeforeChange, handleAfterChange)}>
+            {brands.map((brand, index) => (
+              <Box key={`${brand.id}-${index}`} mt={1} mb={2} px={1}>
+                <BannerCard
+                  height="120px"
+                  publicId={brand?.File?.publicId}
+                  onClick={() => handleBrandClick(brand.codeName, brand.id)}
+                  alt={brand.name}
+                  index={index}
+                />
+              </Box>
+            ))}
+          </Slider>
+        </Box>
       </Box>
     </Box>
   );

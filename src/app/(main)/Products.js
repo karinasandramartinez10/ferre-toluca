@@ -90,13 +90,11 @@ const Products = ({ products }) => {
   };
 
   return (
-    <Grid item xs={12} mt={2}>
+    <Grid item xs={12} mt={2} sx={{ px: { xs: 3, xl: 0 } }}>
       <Typography component="h1" variant="h1">
         Productos
       </Typography>
-      <Slider
-        {...settings(handleBeforeChange, handleAfterChange, products.length)}
-      >
+      <Slider {...settings(handleBeforeChange, handleAfterChange, products.length)}>
         {products.map((product, i) => (
           <Box key={`${product.id} - ${i}`} mt={1} mb={2} pr={2}>
             <ProductCard
