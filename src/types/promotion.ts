@@ -66,3 +66,73 @@ export interface ActivePromotion {
   startsAt: string;
   endsAt: string;
 }
+
+// Árbol de navegación que devuelve getMenuTree (categoría › subcategoría › tipo).
+export interface MenuTreeType {
+  id: number;
+  name: string;
+  productCount: number;
+}
+
+export interface MenuTreeSubcategory {
+  id: number;
+  name: string;
+  productCount: number;
+  types?: MenuTreeType[];
+}
+
+export interface MenuTreeCategory {
+  id: number;
+  name: string;
+  productCount: number;
+  subcategories?: MenuTreeSubcategory[];
+}
+
+// Admin: selección de ámbitos y tiles del board.
+export interface ScopeSelection {
+  kind: PromotionScopeType;
+  id: number;
+  label: string;
+}
+
+export interface ScopeOption {
+  id: number;
+  label: string;
+}
+
+export interface ScopeTileData {
+  id: number;
+  name: string;
+  label: string;
+  count?: number;
+  childCount?: number;
+  childLabel?: string;
+  image?: { publicId?: string; alt?: string };
+}
+
+export type CatalogScopeKind = "category" | "subcategory" | "type";
+
+export interface CatalogCrumb {
+  id: number;
+  name: string;
+}
+
+export interface CatalogView {
+  kind: CatalogScopeKind;
+  tiles: ScopeTileData[];
+}
+
+// Valores del formulario de promoción (composer y modal).
+export interface PromotionFormValues {
+  name: string;
+  type: PromotionType;
+  scopeKind?: PromotionScopeType;
+  scopeOption?: ScopeOption | null;
+  month: number;
+  year: number;
+  active: boolean;
+  discountPercentage?: number | null;
+  buyQuantity?: number | null;
+  receiveTotal?: number | null;
+  getDiscountPercentage?: number | null;
+}
