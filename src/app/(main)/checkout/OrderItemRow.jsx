@@ -4,11 +4,14 @@ import { Box, Typography, IconButton } from "@mui/material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import Image from "next/image";
 import { QuantityField } from "../../../components/QuantityField";
+import PromoBadges from "../../../components/PromoBadges";
 import { formatPrice } from "../../../utils/currency";
 
 const OrderItemRow = ({ product, quantity, onRemove, unitPrice }) => {
   const formattedUnit = formatPrice(unitPrice);
   const subtotal = unitPrice ? formatPrice(parseFloat(unitPrice) * quantity) : null;
+  const hasPromo =
+    product?.finalPrice != null && Number(product.finalPrice) < Number(product.price);
 
   return (
     <Box
@@ -43,8 +46,23 @@ const OrderItemRow = ({ product, quantity, onRemove, unitPrice }) => {
               color={formattedUnit ? "text.secondary" : "warning.main"}
               display="block"
             >
-              {formattedUnit ? `${formattedUnit} c/u` : "Precio por confirmar"}
+              {formattedUnit ? (
+                <>
+                  {hasPromo && (
+                    <Box
+                      component="span"
+                      sx={{ textDecoration: "line-through", color: "text.disabled", mr: 0.5 }}
+                    >
+                      {formatPrice(product.price)}
+                    </Box>
+                  )}
+                  {`${formattedUnit} c/u`}
+                </>
+              ) : (
+                "Precio por confirmar"
+              )}
             </Typography>
+            <PromoBadges badges={product?.badges} />
           </Box>
           <IconButton size="small" color="error" onClick={onRemove} sx={{ flexShrink: 0 }}>
             <DeleteIcon fontSize="small" />

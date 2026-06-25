@@ -69,7 +69,8 @@ const CheckoutPage = () => {
   const orderTotal = useMemo(
     () =>
       orderItems.reduce(
-        (sum, item) => sum + parseFloat(item.product?.price || 0) * item.quantity,
+        (sum, item) =>
+          sum + parseFloat(item.product?.finalPrice ?? item.product?.price ?? 0) * item.quantity,
         0
       ),
     [orderItems]
@@ -213,7 +214,7 @@ const CheckoutPage = () => {
             key={item.product.id}
             product={item.product}
             quantity={item.quantity}
-            unitPrice={item.product?.price}
+            unitPrice={item.product?.finalPrice ?? item.product?.price}
             onRemove={() => removeFromOrder(item.product.id)}
           />
         ))}

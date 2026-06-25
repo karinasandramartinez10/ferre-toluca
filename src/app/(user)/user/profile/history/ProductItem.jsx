@@ -58,6 +58,14 @@ export const ProductItem = ({ product }) => {
                 color={priceType === "A" ? "default" : "secondary"}
               />
             )}
+            {qp.promotionLabel && (
+              <Chip
+                label={qp.promotionLabel}
+                size="small"
+                color="secondary"
+                sx={{ fontWeight: 700 }}
+              />
+            )}
           </Box>
         </Stack>
       </Box>

@@ -18,6 +18,8 @@ import { fetchUserQuoteById } from "../../../../../../api/quote";
 import { Loading } from "../../../../../../components/Loading";
 import { ErrorUI } from "../../../../../../components/Error";
 import QuoteProductCard from "../../../../../(admin)/admin/components/quote-detail/QuoteProductCard";
+import { getQuoteGrandTotal } from "../../../../../../helpers/quotes";
+import { formatPrice } from "../../../../../../utils/currency";
 import { Business, Badge, ExpandMore, ReceiptLong, Policy } from "@mui/icons-material";
 import { QuoteStatusStepper } from "../QuoteStatusStepper";
 import InfoRow from "../../../../../(admin)/admin/components/quote-detail/InfoRow";
@@ -124,6 +126,20 @@ export default function UserQuoteIdPage({ quoteId }) {
                     {quote?.Products?.map((product) => (
                       <QuoteProductCard key={product.id} product={product} />
                     ))}
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      mt: 2,
+                      pt: 2,
+                      borderTop: "1px solid",
+                      borderColor: "divider",
+                    }}
+                  >
+                    <Typography variant="h6" fontWeight={700}>
+                      Total: {formatPrice(getQuoteGrandTotal(quote.Products))}
+                    </Typography>
                   </Box>
                 </AccordionDetails>
               </Accordion>

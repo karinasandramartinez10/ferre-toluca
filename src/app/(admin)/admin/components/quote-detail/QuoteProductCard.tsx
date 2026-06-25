@@ -3,6 +3,7 @@ import { CloudinaryImage } from "../../../../../components/CloudinaryImage";
 import { toCapitalizeWords } from "../../../../../utils/cases";
 import { formatPrice } from "../../../../../utils/currency";
 import { TIER_LABELS } from "../../../../../constants/pricing";
+import { getQuoteLineTotal } from "../../../../../helpers/quotes";
 import type { QuoteProduct } from "../../../../../types/quote";
 
 interface QuoteProductCardProps {
@@ -13,6 +14,8 @@ const QuoteProductCard = ({ product }: QuoteProductCardProps) => {
   const qp = product.QuoteProduct;
   const unitPriceFormatted = formatPrice(qp?.unitPrice);
   const priceType = qp?.priceType;
+  const discountAmount = qp?.discountAmount ?? 0;
+  const lineTotal = getQuoteLineTotal(qp);
 
   return (
     <Card variant="outlined" key={product.id}>
@@ -52,6 +55,35 @@ const QuoteProductCard = ({ product }: QuoteProductCardProps) => {
               />
             )}
           </Box>
+        )}
+        {unitPriceFormatted && (qp?.promotionLabel || discountAmount > 0) && (
+          <Box sx={{ mt: 0.5 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+              {qp?.promotionLabel && (
+                <Chip
+                  label={qp.promotionLabel}
+                  size="small"
+                  color="secondary"
+                  sx={{ fontWeight: 700 }}
+                />
+              )}
+              {qp?.freeUnits ? (
+                <Typography variant="caption" sx={{ color: "green.main" }}>
+                  {qp.freeUnits} gratis
+                </Typography>
+              ) : null}
+            </Box>
+            {discountAmount > 0 && (
+              <Typography variant="body2" color="text.secondary">
+                Descuento: -{formatPrice(discountAmount)}
+              </Typography>
+            )}
+          </Box>
+        )}
+        {unitPriceFormatted && (
+          <Typography variant="body2" fontWeight={700} sx={{ mt: 0.5 }}>
+            Total: {formatPrice(lineTotal)}
+          </Typography>
         )}
       </CardContent>
     </Card>
