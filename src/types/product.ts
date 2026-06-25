@@ -1,4 +1,5 @@
 import type { PriceTier } from "./pricing";
+import type { ProductPromotion, ProductBadge } from "./promotion";
 
 export interface Product {
   id: string;
@@ -6,6 +7,9 @@ export interface Product {
   priceList: number;
   appliedTier: PriceTier;
   discountPercentage?: number | null;
+  finalPrice?: number;
+  promotion?: ProductPromotion | null;
+  badges?: ProductBadge[];
   isAvailable: boolean;
   priceA?: number;
   priceB?: number | null;

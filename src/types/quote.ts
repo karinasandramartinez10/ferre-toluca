@@ -36,11 +36,17 @@ export interface FiscalProfile {
 // ── Product ─────────────────────────────────────────────────────
 
 import type { PriceType } from "./pricing";
+import type { PromotionType } from "./promotion";
 
 export interface QuoteProductJoin {
   quantity: number;
   unitPrice: string;
   priceType: PriceType;
+  promotionId?: number | null;
+  promotionType?: PromotionType | null;
+  promotionLabel?: string | null;
+  freeUnits?: number;
+  discountAmount?: number;
 }
 
 export interface QuoteProduct {
