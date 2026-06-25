@@ -1,4 +1,11 @@
-import { Storefront, Inventory, AddBusiness, Category, Groups } from "@mui/icons-material";
+import {
+  Storefront,
+  Inventory,
+  AddBusiness,
+  Category,
+  Groups,
+  LocalOffer,
+} from "@mui/icons-material";
 
 export const adminSections = [
   {
@@ -20,6 +27,12 @@ export const adminSections = [
         icon: <Inventory />,
         text: "Productos",
         href: "/admin/products",
+        visibleFor: ["admin", "superadmin"],
+      },
+      {
+        icon: <LocalOffer />,
+        text: "Promociones",
+        href: "/admin/promotions",
         visibleFor: ["admin", "superadmin"],
       },
       {
