@@ -10,9 +10,35 @@ import {
   Typography,
 } from "@mui/material";
 import { CheckCircle, ChevronRight } from "@mui/icons-material";
+import type { KeyboardEvent } from "react";
 import { CloudinaryImage } from "../../../../components/CloudinaryImage";
 
-const ScopeTile = ({ name, count, label, selected, promoLabel, image, onSelect, drill }) => (
+interface DrillAction {
+  label: string;
+  onClick: () => void;
+}
+
+interface ScopeTileProps {
+  name: string;
+  label: string;
+  selected: boolean;
+  onSelect: () => void;
+  count?: number;
+  promoLabel?: string | null;
+  image?: { publicId?: string; alt?: string };
+  drill?: DrillAction | null;
+}
+
+const ScopeTile = ({
+  name,
+  count,
+  label,
+  selected,
+  promoLabel,
+  image,
+  onSelect,
+  drill,
+}: ScopeTileProps) => (
   <Card
     variant="outlined"
     sx={{
@@ -28,7 +54,7 @@ const ScopeTile = ({ name, count, label, selected, promoLabel, image, onSelect, 
       role="button"
       tabIndex={0}
       onClick={onSelect}
-      onKeyDown={(e) => {
+      onKeyDown={(e: KeyboardEvent) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           onSelect();
@@ -62,12 +88,14 @@ const ScopeTile = ({ name, count, label, selected, promoLabel, image, onSelect, 
           (image.publicId ? (
             <Box sx={{ height: 48, display: "flex", alignItems: "center" }}>
               <CloudinaryImage
-                publicId={image.publicId}
-                alt={image.alt}
-                width={64}
-                height={48}
-                crop="fit"
-                style={{ objectFit: "contain" }}
+                {...({
+                  publicId: image.publicId,
+                  alt: image.alt,
+                  width: 64,
+                  height: 48,
+                  crop: "fit",
+                  style: { objectFit: "contain" },
+                } as any)}
               />
             </Box>
           ) : (

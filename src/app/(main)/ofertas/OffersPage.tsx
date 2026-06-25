@@ -16,7 +16,7 @@ const TYPE_FILTERS = [{ value: "", label: "Todas" }, ...PROMOTION_TYPE_OPTIONS];
 
 const OffersPage = () => {
   const [typeFilter, setTypeFilter] = useState("");
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -24,7 +24,7 @@ const OffersPage = () => {
   const [error, setError] = useState(false);
 
   const fetchPage = useCallback(
-    async (pageToLoad, append) => {
+    async (pageToLoad: number, append: boolean) => {
       append ? setLoadingMore(true) : setLoading(true);
       setError(false);
       try {

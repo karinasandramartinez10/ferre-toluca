@@ -1,7 +1,8 @@
 import { startOfMonth, endOfMonth } from "date-fns";
 import { SCOPE_BODY_FIELD } from "../../../../constants/promotions";
+import type { PromotionFormValues } from "../../../../types/promotion";
 
-const valueFieldsOf = (values) =>
+const valueFieldsOf = (values: PromotionFormValues) =>
   values.type === "percentage"
     ? { discountPercentage: values.discountPercentage }
     : {
@@ -11,7 +12,10 @@ const valueFieldsOf = (values) =>
         getDiscountPercentage: values.getDiscountPercentage,
       };
 
-export const buildPromotionBody = (values, isEdit = false) => {
+export const buildPromotionBody = (
+  values: PromotionFormValues,
+  isEdit = false
+): Record<string, unknown> => {
   const startsAt = startOfMonth(new Date(values.year, values.month)).toISOString();
   const endsAt = endOfMonth(new Date(values.year, values.month)).toISOString();
 

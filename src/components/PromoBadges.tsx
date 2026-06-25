@@ -1,6 +1,11 @@
 import { Chip, Stack, Tooltip } from "@mui/material";
+import type { ProductBadge } from "../types/promotion";
 
-const PromoBadges = ({ badges }) => {
+interface PromoBadgesProps {
+  badges?: ProductBadge[];
+}
+
+const PromoBadges = ({ badges }: PromoBadgesProps) => {
   if (!badges?.length) return null;
 
   return (

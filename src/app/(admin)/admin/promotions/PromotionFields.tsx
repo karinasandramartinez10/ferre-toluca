@@ -12,12 +12,26 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
+import type { Control } from "react-hook-form";
 import { MONTHS, PROMOTION_TYPE_OPTIONS } from "../../../../constants/promotions";
 
 const currentYear = new Date().getFullYear();
 const YEARS = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
 
-const numberField = (name, label, control, errors, helper) => (
+interface PromotionFieldsProps {
+  control: Control<any>;
+  errors: any;
+  type: string;
+  typeDisabled?: boolean;
+}
+
+const numberField = (
+  name: string,
+  label: string,
+  control: Control<any>,
+  errors: any,
+  helper?: string
+) => (
   <Controller
     name={name}
     control={control}
@@ -35,7 +49,7 @@ const numberField = (name, label, control, errors, helper) => (
   />
 );
 
-const PromotionFields = ({ control, errors, type, typeDisabled = false }) => (
+const PromotionFields = ({ control, errors, type, typeDisabled = false }: PromotionFieldsProps) => (
   <>
     <Controller
       name="name"

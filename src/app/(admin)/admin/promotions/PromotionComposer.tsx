@@ -19,8 +19,16 @@ import { createPromotion } from "../../../../api/promotions";
 import { getApiErrorMessage } from "../../../../utils/apiError";
 import { promotionValueSchema } from "../../../../schemas/promotion";
 import { SCOPE_KIND_LABELS } from "../../../../constants/promotions";
+import type { ScopeSelection } from "../../../../types/promotion";
 import PromotionFields from "./PromotionFields";
 import { buildPromotionBody } from "./buildPromotionBody";
+
+interface PromotionComposerProps {
+  open: boolean;
+  onClose: () => void;
+  scopes?: ScopeSelection[];
+  onSaved: () => void;
+}
 
 const buildDefaults = () => {
   const now = new Date();
@@ -37,7 +45,7 @@ const buildDefaults = () => {
   };
 };
 
-const PromotionComposer = ({ open, onClose, scopes = [], onSaved }) => {
+const PromotionComposer = ({ open, onClose, scopes = [], onSaved }: PromotionComposerProps) => {
   const { enqueueSnackbar } = useSnackbar();
   const [submitting, setSubmitting] = useState(false);
 
@@ -47,7 +55,7 @@ const PromotionComposer = ({ open, onClose, scopes = [], onSaved }) => {
     reset,
     watch,
     formState: { errors, isValid },
-  } = useForm({
+  } = useForm<any>({
     resolver: yupResolver(promotionValueSchema),
     mode: "onChange",
     defaultValues: buildDefaults(),

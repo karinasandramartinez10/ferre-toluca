@@ -4,6 +4,16 @@ import { Autocomplete, MenuItem, Stack, TextField } from "@mui/material";
 import usePromotionScopeOptions from "../../../../hooks/admin/usePromotionScopeOptions";
 import useProductSearch from "../../../../hooks/admin/useProductSearch";
 import { SCOPE_KINDS } from "../../../../constants/promotions";
+import type { PromotionScopeType, ScopeOption } from "../../../../types/promotion";
+
+interface PromotionScopePickerProps {
+  scopeKind: PromotionScopeType;
+  scopeOption: ScopeOption | null;
+  onKindChange: (kind: PromotionScopeType) => void;
+  onOptionChange: (value: ScopeOption | null) => void;
+  disabled?: boolean;
+  error?: string;
+}
 
 const PromotionScopePicker = ({
   scopeKind,
@@ -12,7 +22,7 @@ const PromotionScopePicker = ({
   onOptionChange,
   disabled,
   error,
-}) => {
+}: PromotionScopePickerProps) => {
   const { options } = usePromotionScopeOptions();
   const { options: productOptions, searching, search } = useProductSearch();
 
@@ -26,7 +36,7 @@ const PromotionScopePicker = ({
         label="Tipo de ámbito"
         value={scopeKind}
         disabled={disabled}
-        onChange={(e) => onKindChange(e.target.value)}
+        onChange={(e) => onKindChange(e.target.value as PromotionScopeType)}
       >
         {SCOPE_KINDS.map((k) => (
           <MenuItem key={k.value} value={k.value}>

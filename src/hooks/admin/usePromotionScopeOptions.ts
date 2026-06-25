@@ -6,8 +6,11 @@ import { getMenuTree } from "../../api/products";
 import { getBrands } from "../../api/brands";
 import { queryKeys } from "../../constants/queryKeys";
 import { staleTimes, gcTimes } from "../../constants/queryConfig";
+import type { PromotionScopeType, ScopeOption } from "../../types/promotion";
 
 const EMPTY = [];
+
+type ScopeOptionsByKind = Partial<Record<PromotionScopeType, ScopeOption[]>>;
 
 export default function usePromotionScopeOptions() {
   const { data: tree = EMPTY } = useQuery({
@@ -24,7 +27,7 @@ export default function usePromotionScopeOptions() {
     gcTime: gcTimes.LONG,
   });
 
-  const options = useMemo(
+  const options = useMemo<ScopeOptionsByKind>(
     () => ({
       brand: brands.map((b) => ({ id: b.id, label: b.name })),
       category: tree.map((c) => ({ id: c.id, label: c.name })),
@@ -41,7 +44,8 @@ export default function usePromotionScopeOptions() {
   );
 
   const getScopeLabel = useCallback(
-    (kind, id) => options[kind]?.find((o) => o.id === id)?.label ?? `#${id}`,
+    (kind: PromotionScopeType, id: number) =>
+      options[kind]?.find((o) => o.id === id)?.label ?? `#${id}`,
     [options]
   );
 

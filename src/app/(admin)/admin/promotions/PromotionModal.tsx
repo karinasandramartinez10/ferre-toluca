@@ -12,9 +12,17 @@ import { getApiErrorMessage } from "../../../../utils/apiError";
 import { promotionSchema } from "../../../../schemas/promotion";
 import usePromotionScopeOptions from "../../../../hooks/admin/usePromotionScopeOptions";
 import { getPromotionScope } from "../../../../constants/promotions";
+import type { Promotion, PromotionScopeType } from "../../../../types/promotion";
 import PromotionScopePicker from "./PromotionScopePicker";
 import PromotionFields from "./PromotionFields";
 import { buildPromotionBody } from "./buildPromotionBody";
+
+interface PromotionModalProps {
+  open: boolean;
+  onClose: () => void;
+  promotion?: Promotion | null;
+  onSaved: () => void;
+}
 
 const buildDefaults = () => {
   const now = new Date();
@@ -33,7 +41,7 @@ const buildDefaults = () => {
   };
 };
 
-const PromotionModal = ({ open, onClose, promotion, onSaved }) => {
+const PromotionModal = ({ open, onClose, promotion, onSaved }: PromotionModalProps) => {
   const isEdit = !!promotion;
   const { enqueueSnackbar } = useSnackbar();
   const { getScopeLabel } = usePromotionScopeOptions();
@@ -46,7 +54,7 @@ const PromotionModal = ({ open, onClose, promotion, onSaved }) => {
     setValue,
     watch,
     formState: { errors, isValid },
-  } = useForm({
+  } = useForm<any>({
     resolver: yupResolver(promotionSchema),
     mode: "onChange",
     defaultValues: buildDefaults(),
@@ -60,12 +68,13 @@ const PromotionModal = ({ open, onClose, promotion, onSaved }) => {
     if (!open) return;
     if (promotion) {
       const scope = getPromotionScope(promotion);
+      const scopeKind = scope.kind as PromotionScopeType;
       const starts = parseISO(promotion.startsAt);
       reset({
         name: promotion.name,
         type: promotion.type,
-        scopeKind: scope.kind,
-        scopeOption: { id: scope.id, label: getScopeLabel(scope.kind, scope.id) },
+        scopeKind,
+        scopeOption: { id: scope.id, label: getScopeLabel(scopeKind, scope.id) },
         month: starts.getMonth(),
         year: starts.getFullYear(),
         active: promotion.active,
@@ -110,7 +119,7 @@ const PromotionModal = ({ open, onClose, promotion, onSaved }) => {
             scopeKind={scopeKind}
             scopeOption={scopeOption}
             disabled={isEdit}
-            error={errors.scopeOption?.message}
+            error={errors.scopeOption?.message as string}
             onKindChange={(kind) => {
               setValue("scopeKind", kind, { shouldValidate: true });
               setValue("scopeOption", null, { shouldValidate: true });
