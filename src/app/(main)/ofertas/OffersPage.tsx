@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Box, Stack, Typography } from "@mui/material";
-import { LoadingButton } from "@mui/lab";
 import { ProductCard } from "../../../components/ProductCard";
 import FilterSelect from "../../../components/FilterSelect";
+import Pagination from "../../../components/Pagination";
 import { Loading } from "../../../components/Loading";
 import { ErrorUI } from "../../../components/Error";
 import ActivePromotionsBanner from "../../../components/ActivePromotionsBanner";
@@ -20,32 +20,36 @@ const OffersPage = () => {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(false);
 
   const fetchPage = useCallback(
-    async (pageToLoad: number, append: boolean) => {
-      append ? setLoadingMore(true) : setLoading(true);
+    async (pageToLoad: number) => {
+      setLoading(true);
       setError(false);
       try {
         const res = await getPromotionProducts(pageToLoad, PAGE_SIZE, typeFilter || undefined);
         setTotal(res.total ?? 0);
         setPage(pageToLoad);
-        setItems((prev) => (append ? [...prev, ...(res.products ?? [])] : (res.products ?? [])));
+        setItems(res.products ?? []);
       } catch {
         setError(true);
       } finally {
-        append ? setLoadingMore(false) : setLoading(false);
+        setLoading(false);
       }
     },
     [typeFilter]
   );
 
   useEffect(() => {
-    fetchPage(1, false);
+    fetchPage(1);
   }, [fetchPage]);
 
-  const hasMore = items.length < total;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  const handlePageChange = (next: number) => {
+    fetchPage(next);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <>
@@ -66,7 +70,7 @@ const OffersPage = () => {
         {loading ? (
           <Loading />
         ) : error ? (
-          <ErrorUI onRetry={() => fetchPage(1, false)} message="No pudimos cargar las ofertas" />
+          <ErrorUI onRetry={() => fetchPage(page)} message="No pudimos cargar las ofertas" />
         ) : items.length === 0 ? (
           <Box sx={{ py: 8, textAlign: "center" }}>
             <Typography color="text.secondary">No hay ofertas activas por ahora</Typography>
@@ -84,16 +88,12 @@ const OffersPage = () => {
                 <ProductCard key={product.id} product={product} />
               ))}
             </Box>
-            {hasMore && (
-              <Box sx={{ textAlign: "center", mt: 3 }}>
-                <LoadingButton
-                  onClick={() => fetchPage(page + 1, true)}
-                  loading={loadingMore}
-                  variant="outlined"
-                >
-                  Cargar más
-                </LoadingButton>
-              </Box>
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             )}
           </>
         )}
