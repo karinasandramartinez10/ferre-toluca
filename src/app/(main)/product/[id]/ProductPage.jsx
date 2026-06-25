@@ -19,6 +19,7 @@ import { ProductActions } from "./ProductActions";
 import { ProductFeatures } from "./ProductFeatures";
 import { VariantSelector } from "./VariantSelector/VariantSelector";
 import ProductPrice from "../../../../components/ProductPrice";
+import PromoBadges from "../../../../components/PromoBadges";
 import ProductStickyBar from "./ProductStickyBar";
 import RelatedProducts from "./RelatedProducts";
 import RecentlyViewed from "./RecentlyViewed";
@@ -31,7 +32,10 @@ const ProductPage = ({ product }) => {
 
   const { addToOrder } = useOrderContext();
   const { toggleFavorite, isFavorite } = useFavorites();
-  const { price, priceList, discountPercentage } = useProductPrice(product.id, product);
+  const { price, priceList, discountPercentage, finalPrice, promotion, badges } = useProductPrice(
+    product.id,
+    product
+  );
   const { enqueueSnackbar } = useSnackbar();
   const isUnavailable = product?.isAvailable === false;
 
@@ -108,9 +112,12 @@ const ProductPage = ({ product }) => {
               price={price}
               priceList={priceList}
               discountPercentage={discountPercentage}
+              finalPrice={finalPrice}
+              promotion={promotion}
               size="large"
               showDiscountPercentage
             />
+            <PromoBadges badges={badges} />
 
             <ProductAttributes
               subCategory={product.subCategory?.name}
@@ -172,6 +179,8 @@ const ProductPage = ({ product }) => {
         price={price}
         priceList={priceList}
         discountPercentage={discountPercentage}
+        finalPrice={finalPrice}
+        promotion={promotion}
         onAdd={handleAdd}
         disabled={isUnavailable}
       />

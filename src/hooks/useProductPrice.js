@@ -30,5 +30,8 @@ export function useProductPrice(productId, initial) {
     priceList: source?.priceList,
     discountPercentage: source?.discountPercentage,
     appliedTier: source?.appliedTier,
+    finalPrice: source?.finalPrice,
+    promotion: source?.promotion,
+    badges: source?.badges,
   };
 }

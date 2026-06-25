@@ -3,7 +3,15 @@
 import { Box, Button } from "@mui/material";
 import ProductPrice from "../../../../components/ProductPrice";
 
-const ProductStickyBar = ({ price, priceList, discountPercentage, onAdd, disabled }) => (
+const ProductStickyBar = ({
+  price,
+  priceList,
+  discountPercentage,
+  finalPrice,
+  promotion,
+  onAdd,
+  disabled,
+}) => (
   <Box
     sx={{
       display: { xs: "flex", md: "none" },
@@ -28,6 +36,8 @@ const ProductStickyBar = ({ price, priceList, discountPercentage, onAdd, disable
         price={price}
         priceList={priceList}
         discountPercentage={discountPercentage}
+        finalPrice={finalPrice}
+        promotion={promotion}
         size="small"
         showDiscountPercentage
       />
