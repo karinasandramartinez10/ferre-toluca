@@ -3,15 +3,31 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Image from "next/image";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
+import { ArrowBackIosNew, ArrowForwardIos } from "@mui/icons-material";
 import { getActivePromotions } from "../api/promotions";
 import { queryKeys } from "../constants/queryKeys";
 import { staleTimes, gcTimes } from "../constants/queryConfig";
+import useHorizontalScroll from "../hooks/useHorizontalScroll";
 import PromoDealCard from "./PromoDealCard";
 
 interface ActivePromotionsBannerProps {
   showViewAll?: boolean;
 }
+
+const arrowSx = (side: "left" | "right") => ({
+  position: "absolute" as const,
+  top: "50%",
+  [side]: 4,
+  transform: "translateY(-50%)",
+  zIndex: 2,
+  width: 36,
+  height: 36,
+  bgcolor: "background.paper",
+  color: "primary.main",
+  boxShadow: 2,
+  "&:hover": { bgcolor: "background.paper", color: "primary.hover" },
+});
 
 const ActivePromotionsBanner = ({ showViewAll = true }: ActivePromotionsBannerProps) => {
   const { data: promotions = [] } = useQuery({
@@ -20,6 +36,7 @@ const ActivePromotionsBanner = ({ showViewAll = true }: ActivePromotionsBannerPr
     staleTime: staleTimes.FREQUENT,
     gcTime: gcTimes.SHORT,
   });
+  const { ref, canScrollLeft, canScrollRight, scrollByDir } = useHorizontalScroll();
 
   if (!promotions.length) return null;
 
@@ -74,10 +91,42 @@ const ActivePromotionsBanner = ({ showViewAll = true }: ActivePromotionsBannerPr
           </Stack>
 
           <Stack direction="row" spacing={2} alignItems="stretch">
-            <Box sx={{ display: "flex", gap: 1.5, overflowX: "auto", pb: 1, flex: 1, minWidth: 0 }}>
-              {promotions.map((promo) => (
-                <PromoDealCard key={promo.id} promo={promo} />
-              ))}
+            <Box sx={{ position: "relative", flex: 1, minWidth: 0 }}>
+              {canScrollLeft && (
+                <IconButton
+                  aria-label="Anterior"
+                  size="small"
+                  onClick={() => scrollByDir(-1)}
+                  sx={arrowSx("left")}
+                >
+                  <ArrowBackIosNew fontSize="small" />
+                </IconButton>
+              )}
+              <Box
+                ref={ref}
+                sx={{
+                  display: "flex",
+                  gap: 1.5,
+                  overflowX: "auto",
+                  pb: 1,
+                  scrollbarWidth: "none",
+                  "&::-webkit-scrollbar": { display: "none" },
+                }}
+              >
+                {promotions.map((promo) => (
+                  <PromoDealCard key={promo.id} promo={promo} />
+                ))}
+              </Box>
+              {canScrollRight && (
+                <IconButton
+                  aria-label="Siguiente"
+                  size="small"
+                  onClick={() => scrollByDir(1)}
+                  sx={arrowSx("right")}
+                >
+                  <ArrowForwardIos fontSize="small" />
+                </IconButton>
+              )}
             </Box>
             {/* PNG transparente (recortado) → flota sobre el dorado. next/image lo optimiza
                 y lo sirve en WebP aunque el original pese de más. */}
