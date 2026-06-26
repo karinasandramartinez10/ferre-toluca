@@ -42,7 +42,12 @@ const ProductPage = ({ product }) => {
   const notify = (msg, variant) => enqueueSnackbar(msg, { variant });
 
   const handleAdd = (quantity = 1) => {
-    addToOrder(product, quantity);
+    // El `product` viene del SSR (ISR-cacheado); usamos los campos vivos de useProductPrice
+    // para que el carrito refleje el precio/promo actuales del tier del usuario.
+    addToOrder(
+      { ...product, price, priceList, discountPercentage, finalPrice, promotion, badges },
+      quantity
+    );
     notify(
       `${quantity > 1 ? quantity + " productos añadidos" : "Producto añadido"} al carrito`,
       "success"
