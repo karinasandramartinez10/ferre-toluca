@@ -60,6 +60,7 @@ export const queryKeys = {
   funnelCount: (stage: string) => ["funnelCounts", stage] as const,
   promotionsActive: ["promotions", "active"],
   activePromotions: ["active-promotions"],
+  quotePreview: (signature: string) => ["quotePreview", signature] as const,
   contactRequests: (page: number, size: number, status?: string) => [
     "contactRequests",
     page,
