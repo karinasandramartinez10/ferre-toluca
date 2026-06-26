@@ -10,6 +10,7 @@ import { queryKeys } from "../constants/queryKeys";
 import { staleTimes, gcTimes } from "../constants/queryConfig";
 import useHorizontalScroll from "../hooks/useHorizontalScroll";
 import PromoDealCard from "./PromoDealCard";
+import FullBleedSection from "./layout/FullBleedSection";
 
 interface ActivePromotionsBannerProps {
   showViewAll?: boolean;
@@ -41,116 +42,107 @@ const ActivePromotionsBanner = ({ showViewAll = true }: ActivePromotionsBannerPr
   if (!promotions.length) return null;
 
   return (
-    <Box
-      sx={{
-        width: "100vw",
-        position: "relative",
-        left: "calc(-50vw + 50%)",
-        pt: 2,
-      }}
-    >
-      <Box sx={{ maxWidth: "1440px", mx: "auto", px: { xs: 3, xl: 0 } }}>
-        <Box
-          sx={{
-            bgcolor: "secondary.main",
-            borderRadius: "12px",
-            px: { xs: 2, md: 4 },
-            py: 3,
-          }}
+    <FullBleedSection outerSx={{ pt: 2 }}>
+      <Box
+        sx={{
+          bgcolor: "secondary.main",
+          borderRadius: "12px",
+          px: { xs: 2, md: 4 },
+          py: 3,
+        }}
+      >
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          justifyContent="space-between"
+          alignItems={{ xs: "flex-start", sm: "center" }}
+          spacing={1.5}
+          sx={{ mb: 2 }}
         >
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            justifyContent="space-between"
-            alignItems={{ xs: "flex-start", sm: "center" }}
-            spacing={1.5}
-            sx={{ mb: 2 }}
+          <Typography
+            component="h2"
+            variant="h1"
+            sx={{
+              color: "text.primary",
+              fontWeight: 800,
+              letterSpacing: "-0.5px",
+              fontFamily: "var(--font-montserrat)",
+            }}
           >
-            <Typography
-              component="h2"
-              variant="h1"
-              sx={{
-                color: "text.primary",
-                fontWeight: 800,
-                letterSpacing: "-0.5px",
-                fontFamily: "var(--font-montserrat)",
-              }}
+            Promociones del mes
+          </Typography>
+          {showViewAll && (
+            <Button
+              component={Link}
+              href="/ofertas"
+              variant="contained"
+              color="primary"
+              sx={{ flexShrink: 0, fontWeight: 700 }}
             >
-              Promociones del mes
-            </Typography>
-            {showViewAll && (
-              <Button
-                component={Link}
-                href="/ofertas"
-                variant="contained"
-                color="primary"
-                sx={{ flexShrink: 0, fontWeight: 700 }}
-              >
-                Ver todas las ofertas
-              </Button>
-            )}
-          </Stack>
+              Ver todas las ofertas
+            </Button>
+          )}
+        </Stack>
 
-          <Stack direction="row" spacing={2} alignItems="stretch">
-            <Box sx={{ position: "relative", flex: 1, minWidth: 0 }}>
-              {canScrollLeft && (
-                <IconButton
-                  aria-label="Anterior"
-                  size="small"
-                  onClick={() => scrollByDir(-1)}
-                  sx={arrowSx("left")}
-                >
-                  <ArrowBackIosNew fontSize="small" />
-                </IconButton>
-              )}
-              <Box
-                ref={ref}
-                sx={{
-                  display: "flex",
-                  gap: 1.5,
-                  overflowX: "auto",
-                  pb: 1,
-                  scrollbarWidth: "none",
-                  "&::-webkit-scrollbar": { display: "none" },
-                }}
+        <Stack direction="row" spacing={2} alignItems="stretch">
+          <Box sx={{ position: "relative", flex: 1, minWidth: 0 }}>
+            {canScrollLeft && (
+              <IconButton
+                aria-label="Anterior"
+                size="small"
+                onClick={() => scrollByDir(-1)}
+                sx={arrowSx("left")}
               >
-                {promotions.map((promo) => (
-                  <PromoDealCard key={promo.id} promo={promo} />
-                ))}
-              </Box>
-              {canScrollRight && (
-                <IconButton
-                  aria-label="Siguiente"
-                  size="small"
-                  onClick={() => scrollByDir(1)}
-                  sx={arrowSx("right")}
-                >
-                  <ArrowForwardIos fontSize="small" />
-                </IconButton>
-              )}
-            </Box>
-            {/* PNG transparente (recortado) → flota sobre el dorado. next/image lo optimiza
-                y lo sirve en WebP aunque el original pese de más. */}
+                <ArrowBackIosNew fontSize="small" />
+              </IconButton>
+            )}
             <Box
+              ref={ref}
               sx={{
-                display: { xs: "none", md: "block" },
-                flexShrink: 0,
-                position: "relative",
-                width: 260,
-                height: 180,
+                display: "flex",
+                gap: 1.5,
+                overflowX: "auto",
+                pb: 1,
+                scrollbarWidth: "none",
+                "&::-webkit-scrollbar": { display: "none" },
               }}
             >
-              <Image
-                src="/images/promo-banner.png"
-                alt="Productos en promoción"
-                fill
-                sizes="260px"
-                style={{ objectFit: "contain" }}
-              />
+              {promotions.map((promo) => (
+                <PromoDealCard key={promo.id} promo={promo} />
+              ))}
             </Box>
-          </Stack>
-        </Box>
+            {canScrollRight && (
+              <IconButton
+                aria-label="Siguiente"
+                size="small"
+                onClick={() => scrollByDir(1)}
+                sx={arrowSx("right")}
+              >
+                <ArrowForwardIos fontSize="small" />
+              </IconButton>
+            )}
+          </Box>
+          {/* PNG transparente (recortado) → flota sobre el dorado. next/image lo optimiza
+                y lo sirve en WebP aunque el original pese de más. */}
+          <Box
+            sx={{
+              display: { xs: "none", md: "block" },
+              flexShrink: 0,
+              position: "relative",
+              width: 260,
+              height: 180,
+            }}
+          >
+            <Image
+              src="/images/promo-banner.png"
+              alt="Productos en promoción"
+              fill
+              sizes="260px"
+              style={{ objectFit: "contain" }}
+            />
+          </Box>
+        </Stack>
       </Box>
-    </Box>
+    </FullBleedSection>
   );
 };
 

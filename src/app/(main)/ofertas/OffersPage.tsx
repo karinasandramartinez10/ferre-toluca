@@ -54,7 +54,7 @@ const OffersPage = () => {
   return (
     <>
       <ActivePromotionsBanner showViewAll={false} />
-      <Box sx={{ maxWidth: "1440px", mx: "auto", px: { xs: 3, xl: 0 }, py: 3 }}>
+      <Box sx={{ py: 3 }}>
         <Stack
           direction="row"
           justifyContent="space-between"

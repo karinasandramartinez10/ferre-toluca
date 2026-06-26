@@ -90,7 +90,7 @@ const Products = ({ products }) => {
   };
 
   return (
-    <Grid item xs={12} mt={2} sx={{ px: { xs: 3, xl: 0 } }}>
+    <Grid item xs={12} mt={2}>
       <Typography component="h1" variant="h1">
         Productos
       </Typography>

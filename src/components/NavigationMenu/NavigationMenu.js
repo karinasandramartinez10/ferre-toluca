@@ -12,7 +12,6 @@ export default function NavigationMenu({ categories }) {
       component="section"
       sx={{
         paddingTop: { xs: "60px", sm: "70px" },
-        paddingX: { xs: 3, xl: 0 },
         marginTop: { xs: 2, md: 1 },
       }}
     >
