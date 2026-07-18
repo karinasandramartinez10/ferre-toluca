@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { useForm } from "react-hook-form";
@@ -29,15 +29,20 @@ const buildDefaults = () => {
   return {
     name: "",
     type: "percentage",
+    applicableTiers: [],
     scopeKind: "brand",
     scopeOption: null,
     month: now.getMonth(),
     year: now.getFullYear(),
     active: true,
     discountPercentage: null,
-    buyQuantity: null,
-    receiveTotal: null,
-    getDiscountPercentage: 100,
+    minQuantity: null,
+    priceMode: "percentage",
+    volumeDiscountPercentage: null,
+    volumePriceA: null,
+    volumePriceB: null,
+    volumePriceC: null,
+    volumePriceD: null,
   };
 };
 
@@ -46,6 +51,7 @@ const PromotionModal = ({ open, onClose, promotion, onSaved }: PromotionModalPro
   const { enqueueSnackbar } = useSnackbar();
   const { getScopeLabel } = usePromotionScopeOptions();
   const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
 
   const {
     control,
@@ -61,8 +67,11 @@ const PromotionModal = ({ open, onClose, promotion, onSaved }: PromotionModalPro
   });
 
   const type = watch("type");
+  const priceMode = watch("priceMode");
+  const applicableTiers = watch("applicableTiers");
   const scopeKind = watch("scopeKind");
   const scopeOption = watch("scopeOption");
+  const scopeProductId = scopeKind === "product" ? (scopeOption?.id ?? null) : null;
 
   useEffect(() => {
     if (!open) return;
@@ -75,23 +84,33 @@ const PromotionModal = ({ open, onClose, promotion, onSaved }: PromotionModalPro
         type: promotion.type,
         scopeKind,
         scopeOption: { id: scope.id, label: getScopeLabel(scopeKind, scope.id) },
+        applicableTiers: promotion.applicableTiers ?? [],
         month: starts.getMonth(),
         year: starts.getFullYear(),
         active: promotion.active,
         discountPercentage: promotion.discountPercentage,
-        buyQuantity: promotion.buyQuantity,
-        receiveTotal:
-          promotion.buyQuantity != null && promotion.getQuantity != null
-            ? promotion.buyQuantity + promotion.getQuantity
-            : null,
-        getDiscountPercentage: promotion.getDiscountPercentage,
+        minQuantity: promotion.minQuantity,
+        priceMode: promotion.priceMode ?? "percentage",
+        volumeDiscountPercentage: promotion.volumeDiscountPercentage,
+        volumePriceA: promotion.volumePriceA,
+        volumePriceB: promotion.volumePriceB,
+        volumePriceC: promotion.volumePriceC,
+        volumePriceD: promotion.volumePriceD,
       });
     } else {
       reset(buildDefaults());
     }
   }, [open, promotion, reset, getScopeLabel]);
 
+  useEffect(() => {
+    if (!scopeProductId && priceMode === "absolute") {
+      setValue("priceMode", "percentage");
+    }
+  }, [scopeProductId, priceMode, setValue]);
+
   const onSubmit = async (values) => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
     try {
       if (isEdit) await updatePromotion(promotion.id, buildPromotionBody(values, true));
@@ -104,6 +123,7 @@ const PromotionModal = ({ open, onClose, promotion, onSaved }: PromotionModalPro
     } catch (error) {
       enqueueSnackbar(getApiErrorMessage(error), { variant: "error" });
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   };
@@ -126,7 +146,15 @@ const PromotionModal = ({ open, onClose, promotion, onSaved }: PromotionModalPro
             }}
             onOptionChange={(value) => setValue("scopeOption", value, { shouldValidate: true })}
           />
-          <PromotionFields control={control} errors={errors} type={type} typeDisabled={isEdit} />
+          <PromotionFields
+            control={control}
+            errors={errors}
+            type={type}
+            priceMode={priceMode}
+            applicableTiers={applicableTiers}
+            scopeProductId={scopeProductId}
+            typeDisabled={isEdit}
+          />
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>

@@ -76,29 +76,35 @@ export default function UserQuoteIdPage({ quoteId }) {
                 Datos de facturación
               </Typography>
               <Stack spacing={1} mb={2}>
-                {quote.fiscalProfile && (
-                  <InfoRow
-                    icon={<Business />}
-                    label="Razón social"
-                    value={quote.fiscalProfile?.fiscalName}
-                  />
-                )}
-                {quote.fiscalProfile?.rfc && (
-                  <InfoRow icon={<Badge />} label="RFC" value={quote.fiscalProfile?.rfc} />
-                )}
-                {quote.fiscalProfile?.TaxRegime && (
-                  <InfoRow
-                    icon={<Policy />}
-                    label="Régimen fiscal"
-                    value={quote.fiscalProfile?.TaxRegime?.description}
-                  />
-                )}
-                {quote.fiscalProfile?.defaultCfdiUse && (
-                  <InfoRow
-                    icon={<ReceiptLong />}
-                    label="Uso CFDI"
-                    value={quote.fiscalProfile?.defaultCfdiUse?.description}
-                  />
+                {quote.fiscalProfile ? (
+                  <>
+                    <InfoRow
+                      icon={<Business />}
+                      label="Razón social"
+                      value={quote.fiscalProfile?.fiscalName}
+                    />
+                    {quote.fiscalProfile?.rfc && (
+                      <InfoRow icon={<Badge />} label="RFC" value={quote.fiscalProfile?.rfc} />
+                    )}
+                    {quote.fiscalProfile?.TaxRegime && (
+                      <InfoRow
+                        icon={<Policy />}
+                        label="Régimen fiscal"
+                        value={quote.fiscalProfile?.TaxRegime?.description}
+                      />
+                    )}
+                    {quote.fiscalProfile?.defaultCfdiUse && (
+                      <InfoRow
+                        icon={<ReceiptLong />}
+                        label="Uso CFDI"
+                        value={quote.fiscalProfile?.defaultCfdiUse?.description}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    Esta cotización se envió sin datos de facturación.
+                  </Typography>
                 )}
               </Stack>
 
@@ -118,9 +124,8 @@ export default function UserQuoteIdPage({ quoteId }) {
                     sx={{
                       display: "grid",
                       gap: 2,
-                      gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-                      maxHeight: { xs: "none", md: 350 },
-                      overflowY: { xs: "visible", md: "auto" },
+                      gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                      alignItems: "start",
                     }}
                   >
                     {quote?.Products?.map((product) => (

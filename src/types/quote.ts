@@ -45,7 +45,6 @@ export interface QuoteProductJoin {
   promotionId?: number | null;
   promotionType?: PromotionType | null;
   promotionLabel?: string | null;
-  freeUnits?: number;
   discountAmount?: number;
 }
 

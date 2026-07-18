@@ -2,7 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Autocomplete, Box, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Stack,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
 import { Loading } from "../../../../components/Loading";
 import { getBrands } from "../../../../api/brands";
 import { getMenuTree } from "../../../../api/products";
@@ -16,6 +23,7 @@ import useScopeSelection from "../../../../hooks/admin/useScopeSelection";
 import useCatalogDrilldown from "../../../../hooks/admin/useCatalogDrilldown";
 import PromotionComposer from "./PromotionComposer";
 import ScopeTile from "./ScopeTile";
+import ScopeRow from "./ScopeRow";
 import ScopeSelectionBar from "./ScopeSelectionBar";
 import CatalogBreadcrumbs from "./CatalogBreadcrumbs";
 
@@ -70,11 +78,13 @@ const PromotionCatalogBoard = () => {
 
   const { path, view, drillInto, goToCrumb, reset } = useCatalogDrilldown(tree);
 
-  const promoByScope = useMemo(() => {
-    const map: Record<string, any> = {};
+  // Todas las promos activas por scope (una categoría puede tener varias).
+  const promosByScope = useMemo(() => {
+    const map: Record<string, string[]> = {};
     (active?.promotions ?? []).forEach((promo) => {
       const scope = getPromotionScope(promo);
-      map[`${scope.kind}:${scope.id}`] = promo;
+      const key = `${scope.kind}:${scope.id}`;
+      (map[key] ??= []).push(`${promo.name} — ${promotionShortLabel(promo)}`);
     });
     return map;
   }, [active]);
@@ -181,7 +191,7 @@ const PromotionCatalogBoard = () => {
         </Box>
       )}
 
-      {tab !== "product" && (
+      {tab === "brand" && (
         <Box
           sx={{
             display: "grid",
@@ -189,30 +199,50 @@ const PromotionCatalogBoard = () => {
             gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
           }}
         >
-          {filteredTiles.map((tile) => {
-            const promo = promoByScope[`${currentKind}:${tile.id}`];
-            return (
-              <ScopeTile
-                key={tile.id}
-                name={tile.name}
-                count={tile.count}
-                label={tile.label}
-                image={tile.image}
-                selected={isSelected(currentKind, tile.id)}
-                promoLabel={promo ? promo.label || promotionShortLabel(promo) : null}
-                onSelect={() => toggle({ kind: currentKind, id: tile.id, label: tile.label })}
-                drill={
-                  tile.childCount > 0
-                    ? {
-                        label: pluralize(tile.childCount, tile.childLabel),
-                        onClick: () => handleDrill(tile),
-                      }
-                    : null
-                }
-              />
-            );
-          })}
+          {filteredTiles.map((tile) => (
+            <ScopeTile
+              key={tile.id}
+              name={tile.name}
+              count={tile.count}
+              label={tile.label}
+              image={tile.image}
+              selected={isSelected(currentKind, tile.id)}
+              promos={promosByScope[`${currentKind}:${tile.id}`]}
+              onSelect={() => toggle({ kind: currentKind, id: tile.id, label: tile.label })}
+              drill={
+                tile.childCount > 0
+                  ? {
+                      label: pluralize(tile.childCount, tile.childLabel),
+                      onClick: () => handleDrill(tile),
+                    }
+                  : null
+              }
+            />
+          ))}
         </Box>
+      )}
+
+      {tab === "catalog" && (
+        <Stack spacing={1}>
+          {filteredTiles.map((tile) => (
+            <ScopeRow
+              key={tile.id}
+              name={tile.name}
+              count={tile.count}
+              selected={isSelected(currentKind, tile.id)}
+              promos={promosByScope[`${currentKind}:${tile.id}`]}
+              onSelect={() => toggle({ kind: currentKind, id: tile.id, label: tile.label })}
+              drill={
+                tile.childCount > 0
+                  ? {
+                      label: pluralize(tile.childCount, tile.childLabel),
+                      onClick: () => handleDrill(tile),
+                    }
+                  : null
+              }
+            />
+          ))}
+        </Stack>
       )}
 
       <PromotionComposer

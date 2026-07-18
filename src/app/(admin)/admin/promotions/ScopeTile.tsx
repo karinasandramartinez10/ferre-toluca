@@ -1,17 +1,8 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Chip,
-  Divider,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Avatar, Box, Button, Card, Divider, Stack, Tooltip, Typography } from "@mui/material";
 import { CheckCircle, ChevronRight } from "@mui/icons-material";
 import type { KeyboardEvent } from "react";
 import { CloudinaryImage } from "../../../../components/CloudinaryImage";
+import PromoCountBadge from "./PromoCountBadge";
 
 interface DrillAction {
   label: string;
@@ -24,7 +15,7 @@ interface ScopeTileProps {
   selected: boolean;
   onSelect: () => void;
   count?: number;
-  promoLabel?: string | null;
+  promos?: string[];
   image?: { publicId?: string; alt?: string };
   drill?: DrillAction | null;
 }
@@ -34,7 +25,7 @@ const ScopeTile = ({
   count,
   label,
   selected,
-  promoLabel,
+  promos,
   image,
   onSelect,
   drill,
@@ -71,14 +62,6 @@ const ScopeTile = ({
       {selected && (
         <CheckCircle color="primary" sx={{ position: "absolute", top: 6, left: 6, fontSize: 20 }} />
       )}
-      {promoLabel && (
-        <Chip
-          label={promoLabel}
-          size="small"
-          color="primary"
-          sx={{ position: "absolute", top: 6, right: 6, fontWeight: 700 }}
-        />
-      )}
       <Stack
         alignItems="center"
         spacing={0.5}
@@ -101,11 +84,20 @@ const ScopeTile = ({
           ) : (
             <Avatar sx={{ bgcolor: "grey.light", color: "text.primary" }}>{image.alt?.[0]}</Avatar>
           ))}
-        <Tooltip title={label} arrow>
-          <Typography variant="body2" fontWeight={700} noWrap sx={{ maxWidth: "100%" }}>
-            {name}
-          </Typography>
-        </Tooltip>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="center"
+          spacing={0.5}
+          sx={{ maxWidth: "100%" }}
+        >
+          <Tooltip title={label} arrow>
+            <Typography variant="body2" fontWeight={700} noWrap sx={{ minWidth: 0 }}>
+              {name}
+            </Typography>
+          </Tooltip>
+          <PromoCountBadge promos={promos} />
+        </Stack>
         {count != null && (
           <Typography variant="caption" color="text.secondary">
             {count} productos

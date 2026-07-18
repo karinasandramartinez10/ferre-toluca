@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Button,
   Chip,
@@ -35,19 +35,25 @@ const buildDefaults = () => {
   return {
     name: "",
     type: "percentage",
+    applicableTiers: [],
     month: now.getMonth(),
     year: now.getFullYear(),
     active: true,
     discountPercentage: null,
-    buyQuantity: null,
-    receiveTotal: null,
-    getDiscountPercentage: 100,
+    minQuantity: null,
+    priceMode: "percentage",
+    volumeDiscountPercentage: null,
+    volumePriceA: null,
+    volumePriceB: null,
+    volumePriceC: null,
+    volumePriceD: null,
   };
 };
 
 const PromotionComposer = ({ open, onClose, scopes = [], onSaved }: PromotionComposerProps) => {
   const { enqueueSnackbar } = useSnackbar();
   const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
 
   const {
     control,
@@ -62,12 +68,18 @@ const PromotionComposer = ({ open, onClose, scopes = [], onSaved }: PromotionCom
   });
 
   const type = watch("type");
+  const priceMode = watch("priceMode");
+  const applicableTiers = watch("applicableTiers");
+  // Modo absoluto solo si la selección es exactamente un producto.
+  const scopeProductId = scopes.length === 1 && scopes[0].kind === "product" ? scopes[0].id : null;
 
   useEffect(() => {
     if (open) reset(buildDefaults());
   }, [open, reset]);
 
   const onSubmit = async (values) => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
     try {
       const results = await Promise.allSettled(
@@ -99,6 +111,7 @@ const PromotionComposer = ({ open, onClose, scopes = [], onSaved }: PromotionCom
         onClose();
       }
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   };
@@ -108,7 +121,7 @@ const PromotionComposer = ({ open, onClose, scopes = [], onSaved }: PromotionCom
       <DialogTitle sx={{ fontWeight: 600 }}>Nueva promoción</DialogTitle>
       <DialogContent>
         <Typography variant="caption" color="text.secondary">
-          Se creará una promoción por cada ámbito seleccionado.
+          Se creará una promoción por cada alcance seleccionado.
         </Typography>
 
         <Stack direction="row" sx={{ flexWrap: "wrap", gap: 0.5, mt: 1, mb: 2 }}>
@@ -123,7 +136,14 @@ const PromotionComposer = ({ open, onClose, scopes = [], onSaved }: PromotionCom
         </Stack>
 
         <Stack spacing={2}>
-          <PromotionFields control={control} errors={errors} type={type} />
+          <PromotionFields
+            control={control}
+            errors={errors}
+            type={type}
+            priceMode={priceMode}
+            applicableTiers={applicableTiers}
+            scopeProductId={scopeProductId}
+          />
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>

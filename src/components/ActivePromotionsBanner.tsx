@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { Box, Button, IconButton, Stack, Typography } from "@mui/material";
@@ -31,8 +32,10 @@ const arrowSx = (side: "left" | "right") => ({
 });
 
 const ActivePromotionsBanner = ({ showViewAll = true }: ActivePromotionsBannerProps) => {
+  const { data: session } = useSession();
+  // El BE filtra por tier del token → re-fetch al cambiar de sesión (login/logout).
   const { data: promotions = [] } = useQuery({
-    queryKey: queryKeys.activePromotions,
+    queryKey: [...queryKeys.activePromotions, session?.user?.id ?? "guest"],
     queryFn: getActivePromotions,
     staleTime: staleTimes.FREQUENT,
     gcTime: gcTimes.SHORT,

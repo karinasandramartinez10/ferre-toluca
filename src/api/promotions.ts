@@ -1,7 +1,34 @@
-import { api } from "../config";
 import privateApi from "../config/private";
 import { createApiError, getApiErrorMessage } from "../utils/apiError";
-import type { ActivePromotion, Promotion, PromotionsResult } from "../types/promotion";
+import type {
+  ActivePromotion,
+  Promotion,
+  PromotionsResult,
+  ScopePreviewProduct,
+} from "../types/promotion";
+
+interface ScopePreviewResult {
+  products: ScopePreviewProduct[];
+  total: number;
+  page: number;
+  size: number;
+}
+
+// Precios vigentes por tier del ámbito, para fijar el precio absoluto en el modal (admin).
+export const getScopePreview = async (
+  scope: Record<string, number>,
+  page = 1,
+  size = 20
+): Promise<ScopePreviewResult> => {
+  try {
+    const { data } = await privateApi.get("/promotion/scope-preview", {
+      params: { ...scope, page, size },
+    });
+    return data.data;
+  } catch (error) {
+    throw createApiError(error);
+  }
+};
 
 export const getPromotions = async (
   page = 1,
@@ -54,10 +81,11 @@ export const deletePromotion = async (id: number | string): Promise<void> => {
   }
 };
 
-// Público: promos vigentes con scopeName hidratado (banner). Sin precios → sin token.
+// Promos vigentes con scopeName hidratado (banner). Auth OPCIONAL: sin token = tier A;
+// con token, el BE filtra por el tier del cliente. privateApi manda el token si hay sesión.
 export const getActivePromotions = async (): Promise<ActivePromotion[]> => {
   try {
-    const { data } = await api.get("/promotion/active");
+    const { data } = await privateApi.get("/promotion/active");
     return data.data;
   } catch (error) {
     throw new Error(getApiErrorMessage(error));

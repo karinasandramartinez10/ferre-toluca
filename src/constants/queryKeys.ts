@@ -61,6 +61,7 @@ export const queryKeys = {
   promotionsActive: ["promotions", "active"],
   activePromotions: ["active-promotions"],
   quotePreview: (signature: string) => ["quotePreview", signature] as const,
+  scopePreview: (productId?: number | null) => ["scopePreview", productId ?? "none"] as const,
   contactRequests: (page: number, size: number, status?: string) => [
     "contactRequests",
     page,

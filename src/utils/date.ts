@@ -7,4 +7,4 @@ export const formatDateDayAbrev = (createdAt: string): string => {
 };
 
 export const formatShortDate = (value?: string | null): string =>
-  value ? new Date(value).toLocaleDateString("es-MX") : "—";
+  value ? format(new Date(value), "dd/MM/yyyy") : "—";

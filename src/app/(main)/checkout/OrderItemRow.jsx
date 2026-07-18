@@ -7,28 +7,12 @@ import { QuantityField } from "../../../components/QuantityField";
 import PromoBadges from "../../../components/PromoBadges";
 import { formatPrice } from "../../../utils/currency";
 
-// La tasa de descuento de las unidades de regalo se deriva del monto que ya calculó el BE
-// (descuento / (unidades × precio)): 1 = gratis, 0.5 = mitad de precio.
-const nxmNote = (nxm, unitPrice, quantity) => {
-  if (!nxm || !nxm.freeUnits) return null;
-  const rate = nxm.discountAmount / (nxm.freeUnits * parseFloat(unitPrice));
-  const word =
-    rate >= 0.99
-      ? "gratis"
-      : Math.abs(rate - 0.5) < 0.05
-        ? "a mitad de precio"
-        : `con ${Math.round(rate * 100)}% de descuento`;
-  const unit = nxm.freeUnits > 1 ? "unidades" : "unidad";
-  const prefix = rate >= 0.99 ? `Pagas ${quantity - nxm.freeUnits} · ` : "";
-  return `${prefix}${nxm.freeUnits} ${unit} ${word}`;
-};
-
-const OrderItemRow = ({ product, quantity, onRemove, unitPrice, nxm }) => {
+const OrderItemRow = ({ product, quantity, onRemove, unitPrice, volume }) => {
   const formattedUnit = formatPrice(unitPrice);
   const grossSubtotal = unitPrice ? parseFloat(unitPrice) * quantity : 0;
-  const effectiveSubtotal = nxm ? nxm.lineTotal : grossSubtotal;
+  const effectiveSubtotal = volume ? volume.lineTotal : grossSubtotal;
   const subtotal = unitPrice ? formatPrice(effectiveSubtotal) : null;
-  const strikedSubtotal = nxm ? formatPrice(grossSubtotal) : null;
+  const strikedSubtotal = volume ? formatPrice(grossSubtotal) : null;
   const hasPromo =
     product?.finalPrice != null && Number(product.finalPrice) < Number(product.price);
 
@@ -82,9 +66,9 @@ const OrderItemRow = ({ product, quantity, onRemove, unitPrice, nxm }) => {
               )}
             </Typography>
             <PromoBadges badges={product?.badges} />
-            {nxm && (
+            {volume && (
               <Typography variant="caption" color="green.main" fontWeight={700} display="block">
-                {nxmNote(nxm, unitPrice, quantity)}
+                {volume.label || "Precio por volumen aplicado"}
               </Typography>
             )}
           </Box>

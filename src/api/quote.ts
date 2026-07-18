@@ -18,7 +18,6 @@ export interface QuotePreviewLine {
   promotionId: number | null;
   promotionType: string | null;
   promotionLabel: string | null;
-  freeUnits: number;
   discountAmount: number;
   lineTotal: number;
 }

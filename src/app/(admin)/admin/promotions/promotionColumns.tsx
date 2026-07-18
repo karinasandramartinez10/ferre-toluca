@@ -8,6 +8,7 @@ import {
   PROMOTION_TYPE_LABELS,
   SCOPE_KIND_LABELS,
   getPromotionScope,
+  promotionShortLabel,
 } from "../../../../constants/promotions";
 import type { Promotion, PromotionScopeType } from "../../../../types/promotion";
 
@@ -32,14 +33,31 @@ export const getPromotionColumns = ({
     ),
   },
   {
-    field: "discountPercentage",
-    headerName: "Porcentaje de descuento",
-    width: 150,
-    renderCell: ({ value }) => <Chip label={`${value ?? "0"}%`} size="small" variant="outlined" />,
+    field: "descuento",
+    headerName: "Descuento",
+    width: 180,
+    sortable: false,
+    renderCell: ({ row }) => (
+      <Chip label={promotionShortLabel(row)} size="small" variant="outlined" />
+    ),
+  },
+  {
+    field: "applicableTiers",
+    headerName: "Clientes",
+    width: 130,
+    sortable: false,
+    headerAlign: "center",
+    renderCell: ({ value }) => (
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+        <Typography variant="body2" noWrap>
+          {value?.length ? value.join(", ") : "Todos"}
+        </Typography>
+      </Box>
+    ),
   },
   {
     field: "scope",
-    headerName: "Ámbito",
+    headerName: "Alcance",
     width: 240,
     sortable: false,
     renderCell: ({ row }) => {

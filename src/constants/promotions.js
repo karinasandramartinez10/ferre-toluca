@@ -1,11 +1,11 @@
 export const PROMOTION_TYPE_LABELS = {
   percentage: "Porcentaje",
-  buy_x_get_y: "NxM",
+  volume_price: "Precio por volumen",
 };
 
 export const PROMOTION_TYPE_OPTIONS = [
   { value: "percentage", label: "Porcentaje (%)" },
-  { value: "buy_x_get_y", label: "NxM (compra X, lleva Y)" },
+  { value: "volume_price", label: "Precio por volumen" },
 ];
 
 export const PROMOTION_STATUS_LABELS = {
@@ -62,10 +62,11 @@ export const MONTHS = [
   "Diciembre",
 ];
 
+// El BE ya manda `label` legible para volume_price ("Compra 4+ y llévate 20%").
 export const promotionShortLabel = (promotion) =>
   promotion.type === "percentage"
     ? `-${promotion.discountPercentage}%`
-    : `${promotion.buyQuantity + promotion.getQuantity}x${promotion.buyQuantity}`;
+    : promotion.label || "Precio por volumen";
 
 export const getPromotionScope = (promotion) => {
   if (promotion.brandId != null) return { kind: "brand", id: promotion.brandId };

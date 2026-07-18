@@ -1,17 +1,21 @@
-export type PromotionType = "percentage" | "buy_x_get_y";
+export type PromotionType = "percentage" | "volume_price";
+
+export type PriceMode = "percentage" | "absolute";
+
+export type PriceTier = "A" | "B" | "C" | "D";
 
 export type PromotionScopeType = "brand" | "category" | "subcategory" | "type" | "product";
 
 export interface ProductPromotion {
   id: number;
-  type: PromotionType;
+  type: "percentage";
   discountPercentage: number;
   scopeType: PromotionScopeType;
   name: string;
 }
 
 export interface ProductBadge {
-  type: "buy_x_get_y";
+  type: "volume_price";
   promotionId: number;
   label: string;
   description?: string;
@@ -24,15 +28,20 @@ export interface Promotion {
   id: number;
   name: string;
   type: PromotionType;
+  applicableTiers: PriceTier[] | null;
   brandId: number | null;
   categoryId: number | null;
   subCategoryId: number | null;
   typeId: number | null;
   productId: number | null;
   discountPercentage: number | null;
-  buyQuantity: number | null;
-  getQuantity: number | null;
-  getDiscountPercentage: number | null;
+  minQuantity: number | null;
+  priceMode: PriceMode | null;
+  volumeDiscountPercentage: number | null;
+  volumePriceA: number | null;
+  volumePriceB: number | null;
+  volumePriceC: number | null;
+  volumePriceD: number | null;
   label: string | null;
   description: string | null;
   startsAt: string;
@@ -54,10 +63,12 @@ export interface ActivePromotion {
   id: number;
   name: string;
   type: PromotionType;
+  applicableTiers: PriceTier[] | null;
   discountPercentage?: number;
-  buyQuantity?: number;
-  getQuantity?: number;
-  getDiscountPercentage?: number;
+  minQuantity?: number;
+  priceMode?: PriceMode;
+  volumeDiscountPercentage?: number;
+  volumePrice?: number;
   label?: string;
   description?: string | null;
   scopeType: PromotionScopeType;
@@ -122,17 +133,30 @@ export interface CatalogView {
   tiles: ScopeTileData[];
 }
 
+// Precios vigentes por tier de un producto del ámbito (GET /promotion/scope-preview).
+export interface ScopePreviewProduct {
+  id: number;
+  name: string;
+  code: string;
+  prices: Record<PriceTier, number>;
+}
+
 // Valores del formulario de promoción (composer y modal).
 export interface PromotionFormValues {
   name: string;
   type: PromotionType;
+  applicableTiers: PriceTier[];
   scopeKind?: PromotionScopeType;
   scopeOption?: ScopeOption | null;
   month: number;
   year: number;
   active: boolean;
   discountPercentage?: number | null;
-  buyQuantity?: number | null;
-  receiveTotal?: number | null;
-  getDiscountPercentage?: number | null;
+  minQuantity?: number | null;
+  priceMode?: PriceMode;
+  volumeDiscountPercentage?: number | null;
+  volumePriceA?: number | null;
+  volumePriceB?: number | null;
+  volumePriceC?: number | null;
+  volumePriceD?: number | null;
 }

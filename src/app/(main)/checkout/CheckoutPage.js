@@ -251,19 +251,20 @@ const CheckoutPage = () => {
       <Box sx={{ maxHeight: { xs: 350, md: 450 }, overflowY: "auto", pr: 1 }}>
         {orderItems.map((item) => {
           const line = previewByProduct.get(item.product.id);
-          const isNxm = line?.promotionType === "buy_x_get_y" && Number(line.discountAmount) > 0;
+          const hasVolume =
+            line?.promotionType === "volume_price" && Number(line.discountAmount) > 0;
           return (
             <OrderItemRow
               key={item.product.id}
               product={item.product}
               quantity={item.quantity}
               unitPrice={item.product?.finalPrice ?? item.product?.price}
-              nxm={
-                isNxm
+              volume={
+                hasVolume
                   ? {
                       discountAmount: Number(line.discountAmount),
-                      freeUnits: line.freeUnits,
                       lineTotal: Number(line.lineTotal),
+                      label: line.promotionLabel,
                     }
                   : null
               }

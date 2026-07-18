@@ -33,7 +33,7 @@ const PromotionScopePicker = ({
     <Stack spacing={2}>
       <TextField
         select
-        label="Tipo de ámbito"
+        label="Tipo de alcance"
         value={scopeKind}
         disabled={disabled}
         onChange={(e) => onKindChange(e.target.value as PromotionScopeType)}
@@ -58,7 +58,7 @@ const PromotionScopePicker = ({
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Ámbito de la promoción"
+            label="Alcance de la promoción"
             error={!!error}
             helperText={error}
           />
