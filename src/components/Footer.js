@@ -21,7 +21,7 @@ export const Footer = () => {
       >
         <Grid item xs={12} sm={3}>
           <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
-            Ferreteria texcoco
+            Ferretera Toluca
           </Typography>
           <Typography>
             <Link href="/delivery-time" color="inherit" underline="hover">
@@ -57,28 +57,22 @@ export const Footer = () => {
           </Typography>
           <Typography>Escríbenos:</Typography>
           <Typography sx={{ wordBreak: "break-word" }}>
-            <Link
-              href="mailto:atencionalcliente@gmail.com" // TODO: cambiar
-              color="inherit"
-              underline="hover"
-            >
-              ferreteriatexcoco@gmail.com
+            <Link href="mailto:ferretera.toluca10@gmail.com" color="inherit" underline="hover">
+              ferretera.toluca10@gmail.com
             </Link>
           </Typography>
           <Typography>Llámanos:</Typography>
           <Typography sx={{ wordBreak: "break-word" }}>
-            <Link href="tel:8009004872" color="inherit" underline="hover">
-              800 900 4872
+            <Link href="tel:+527207888704" color="inherit" underline="hover">
+              +52 720 788 8704
             </Link>
           </Typography>
         </Grid>
       </Grid>
 
-      <Box
-        sx={{ textAlign: "center", mt: 4, pt: 2, borderTop: "1px solid #333" }}
-      >
+      <Box sx={{ textAlign: "center", mt: 4, pt: 2, borderTop: "1px solid #333" }}>
         <Typography variant="body2" color="inherit">
-          Copyright © 2026 Ferretería Texcoco. Todos los Derechos Reservados.
+          Copyright © 2026 Ferretera Toluca. Todos los Derechos Reservados.
         </Typography>
       </Box>
     </Box>

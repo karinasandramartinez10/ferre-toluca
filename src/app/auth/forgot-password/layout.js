@@ -4,7 +4,7 @@ export const metadata = {
   title: "Olvidé contraseña",
   description: "Reset",
   icons: {
-    icon: "/iso_texcoco.svg",
+    icon: "/iso_toluca.svg",
   },
 };
 

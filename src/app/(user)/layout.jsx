@@ -2,10 +2,10 @@ import UserProfileLayout from "../../layouts/user/UserProfileLayout";
 import { auth } from "../../auth";
 
 export const metadata = {
-  title: "Ferreteria Texcoco",
+  title: "Ferretera Toluca",
   description: "Usuario",
   icons: {
-    icon: "/iso_texcoco.svg",
+    icon: "/iso_toluca.svg",
   },
 };
 

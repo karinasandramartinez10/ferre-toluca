@@ -2,10 +2,10 @@ import { getCategoriesServer } from "../../actions/categories";
 import { MainLayout } from "../../layouts/main/MainLayout";
 
 export const metadata = {
-  title: "Ferreteria Texcoco",
+  title: "Ferretera Toluca",
   description: "Home",
   icons: {
-    icon: "/iso_texcoco.svg",
+    icon: "/iso_toluca.svg",
   },
 };
 

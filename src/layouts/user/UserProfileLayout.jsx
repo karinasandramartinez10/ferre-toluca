@@ -52,7 +52,7 @@ export default function UserProfileLayout({ children, session }) {
           <List sx={{ paddingX: 2, borderRadius: 1, paddingTop: 0 }}>
             <Box width="100%" padding={2} position="relative" height="100px">
               <NextLink href="/">
-                <Image src={"/images/texcoco_logo2.svg"} alt="ferreteria texcoco" fill />
+                <Image src={"/images/toluca_logo2.svg"} alt="Ferretera Toluca" fill />
               </NextLink>
             </Box>
             <Stack gap={1}>

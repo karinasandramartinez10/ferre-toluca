@@ -43,8 +43,8 @@ export const MainNavbarDesktop = ({ session }) => {
         <Link href="/" style={{ display: "inline-block", lineHeight: 0 }}>
           <Box sx={{ position: "relative", width: 120, height: 60 }}>
             <Image
-              src={"/images/texcocowhite.svg"}
-              alt="ferreteria texcoco"
+              src={"/images/tolucawhite.svg"}
+              alt="Ferretera Toluca"
               fill
               sizes="120px"
               priority

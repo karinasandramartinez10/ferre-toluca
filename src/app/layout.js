@@ -18,10 +18,10 @@ const montserrat = Montserrat({
 });
 
 export const metadata = {
-  title: "Ferretería Texcoco",
-  description: "Ferretería Texcoco",
+  title: "Ferretera Toluca",
+  description: "Ferretera Toluca",
   icons: {
-    icon: "/iso_texcoco.svg",
+    icon: "/iso_toluca.svg",
   },
 };
 

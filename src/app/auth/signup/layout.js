@@ -4,7 +4,7 @@ export const metadata = {
   title: "Crear cuenta",
   description: "Crear cuenta",
   icons: {
-    icon: "/iso_texcoco.svg",
+    icon: "/iso_toluca.svg",
   },
 };
 
