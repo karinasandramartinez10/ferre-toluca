@@ -13,7 +13,14 @@ export default function useProductSearch() {
     setSearching(true);
     try {
       const res = await getProductsByQuery(query);
-      setOptions((res.products ?? []).map((p) => ({ id: p.id, label: p.name })));
+      setOptions(
+        (res.products ?? []).map((p) => ({
+          id: p.id,
+          label: p.name,
+          code: p.code,
+          image: p.Files?.[0]?.path ?? null,
+        }))
+      );
     } catch {
       setOptions([]);
     } finally {

@@ -104,11 +104,15 @@ export interface ScopeSelection {
   kind: PromotionScopeType;
   id: number;
   label: string;
+  code?: string | null;
+  image?: string | null;
 }
 
 export interface ScopeOption {
   id: number;
   label: string;
+  code?: string | null;
+  image?: string | null;
 }
 
 export interface ScopeTileData {

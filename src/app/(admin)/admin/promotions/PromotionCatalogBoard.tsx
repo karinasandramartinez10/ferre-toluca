@@ -5,11 +5,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Autocomplete,
   Box,
+  Card,
+  IconButton,
   Stack,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
+import { Close } from "@mui/icons-material";
 import { Loading } from "../../../../components/Loading";
 import { getBrands } from "../../../../api/brands";
 import { getMenuTree } from "../../../../api/products";
@@ -21,6 +24,7 @@ import type { ScopeOption, ScopeTileData } from "../../../../types/promotion";
 import useProductSearch from "../../../../hooks/admin/useProductSearch";
 import useScopeSelection from "../../../../hooks/admin/useScopeSelection";
 import useCatalogDrilldown from "../../../../hooks/admin/useCatalogDrilldown";
+import ProductResultRow from "../../../../components/ProductResultRow";
 import PromotionComposer from "./PromotionComposer";
 import ScopeTile from "./ScopeTile";
 import ScopeRow from "./ScopeRow";
@@ -30,9 +34,9 @@ import CatalogBreadcrumbs from "./CatalogBreadcrumbs";
 const EMPTY = [];
 
 const SEGMENTS = [
-  { value: "brand", label: "Marcas" },
-  { value: "catalog", label: "Catálogo" },
   { value: "product", label: "Producto" },
+  { value: "catalog", label: "Catálogo" },
+  { value: "brand", label: "Marcas" },
 ];
 
 const toggleButtonSx = {
@@ -49,7 +53,7 @@ const pluralize = (n: number, singular: string) => `Ver ${n} ${singular}${n === 
 
 const PromotionCatalogBoard = () => {
   const queryClient = useQueryClient();
-  const [tab, setTab] = useState("brand");
+  const [tab, setTab] = useState("product");
   const [filterText, setFilterText] = useState("");
   const [composerOpen, setComposerOpen] = useState(false);
   const [productValue, setProductValue] = useState<ScopeOption | null>(null);
@@ -165,11 +169,30 @@ const PromotionCatalogBoard = () => {
             isOptionEqualToValue={(o, v) => o.id === v.id}
             onInputChange={(_e, query) => search(query)}
             onChange={(_e, value) => {
-              if (value) toggle({ kind: "product", id: value.id, label: value.label });
+              if (value)
+                toggle({
+                  kind: "product",
+                  id: value.id,
+                  label: value.label,
+                  code: value.code,
+                  image: value.image,
+                });
               setProductValue(null);
             }}
             noOptionsText="Escribe para buscar un producto"
             sx={{ flexGrow: 1, maxWidth: { sm: 480 } }}
+            renderOption={(props, option) => {
+              const { key, ...optionProps } = props;
+              return (
+                <Box component="li" key={key} {...optionProps}>
+                  <ProductResultRow
+                    name={option.label}
+                    sku={option.code}
+                    imagePath={option.image}
+                  />
+                </Box>
+              );
+            }}
             renderInput={(params) => (
               <TextField {...params} label="Busca un producto para promocionar" />
             )}
@@ -184,6 +207,36 @@ const PromotionCatalogBoard = () => {
           />
         )}
       </Box>
+
+      {tab === "product" && (
+        <Stack spacing={1} sx={{ mb: 2 }}>
+          {selection
+            .filter((s) => s.kind === "product")
+            .map((s) => (
+              <Card
+                key={s.id}
+                variant="outlined"
+                sx={{
+                  p: 1.5,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 1,
+                  borderColor: "primary.main",
+                }}
+              >
+                <ProductResultRow name={s.label} sku={s.code} imagePath={s.image} size={48} />
+                <IconButton
+                  size="small"
+                  onClick={() => remove("product", s.id)}
+                  aria-label="Quitar"
+                >
+                  <Close fontSize="small" />
+                </IconButton>
+              </Card>
+            ))}
+        </Stack>
+      )}
 
       {tab === "catalog" && (
         <Box sx={{ mb: 2 }}>
