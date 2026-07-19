@@ -111,27 +111,42 @@ const PromotionFields = ({
       <Controller
         name="applicableTiers"
         control={control}
-        render={({ field }) => (
-          <Box>
-            <Typography variant="body2" sx={{ mb: 1 }}>
-              Aplica a los clientes
-            </Typography>
-            <ToggleButtonGroup
-              size="small"
-              value={field.value ?? []}
-              onChange={(_e, value) => field.onChange(value)}
-            >
-              {PRICE_TIERS.map((tier) => (
-                <ToggleButton key={tier} value={tier} sx={tierToggleSx}>
-                  {tier} · {TIER_LABELS[tier]}
+        render={({ field }) => {
+          const tiers: string[] = field.value ?? [];
+          const isAll = tiers.length === 0;
+          return (
+            <Box>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Aplica a los clientes
+              </Typography>
+              <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1 }}>
+                <ToggleButton
+                  size="small"
+                  value="all"
+                  selected={isAll}
+                  onChange={() => field.onChange([])}
+                  sx={tierToggleSx}
+                >
+                  Todos
                 </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-            <Typography variant="caption" color="text.secondary" display="block">
-              Vacío = todos los clientes
-            </Typography>
-          </Box>
-        )}
+                <ToggleButtonGroup
+                  size="small"
+                  value={tiers}
+                  onChange={(_e, value) => field.onChange(value)}
+                >
+                  {PRICE_TIERS.map((tier) => (
+                    <ToggleButton key={tier} value={tier} sx={tierToggleSx}>
+                      {tier} · {TIER_LABELS[tier]}
+                    </ToggleButton>
+                  ))}
+                </ToggleButtonGroup>
+              </Stack>
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+                Segmenta eligiendo tipos de cliente, o déjala en Todos para cualquiera.
+              </Typography>
+            </Box>
+          );
+        }}
       />
 
       {type === "percentage" ? (
