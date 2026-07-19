@@ -67,8 +67,9 @@ const CookieConsentBanner = () => {
             sx={{ maxWidth: 1200, mx: "auto" }}
           >
             <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
-              Usamos cookies esenciales para que el sitio funcione y, con tu permiso, cookies de
-              analítica y marketing para mejorar tu experiencia. Consulta nuestro{" "}
+              Usamos cookies y tecnologías similares (como el almacenamiento local) esenciales para
+              que el sitio funcione y, con tu permiso, cookies de analítica y marketing para mejorar
+              tu experiencia. Consulta nuestro{" "}
               <Link href="/privacy-statement" style={{ color: "inherit", fontWeight: 600 }}>
                 Aviso de Privacidad
               </Link>
@@ -93,8 +94,8 @@ const CookieConsentBanner = () => {
         <DialogTitle sx={{ fontWeight: 600 }}>Preferencias de cookies</DialogTitle>
         <DialogContent dividers>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Elige qué cookies quieres permitir. Las esenciales no se pueden desactivar porque el
-            sitio no funcionaría sin ellas.
+            Elige qué permitir. Las esenciales (cookies y almacenamiento) no se pueden desactivar
+            porque el sitio no funcionaría sin ellas.
           </Typography>
           <Stack spacing={1.5}>
             {COOKIE_CATEGORIES.map((cat) => (

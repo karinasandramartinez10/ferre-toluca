@@ -7,7 +7,7 @@ export const COOKIE_CATEGORIES = [
     key: "essential",
     label: "Esenciales",
     description:
-      "Necesarias para que el sitio funcione: sesión, carrito y seguridad. Siempre activas.",
+      "Necesarias para que el sitio funcione: inicio de sesión, carrito y seguridad. Siempre activas.",
     locked: true,
   },
   {
