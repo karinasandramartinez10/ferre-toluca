@@ -9,6 +9,8 @@ import { mainTheme } from "../theme/mainTheme";
 import { SocketProvider } from "../context/socket/SocketContext";
 import { NotificationsProvider } from "../context/notifications/NotificationsProvider";
 import { OrderProvider } from "../context/order/OrderProvider";
+import { CookieConsentProvider } from "../context/cookieConsent/CookieConsentProvider";
+import CookieConsentBanner from "../components/CookieConsentBanner";
 
 export function Providers({ children }) {
   const [queryClient] = useState(
@@ -41,7 +43,12 @@ export function Providers({ children }) {
           <CssBaseline />
           <SocketProvider>
             <NotificationsProvider>
-              <OrderProvider>{children}</OrderProvider>
+              <OrderProvider>
+                <CookieConsentProvider>
+                  {children}
+                  <CookieConsentBanner />
+                </CookieConsentProvider>
+              </OrderProvider>
             </NotificationsProvider>
           </SocketProvider>
         </SnackbarProvider>
