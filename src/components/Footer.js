@@ -1,4 +1,5 @@
 import { Box, Grid, Link, Typography } from "@mui/material";
+import CookieSettingsLink from "./CookieSettingsLink";
 
 export const Footer = () => {
   return (
@@ -48,6 +49,9 @@ export const Footer = () => {
             <Link href="/terms-conditions" color="inherit" underline="hover">
               Términos y Condiciones
             </Link>
+          </Typography>
+          <Typography>
+            <CookieSettingsLink />
           </Typography>
         </Grid>
 
