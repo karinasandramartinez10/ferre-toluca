@@ -4,11 +4,17 @@ import { Box, Typography, IconButton } from "@mui/material";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import Image from "next/image";
 import { QuantityField } from "../../../components/QuantityField";
+import PromoBadges from "../../../components/PromoBadges";
 import { formatPrice } from "../../../utils/currency";
 
-const OrderItemRow = ({ product, quantity, onRemove, unitPrice }) => {
+const OrderItemRow = ({ product, quantity, onRemove, unitPrice, volume }) => {
   const formattedUnit = formatPrice(unitPrice);
-  const subtotal = unitPrice ? formatPrice(parseFloat(unitPrice) * quantity) : null;
+  const grossSubtotal = unitPrice ? parseFloat(unitPrice) * quantity : 0;
+  const effectiveSubtotal = volume ? volume.lineTotal : grossSubtotal;
+  const subtotal = unitPrice ? formatPrice(effectiveSubtotal) : null;
+  const strikedSubtotal = volume ? formatPrice(grossSubtotal) : null;
+  const hasPromo =
+    product?.finalPrice != null && Number(product.finalPrice) < Number(product.price);
 
   return (
     <Box
@@ -43,8 +49,28 @@ const OrderItemRow = ({ product, quantity, onRemove, unitPrice }) => {
               color={formattedUnit ? "text.secondary" : "warning.main"}
               display="block"
             >
-              {formattedUnit ? `${formattedUnit} c/u` : "Precio por confirmar"}
+              {formattedUnit ? (
+                <>
+                  {hasPromo && (
+                    <Box
+                      component="span"
+                      sx={{ textDecoration: "line-through", color: "text.disabled", mr: 0.5 }}
+                    >
+                      {formatPrice(product.price)}
+                    </Box>
+                  )}
+                  {`${formattedUnit} c/u`}
+                </>
+              ) : (
+                "Precio por confirmar"
+              )}
             </Typography>
+            <PromoBadges badges={product?.badges} />
+            {volume && (
+              <Typography variant="caption" color="green.main" fontWeight={700} display="block">
+                {volume.label || "Precio por volumen aplicado"}
+              </Typography>
+            )}
           </Box>
           <IconButton size="small" color="error" onClick={onRemove} sx={{ flexShrink: 0 }}>
             <DeleteIcon fontSize="small" />
@@ -54,13 +80,24 @@ const OrderItemRow = ({ product, quantity, onRemove, unitPrice }) => {
           sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mt: 0.5 }}
         >
           <QuantityField productId={product.id} quantity={quantity} />
-          <Typography
-            variant="subtitle2"
-            fontWeight={700}
-            color={subtotal ? "primary.main" : "warning.main"}
-          >
-            Subtotal: {subtotal || "Por confirmar"}
-          </Typography>
+          <Box sx={{ textAlign: "right" }}>
+            {strikedSubtotal && (
+              <Typography
+                variant="caption"
+                color="text.disabled"
+                sx={{ textDecoration: "line-through", display: "block" }}
+              >
+                {strikedSubtotal}
+              </Typography>
+            )}
+            <Typography
+              variant="subtitle2"
+              fontWeight={700}
+              color={subtotal ? "primary.main" : "warning.main"}
+            >
+              Subtotal: {subtotal || "Por confirmar"}
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </Box>

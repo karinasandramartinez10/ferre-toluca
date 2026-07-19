@@ -1,4 +1,4 @@
-import { Inter } from "next/font/google";
+import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -11,12 +11,17 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"] });
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["800"],
+  variable: "--font-montserrat",
+});
 
 export const metadata = {
-  title: "Ferretería Texcoco",
-  description: "Ferretería Texcoco",
+  title: "Ferretera Toluca",
+  description: "Ferretera Toluca",
   icons: {
-    icon: "/iso_texcoco.svg",
+    icon: "/iso_toluca.svg",
   },
 };
 
@@ -24,13 +29,9 @@ export default async function RootLayout({ children }) {
   const session = await auth();
   return (
     <html lang="es">
-      <body className={inter.className}>
+      <body className={`${inter.className} ${montserrat.variable}`}>
         <AppRouterCacheProvider>
-          <SessionProvider
-            session={session}
-            refetchOnWindowFocus={false}
-            refetchInterval={0}
-          >
+          <SessionProvider session={session} refetchOnWindowFocus={false} refetchInterval={0}>
             <Providers>
               <GlobalAuthWatcher />
               {children}

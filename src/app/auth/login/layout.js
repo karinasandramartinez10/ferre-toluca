@@ -4,7 +4,7 @@ export const metadata = {
   title: "Iniciar sesión",
   description: "Iniciar sesión",
   icons: {
-    icon: "/iso_texcoco.svg",
+    icon: "/iso_toluca.svg",
   },
 };
 

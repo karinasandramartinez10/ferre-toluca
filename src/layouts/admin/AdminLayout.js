@@ -210,7 +210,7 @@ export const AdminLayout = ({ children, session }) => {
           </IconButton>
           <Box sx={{ position: "relative", width: 100, height: 34 }}>
             <Image
-              src="/images/texcoco_logo2.svg"
+              src="/images/toluca_logo2.svg"
               alt="Ferre Toluca"
               fill
               sizes="100px"

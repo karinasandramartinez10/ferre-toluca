@@ -48,7 +48,7 @@ const MainNavbarMobile = ({ session }) => {
       sx={{ display: { xs: "flex", md: "none" } }}
     >
       <Link href="/">
-        <Image src={"/images/texcocowhite.svg"} alt="ferreteria texcoco" width="90" height="60" />
+        <Image src={"/images/tolucawhite.svg"} alt="Ferretera Toluca" width="90" height="60" />
       </Link>
 
       <Box display="flex" alignItems="center" gap={0.5}>
@@ -71,7 +71,7 @@ const MainNavbarMobile = ({ session }) => {
 
       <Drawer anchor="top" open={openNavbar} onClose={toggleDrawer(false)}>
         <BurgerMenu
-          src={"/images/texcoco_logo2.svg"}
+          src={"/images/toluca_logo2.svg"}
           toggleDrawer={toggleDrawer}
           sections={showSections()}
           showLogout={isAuthenticated}

@@ -4,6 +4,7 @@ import type { SelectedFilters } from "../types/filters";
 export const queryKeys = {
   // STATIC — catálogos, estructura de navegación
   menuTree: ["menu-tree"],
+  brands: ["brands"],
   fiscalCatalogs: ["fiscalCatalogs"],
   measures: ["measures"],
   productModels: (brandId?: string) => ["productModels", brandId ?? "all"],
@@ -57,6 +58,10 @@ export const queryKeys = {
   invitationValidation: (token: string) => ["invitationValidation", token],
   funnelCounts: ["funnelCounts"] as const,
   funnelCount: (stage: string) => ["funnelCounts", stage] as const,
+  promotionsActive: ["promotions", "active"],
+  activePromotions: ["active-promotions"],
+  quotePreview: (signature: string) => ["quotePreview", signature] as const,
+  scopePreview: (productId?: number | null) => ["scopePreview", productId ?? "none"] as const,
   contactRequests: (page: number, size: number, status?: string) => [
     "contactRequests",
     page,

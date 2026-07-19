@@ -94,9 +94,7 @@ const Products = ({ products }) => {
       <Typography component="h1" variant="h1">
         Productos
       </Typography>
-      <Slider
-        {...settings(handleBeforeChange, handleAfterChange, products.length)}
-      >
+      <Slider {...settings(handleBeforeChange, handleAfterChange, products.length)}>
         {products.map((product, i) => (
           <Box key={`${product.id} - ${i}`} mt={1} mb={2} pr={2}>
             <ProductCard

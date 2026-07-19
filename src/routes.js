@@ -18,6 +18,7 @@ export const publicRoutes = [
   "/delivery-time", // Tiempos de entrega
   "/search", // Página de búsqueda
   "/all-products", // Todos los productos
+  "/ofertas", // Página pública de ofertas/promociones
   "/contact", // Formulario de contacto
 ];
 
@@ -29,6 +30,7 @@ export const adminRoutes = [
   /^\/admin\/quotes\/.*/,
   "/admin/contact-requests",
   "/admin/clients",
+  "/admin/promotions",
 ];
 
 export const superAdminRoutes = [
@@ -40,6 +42,7 @@ export const superAdminRoutes = [
   "/admin/invitations",
   "/admin/contact-requests",
   "/admin/clients",
+  "/admin/promotions",
 ];
 
 /**

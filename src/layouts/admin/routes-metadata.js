@@ -4,6 +4,11 @@ export const PAGE_METADATA = {
     subtitle:
       "Consulta, edita y agrega productos. Gestiona precios, disponibilidad e importa por lote o CSV.",
   },
+  "/admin/promotions": {
+    title: "Promociones",
+    subtitle:
+      "Crea promociones por marca, categoría, subcategoría, tipo o producto, y gestiona las activas, programadas y vencidas.",
+  },
   "/admin/quotes": {
     title: "Cotizaciones",
     subtitle:

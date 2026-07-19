@@ -19,6 +19,7 @@ import { useFavorites } from "../hooks/favorites/useFavorites";
 import { CloudinaryImage } from "./CloudinaryImage";
 import { toCapitalizeWords } from "../utils/cases";
 import ProductPrice from "./ProductPrice";
+import PromoBadges from "./PromoBadges";
 
 export const ProductCard = ({ product, showBtns = true }) => {
   const { data: session } = useSession();
@@ -28,7 +29,11 @@ export const ProductCard = ({ product, showBtns = true }) => {
 
   const isUnavailable = product?.isAvailable === false;
   const canFavorite = session?.user?.role === "user";
-  const discount = product?.discountPercentage ?? null;
+  const hasPromo =
+    product?.finalPrice != null && Number(product.finalPrice) < Number(product.price);
+  // El badge de esquina muestra la promo % si la hay; si no, el descuento de tier.
+  const discount =
+    (hasPromo ? product?.promotion?.discountPercentage : product?.discountPercentage) ?? null;
   const isFav = isFavorite(product.id);
   const imagePublicId = product?.Files?.[0]?.publicId;
   const productHref = `/product/${product.id}`;
@@ -205,8 +210,11 @@ export const ProductCard = ({ product, showBtns = true }) => {
           price={product?.price}
           priceList={product?.priceList}
           discountPercentage={product?.discountPercentage}
+          finalPrice={product?.finalPrice}
+          promotion={product?.promotion}
           size="small"
         />
+        <PromoBadges badges={product?.badges} />
       </Box>
 
       {showBtns && (

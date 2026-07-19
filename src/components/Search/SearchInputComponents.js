@@ -6,10 +6,9 @@ import {
   InputBase,
   List,
   ListItem,
-  ListItemText,
   Typography,
 } from "@mui/material";
-import Image from "next/image";
+import ProductResultRow from "../ProductResultRow";
 
 export const SearchInput = ({ searchQuery, handleSearchChange, handleSearchSubmit }) => (
   <InputBase
@@ -66,24 +65,12 @@ export const SearchList = ({ products, handleProductClick }) => (
   <List>
     {products.map((product) => (
       <ListItem button key={product.id} onClick={() => handleProductClick(product.id)}>
-        <Box
-          sx={{
-            width: "50px",
-            height: "50px",
-            marginRight: "16px",
-            borderRadius: "8px",
-            overflow: "hidden",
-          }}
-        >
-          <Image
-            src={product.Files?.[0]?.path ?? "/images/placeholder.png"}
-            alt={product.name}
-            width={50}
-            height={50}
-            style={{ objectFit: "cover" }}
-          />
-        </Box>
-        <ListItemText primary={product.name} secondary={product.code} />
+        <ProductResultRow
+          name={product.name}
+          sku={product.code}
+          imagePath={product.Files?.[0]?.path}
+          size={50}
+        />
       </ListItem>
     ))}
   </List>

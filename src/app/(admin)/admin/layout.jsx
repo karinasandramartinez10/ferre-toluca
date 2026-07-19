@@ -4,7 +4,7 @@ import { auth } from "../../../auth";
 export const metadata = {
   title: "Panel de administrador",
   icons: {
-    icon: "/iso_texcoco.svg",
+    icon: "/iso_toluca.svg",
   },
 };
 

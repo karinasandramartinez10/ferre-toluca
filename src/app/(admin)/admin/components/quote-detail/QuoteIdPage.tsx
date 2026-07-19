@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Card, CardContent, CardHeader, Stack } from "@mui/material";
+import { Box, Card, CardContent, CardHeader, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import { ErrorUI } from "../../../../../components/Error";
 import { Loading } from "../../../../../components/Loading";
@@ -12,7 +12,8 @@ import { useStatusLogs } from "../../../../../hooks/logs/useStatusLogs";
 import { useQuote, useUpdateQuoteStatus } from "../../../../../hooks/quotes";
 import QuoteMessages from "../../../../../components/QuoteMessages";
 import { buildTableHtml, escapeHtml, openPrintWindow } from "../../../../../utils/print";
-import { statusLabelMap } from "../../../../../helpers/quotes";
+import { getQuoteGrandTotal, statusLabelMap } from "../../../../../helpers/quotes";
+import { formatPrice } from "../../../../../utils/currency";
 import type { QuoteStatus } from "../../../../../types/quote";
 
 interface QuoteIdProps {
@@ -134,6 +135,20 @@ export const QuoteId = ({ quoteId }: QuoteIdProps) => {
             {quote?.Products?.map((product) => (
               <QuoteProductCard key={product.id} product={product} />
             ))}
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              mt: 2,
+              pt: 2,
+              borderTop: "1px solid",
+              borderColor: "divider",
+            }}
+          >
+            <Typography variant="h6" fontWeight={700}>
+              Total: {formatPrice(getQuoteGrandTotal(quote.Products))}
+            </Typography>
           </Box>
         </CardContent>
       </Card>

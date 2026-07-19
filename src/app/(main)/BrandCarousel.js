@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Slider from "react-slick";
 import { BannerCard } from "../../components/BannerCard";
+import FullBleedSection from "../../components/layout/FullBleedSection";
 
 const NextArrow = (props) => {
   const { className, style, onClick } = props;
@@ -96,25 +97,14 @@ const BrandCarousel = ({ brands }) => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: "#AE2424",
-        width: "100vw",
-        position: "relative",
-        left: "calc(-50vw + 50%)",
-      }}
-    >
+    <FullBleedSection outerSx={{ pt: 2 }}>
       <Box
         sx={{
-          maxWidth: "1440px",
-          margin: "0 auto",
-          paddingX: "40px",
-          paddingTop: {
-            md: "16px !important",
-          },
-          paddingBottom: {
-            md: "32px !important",
-          },
+          backgroundColor: "#AE2424",
+          borderRadius: "12px",
+          px: { xs: 2, md: 4 },
+          pt: 3,
+          pb: 4,
           ".slick-dots li button:before": {
             color: "#FFF",
           },
@@ -140,7 +130,7 @@ const BrandCarousel = ({ brands }) => {
           ))}
         </Slider>
       </Box>
-    </Box>
+    </FullBleedSection>
   );
 };
 

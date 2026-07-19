@@ -10,6 +10,41 @@ import type {
 } from "../types/quote";
 import { getApiErrorMessage, createApiError } from "../utils/apiError";
 
+export interface QuotePreviewLine {
+  ProductId: number;
+  quantity: number;
+  unitPrice: number;
+  priceType: string;
+  promotionId: number | null;
+  promotionType: string | null;
+  promotionLabel: string | null;
+  discountAmount: number;
+  lineTotal: number;
+}
+
+export interface QuotePreview {
+  products: QuotePreviewLine[];
+  subtotal: number;
+  totalDiscount: number;
+  total: number;
+  totalItems: number;
+}
+
+export const getQuotePreview = async (
+  products: { ProductId: number; quantity: number }[]
+): Promise<QuotePreview> => {
+  try {
+    const { data } = await privateApi.post(
+      "/quote/preview",
+      { products },
+      { headers: { "Content-Type": "application/json" } }
+    );
+    return data.data;
+  } catch (error) {
+    throw createApiError(error);
+  }
+};
+
 export const createQuote = async (body: Record<string, unknown>): Promise<AxiosResponse> => {
   try {
     const resp = await privateApi.post("/quote", body, {

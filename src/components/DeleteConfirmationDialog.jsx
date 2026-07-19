@@ -8,21 +8,17 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
-const DeleteConfirmationDialog = ({ 
-  open, 
-  onClose, 
-  onConfirm, 
-  loading, 
-  title, 
-  description 
+const DeleteConfirmationDialog = ({
+  open,
+  onClose,
+  onConfirm,
+  loading,
+  title,
+  description,
+  confirmColor = "primary",
 }) => {
   return (
-    <Dialog
-      open={open}
-      onClose={!loading ? onClose : null}
-      fullWidth
-      maxWidth="sm"
-    >
+    <Dialog open={open} onClose={!loading ? onClose : null} fullWidth maxWidth="sm">
       <DialogTitle sx={{ fontWeight: 600 }}>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{description}</DialogContentText>
@@ -35,7 +31,7 @@ const DeleteConfirmationDialog = ({
           onClick={onConfirm}
           loading={loading}
           variant="contained"
-          color="primary"
+          color={confirmColor}
         >
           Eliminar
         </LoadingButton>

@@ -2,6 +2,7 @@
 
 import BrandCarousel from "./BrandCarousel";
 import Products from "./Products";
+import ActivePromotionsBanner from "../../components/ActivePromotionsBanner";
 
 export const MainPage = ({ brands = [], products = [], session }) => {
   //TODO: quitar session auth y manejarlo use client
@@ -10,13 +11,13 @@ export const MainPage = ({ brands = [], products = [], session }) => {
     ? products.map((group) => group.variants[0])
     : [];
 
+  const isAdmin = session?.user.role === "admin" || session?.user.role === "superadmin";
+
   return (
     <>
+      {!isAdmin && <ActivePromotionsBanner />}
       <BrandCarousel brands={brands} />
-      {session?.user.role === "admin" ||
-      session?.user.role === "superadmin" ? undefined : (
-        <Products products={representativeProducts} session={session} />
-      )}
+      {!isAdmin && <Products products={representativeProducts} session={session} />}
     </>
   );
 };

@@ -14,10 +14,7 @@ export const UserNavbarMobile = () => {
   const [openNavbar, setOpenNavbar] = useState(false);
 
   const toggleDrawer = (open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
+    if (event.type === "keydown" && (event.key === "Tab" || event.key === "Shift")) {
       return;
     }
 
@@ -32,12 +29,7 @@ export const UserNavbarMobile = () => {
       sx={{ display: { xs: "flex", md: "none" } }}
     >
       <Link href="/">
-        <Image
-          src={"/images/texcocowhite.svg"}
-          alt="ferreteria texcoco"
-          width="90"
-          height="60"
-        />
+        <Image src={"/images/tolucawhite.svg"} alt="Ferretera Toluca" width="90" height="60" />
       </Link>
 
       <Box display="flex" alignItems="center">
@@ -58,7 +50,7 @@ export const UserNavbarMobile = () => {
 
       <Drawer anchor="top" open={openNavbar} onClose={toggleDrawer(false)}>
         <BurgerMenu
-          src={"/images/texcoco_logo2.svg"}
+          src={"/images/toluca_logo2.svg"}
           toggleDrawer={toggleDrawer}
           sections={userSectionsMobile}
           showLogout

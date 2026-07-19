@@ -2,6 +2,7 @@ import {
   AdminPanelSettings,
   FactCheck,
   Favorite,
+  LocalOffer,
   LoginOutlined,
   Person,
   Receipt,
@@ -10,6 +11,11 @@ import {
 export const noAuthSectionsMobile = [
   {
     items: [
+      {
+        icon: <LocalOffer />,
+        text: "Ofertas",
+        href: "/ofertas",
+      },
       {
         icon: <LoginOutlined />,
         text: "Iniciar sesión",
@@ -40,6 +46,11 @@ export const adminSectionsMobile = [
 export const userSectionsMobile = [
   {
     items: [
+      {
+        icon: <LocalOffer />,
+        text: "Ofertas",
+        href: "/ofertas",
+      },
       {
         icon: <FactCheck />,
         text: "Datos de facturación",

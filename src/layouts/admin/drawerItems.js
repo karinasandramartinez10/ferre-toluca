@@ -1,4 +1,11 @@
-import { Storefront, Groups, Inventory, AddBusiness, Category } from "@mui/icons-material";
+import {
+  Storefront,
+  Groups,
+  Inventory,
+  AddBusiness,
+  Category,
+  LocalOffer,
+} from "@mui/icons-material";
 
 export const drawerGroups = [
   {
@@ -23,6 +30,12 @@ export const drawerGroups = [
         text: "Productos",
         pathname: "/admin/products",
         icon: <Inventory sx={{ fontSize: 20 }} />,
+        visibleFor: ["admin", "superadmin"],
+      },
+      {
+        text: "Promociones",
+        pathname: "/admin/promotions",
+        icon: <LocalOffer sx={{ fontSize: 20 }} />,
         visibleFor: ["admin", "superadmin"],
       },
       {

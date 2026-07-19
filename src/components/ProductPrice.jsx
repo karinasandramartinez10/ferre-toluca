@@ -7,13 +7,25 @@ const ProductPrice = ({
   price,
   priceList,
   discountPercentage,
+  finalPrice,
+  promotion,
   size = "medium",
   showDiscountPercentage = false,
 }) => {
-  const formattedPrice = formatPrice(price);
-  const hasDiscount =
+  const hasPromo = finalPrice != null && Number(finalPrice) < Number(price);
+  const effectivePrice = hasPromo ? finalPrice : price;
+  const formattedPrice = formatPrice(effectivePrice);
+
+  const tierHasDiscount =
     discountPercentage != null && priceList != null && Number(priceList) > Number(price);
-  const formattedListStrike = hasDiscount ? formatPrice(priceList) : null;
+  // Con promo activa se tacha el precio de tier; sin promo, el de lista (descuento de tier).
+  const strikeValue = hasPromo ? price : tierHasDiscount ? priceList : null;
+  const formattedStrike = strikeValue != null ? formatPrice(strikeValue) : null;
+  const badgePercentage = hasPromo
+    ? promotion?.discountPercentage
+    : tierHasDiscount
+      ? discountPercentage
+      : null;
 
   if (!formattedPrice) {
     if (size === "small") {
@@ -44,20 +56,20 @@ const ProductPrice = ({
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
-      {formattedListStrike && (
+      {formattedStrike && (
         <Typography
           variant={strikeVariant}
           color="text.disabled"
           sx={{ textDecoration: "line-through" }}
         >
-          {formattedListStrike}
+          {formattedStrike}
         </Typography>
       )}
       <Typography variant={priceVariant} color="primary.main" fontWeight={700}>
         {formattedPrice}
       </Typography>
-      {showDiscountPercentage && hasDiscount && (
-        <Chip label={`-${discountPercentage}%`} size="small" color="primary" />
+      {showDiscountPercentage && badgePercentage != null && (
+        <Chip label={`-${badgePercentage}%`} size="small" color="primary" />
       )}
     </Box>
   );

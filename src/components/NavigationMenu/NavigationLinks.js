@@ -12,6 +12,22 @@ const NavigationLinks = ({ mainCategories = [] }) => {
         minWidth: 0,
       }}
     >
+      <Tooltip title="Ofertas del mes" arrow>
+        <Link href="/ofertas" passHref>
+          <Chip
+            label="Ofertas"
+            clickable
+            color="primary"
+            sx={{
+              fontWeight: 700,
+              fontSize: "14px",
+              borderRadius: "10px",
+              paddingX: "8px",
+              paddingY: "20px",
+            }}
+          />
+        </Link>
+      </Tooltip>
       {mainCategories.map((category) => {
         const label = toCapitalizeWords(category.name);
         return (

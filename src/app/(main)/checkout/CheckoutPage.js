@@ -2,11 +2,14 @@
 
 import { Box, Typography, Button, Stack } from "@mui/material";
 import { signIn, useSession } from "next-auth/react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
-import { createQuote } from "../../../api/quote";
+import { createQuote, getQuotePreview } from "../../../api/quote";
+import { queryKeys } from "../../../constants/queryKeys";
+import { staleTimes } from "../../../constants/queryConfig";
 import { LoadingButton } from "@mui/lab";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import LoginContainer from "../../auth/login/LoginContainer";
@@ -66,14 +69,52 @@ const CheckoutPage = () => {
 
   const { orderItems, removeFromOrder, clearOrder, totalItems } = useOrderContext();
 
-  const orderTotal = useMemo(
+  const previewProducts = useMemo(
+    () => orderItems.map((item) => ({ ProductId: item.product.id, quantity: item.quantity })),
+    [orderItems]
+  );
+
+  // Firma del carrito con debounce: el BE es la fuente de verdad de precios/descuentos,
+  // pero no queremos llamarlo en cada click de cantidad.
+  const cartSignature = previewProducts.map((p) => `${p.ProductId}:${p.quantity}`).join(",");
+  const [debouncedSignature, setDebouncedSignature] = useState(cartSignature);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSignature(cartSignature), 400);
+    return () => clearTimeout(timer);
+  }, [cartSignature]);
+
+  const { data: preview, isFetching: previewFetching } = useQuery({
+    queryKey: queryKeys.quotePreview(debouncedSignature),
+    queryFn: () => getQuotePreview(previewProducts),
+    enabled: isAuthenticated && previewProducts.length > 0,
+    staleTime: staleTimes.FREQUENT,
+    placeholderData: keepPreviousData,
+  });
+
+  // Recalculando = ventana del debounce (firma aún no aplicada) o fetch en curso.
+  const isRecalculating =
+    isAuthenticated &&
+    previewProducts.length > 0 &&
+    (cartSignature !== debouncedSignature || previewFetching);
+
+  const previewByProduct = useMemo(() => {
+    const map = new Map();
+    (preview?.products ?? []).forEach((line) => map.set(line.ProductId, line));
+    return map;
+  }, [preview]);
+
+  const fallbackSubtotal = useMemo(
     () =>
       orderItems.reduce(
-        (sum, item) => sum + parseFloat(item.product?.price || 0) * item.quantity,
+        (sum, item) =>
+          sum + parseFloat(item.product?.finalPrice ?? item.product?.price ?? 0) * item.quantity,
         0
       ),
     [orderItems]
   );
+
+  const orderTotal = preview?.total ?? fallbackSubtotal;
+  const totalSavings = preview?.totalDiscount ?? 0;
 
   const {
     control,
@@ -202,26 +243,45 @@ const CheckoutPage = () => {
   }
 
   return (
-    <Box width="100%">
+    <Box sx={{ width: "100%" }}>
       <Typography variant="h4" sx={{ mb: 2 }}>
         Productos a cotizar
       </Typography>
 
       <Box sx={{ maxHeight: { xs: 350, md: 450 }, overflowY: "auto", pr: 1 }}>
-        {orderItems.map((item) => (
-          <OrderItemRow
-            key={item.product.id}
-            product={item.product}
-            quantity={item.quantity}
-            unitPrice={item.product?.price}
-            onRemove={() => removeFromOrder(item.product.id)}
-          />
-        ))}
+        {orderItems.map((item) => {
+          const line = previewByProduct.get(item.product.id);
+          const hasVolume =
+            line?.promotionType === "volume_price" && Number(line.discountAmount) > 0;
+          return (
+            <OrderItemRow
+              key={item.product.id}
+              product={item.product}
+              quantity={item.quantity}
+              unitPrice={item.product?.finalPrice ?? item.product?.price}
+              volume={
+                hasVolume
+                  ? {
+                      discountAmount: Number(line.discountAmount),
+                      lineTotal: Number(line.lineTotal),
+                      label: line.promotionLabel,
+                    }
+                  : null
+              }
+              onRemove={() => removeFromOrder(item.product.id)}
+            />
+          );
+        })}
       </Box>
 
       {isAuthenticated ? (
         <>
-          <TotalRow totalItems={totalItems} orderTotal={formatPrice(orderTotal)} />
+          <TotalRow
+            totalItems={totalItems}
+            orderTotal={formatPrice(orderTotal)}
+            savings={totalSavings > 0 ? formatPrice(totalSavings) : null}
+            loading={isRecalculating}
+          />
           <BillingSelect
             loading={loadingFiscals}
             profiles={sortedProfiles}
