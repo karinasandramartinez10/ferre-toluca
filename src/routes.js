@@ -14,7 +14,7 @@ export const publicRoutes = [
   "/faq", // Preguntas Frecuentes
   "/privacy-statement", // Aviso de Privacidad
   "/terms-conditions", // Términos y Condiciones
-  "/service-terms", // Términos del Servicio
+  "/cookies-policy", // Política de Cookies
   "/delivery-time", // Tiempos de entrega
   "/search", // Página de búsqueda
   "/all-products", // Todos los productos

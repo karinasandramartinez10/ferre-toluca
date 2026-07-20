@@ -454,13 +454,23 @@ const SignUp = ({ token }) => {
                                 <Typography variant="body3">
                                   Acepto los{" "}
                                   <NextLink
-                                    href="/service-terms"
+                                    href="/terms-conditions"
                                     target="_blank"
                                     passHref
                                     legacyBehavior
                                     rel="noopener"
                                   >
-                                    <Link>términos de servicio</Link>
+                                    <Link>Términos y Condiciones</Link>
+                                  </NextLink>{" "}
+                                  y el{" "}
+                                  <NextLink
+                                    href="/privacy-statement"
+                                    target="_blank"
+                                    passHref
+                                    legacyBehavior
+                                    rel="noopener"
+                                  >
+                                    <Link>Aviso de Privacidad</Link>
                                   </NextLink>
                                 </Typography>
                                 {error && (
