@@ -33,8 +33,10 @@ const PrivacyStatement = () => {
       <Section title="1. Datos personales que recabamos">
         Para brindarle nuestros servicios podemos recabar: nombre, correo electrónico, teléfono,
         domicilio de entrega y datos de facturación (razón social, RFC, régimen fiscal, uso de CFDI)
-        cuando usted los proporciona al registrarse, solicitar una cotización o contactarnos.{" "}
-        <strong>No recabamos datos personales sensibles.</strong>
+        cuando usted los proporciona al registrarse, solicitar una cotización o contactarnos. Al
+        aceptar los Términos y este Aviso, conservamos como constancia la fecha y hora, la versión
+        aceptada, su dirección IP de forma anonimizada y el identificador de su navegador
+        (user-agent). <strong>No recabamos datos personales sensibles.</strong>
       </Section>
 
       <Section title="2. Finalidades del tratamiento">

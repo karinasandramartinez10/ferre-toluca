@@ -102,6 +102,7 @@ const SignUp = ({ token }) => {
     phoneNumber,
     dateOfBirth,
     companyName,
+    agreeTerms,
   }) => {
     const regError = await registerUser({
       invitationToken: token,
@@ -112,6 +113,7 @@ const SignUp = ({ token }) => {
       phoneNumber,
       birthDate: format(new Date(dateOfBirth), "yyyy-MM-dd"),
       companyName: companyName || undefined,
+      agreeTerms,
     });
 
     if (regError) {
