@@ -72,6 +72,10 @@ const CookieConsentBanner = () => {
               tu experiencia. Consulta nuestro{" "}
               <Link href="/privacy-statement" style={{ color: "inherit", fontWeight: 600 }}>
                 Aviso de Privacidad
+              </Link>{" "}
+              y nuestra{" "}
+              <Link href="/cookies-policy" style={{ color: "inherit", fontWeight: 600 }}>
+                Política de Cookies
               </Link>
               .
             </Typography>

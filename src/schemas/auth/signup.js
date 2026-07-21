@@ -40,8 +40,10 @@ export const SignUpSchema = yup.object().shape({
     .bool()
     .test(
       "agreeTerms",
-      "Para crear una cuenta debes aceptar nuestros Términos y Condiciones",
+      "Para crear una cuenta debes aceptar los Términos y Condiciones y el Aviso de Privacidad",
       (value) => value === true
     )
-    .required("Para crear una cuenta debes aceptar nuestros Términos y Condiciones"),
+    .required(
+      "Para crear una cuenta debes aceptar los Términos y Condiciones y el Aviso de Privacidad"
+    ),
 });

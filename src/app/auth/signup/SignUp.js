@@ -102,6 +102,7 @@ const SignUp = ({ token }) => {
     phoneNumber,
     dateOfBirth,
     companyName,
+    agreeTerms,
   }) => {
     const regError = await registerUser({
       invitationToken: token,
@@ -112,6 +113,7 @@ const SignUp = ({ token }) => {
       phoneNumber,
       birthDate: format(new Date(dateOfBirth), "yyyy-MM-dd"),
       companyName: companyName || undefined,
+      agreeTerms,
     });
 
     if (regError) {
@@ -454,13 +456,23 @@ const SignUp = ({ token }) => {
                                 <Typography variant="body3">
                                   Acepto los{" "}
                                   <NextLink
-                                    href="/service-terms"
+                                    href="/terms-conditions"
                                     target="_blank"
                                     passHref
                                     legacyBehavior
                                     rel="noopener"
                                   >
-                                    <Link>términos de servicio</Link>
+                                    <Link>Términos y Condiciones</Link>
+                                  </NextLink>{" "}
+                                  y el{" "}
+                                  <NextLink
+                                    href="/privacy-statement"
+                                    target="_blank"
+                                    passHref
+                                    legacyBehavior
+                                    rel="noopener"
+                                  >
+                                    <Link>Aviso de Privacidad</Link>
                                   </NextLink>
                                 </Typography>
                                 {error && (

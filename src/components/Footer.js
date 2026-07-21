@@ -51,6 +51,11 @@ export const Footer = () => {
             </Link>
           </Typography>
           <Typography>
+            <Link href="/cookies-policy" color="inherit" underline="hover">
+              Política de Cookies
+            </Link>
+          </Typography>
+          <Typography>
             <CookieSettingsLink />
           </Typography>
         </Grid>
