@@ -6,7 +6,6 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import Providers from "../providers/providers";
 import { SessionProvider } from "next-auth/react";
 import GlobalAuthWatcher from "../components/GlobalAuthWatcher";
-import { auth } from "../auth";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -25,13 +24,15 @@ export const metadata = {
   },
 };
 
-export default async function RootLayout({ children }) {
-  const session = await auth();
+// Sin `auth()` aquí: leería cookies y volvería dinámico todo el árbol, rompiendo
+// la generación on-demand de las rutas estáticas (/product/[id] con ids nuevos).
+// SessionProvider resuelve la sesión en cliente; el middleware sigue protegiendo rutas.
+export default function RootLayout({ children }) {
   return (
     <html lang="es">
       <body className={`${inter.className} ${montserrat.variable}`}>
         <AppRouterCacheProvider>
-          <SessionProvider session={session} refetchOnWindowFocus={false} refetchInterval={0}>
+          <SessionProvider refetchOnWindowFocus={false} refetchInterval={0}>
             <Providers>
               <GlobalAuthWatcher />
               {children}
