@@ -5,13 +5,21 @@ export const queryKeys = {
   // STATIC — catálogos, estructura de navegación
   menuTree: ["menu-tree"],
   brands: ["brands"],
+  categories: ["categories"],
+  // `|| "all"` y no `?? "all"`: los selects vacíos mandan "" (falsy pero no nullish),
+  // que generaría una entrada de caché basura por cada nivel sin seleccionar.
+  subcategoriesByCategory: (categoryId?: string) => [
+    "subcategories",
+    "byCategory",
+    categoryId || "all",
+  ],
   fiscalCatalogs: ["fiscalCatalogs"],
   measures: ["measures"],
-  productModels: (brandId?: string) => ["productModels", brandId ?? "all"],
-  productTypesBySubcategory: (subcategoryId: string) => [
+  productModels: (brandId?: string) => ["productModels", brandId || "all"],
+  productTypesBySubcategory: (subcategoryId?: string) => [
     "productTypes",
     "bySubcategory",
-    subcategoryId,
+    subcategoryId || "all",
   ],
 
   // DYNAMIC — cambian con acciones del usuario, se invalidan con mutations
