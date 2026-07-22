@@ -6,6 +6,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import Providers from "../providers/providers";
 import { SessionProvider } from "next-auth/react";
 import GlobalAuthWatcher from "../components/GlobalAuthWatcher";
+import AuthTokenSync from "../components/AuthTokenSync";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -35,6 +36,7 @@ export default function RootLayout({ children }) {
           <SessionProvider refetchOnWindowFocus={false} refetchInterval={0}>
             <Providers>
               <GlobalAuthWatcher />
+              <AuthTokenSync />
               {children}
               <Analytics debug={false} />
               <SpeedInsights debug={false} />
