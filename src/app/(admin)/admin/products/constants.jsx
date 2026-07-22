@@ -23,6 +23,34 @@ export const selectFields = [
   { label: "Tipo", name: "typeId" },
 ];
 
+export const priceFields = [
+  {
+    name: "priceA",
+    label: "Precio A — Público (requerido)",
+    helper: "Precio de lista, el más caro",
+  },
+  { name: "priceB", label: "Precio B (opcional)", helper: "Vacío = usa el tier superior" },
+  { name: "priceC", label: "Precio C (opcional)", helper: "Vacío = usa el tier superior" },
+  { name: "priceD", label: "Precio D — mejor cliente (opcional)", helper: "El más barato" },
+];
+
+export const measureFields = [
+  {
+    valueName: "measureValue",
+    valueLabel: "Valor",
+    unitName: "measureId",
+    unitLabel: "Unidad",
+    title: "Medidas",
+  },
+  {
+    valueName: "secondaryMeasureValue",
+    valueLabel: "Valor secundario",
+    unitName: "secondaryMeasureId",
+    unitLabel: "Unidad secundaria",
+    title: "Medida secundaria",
+  },
+];
+
 export const getSelectOptions = (name, brands, categories, subcategories, types) => {
   const optionsMap = {
     brandId: brands,

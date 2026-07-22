@@ -13,11 +13,17 @@ import { Controller } from "react-hook-form";
 import type { Control, FieldErrors, UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import { Dropzone } from "../../../../components/Dropzone";
 import type { PhotoPreview } from "../../../../types/ui";
-import { getSelectOptions, multiLineFields, selectFields, textFields } from "./constants";
+import {
+  getSelectOptions,
+  measureFields,
+  multiLineFields,
+  priceFields,
+  selectFields,
+  textFields,
+} from "./constants";
 import { sectionTitleSx, twoColumnGrid } from "./styles";
 import { toCapitalizeWords } from "../../../../utils/cases";
 import type {
-  Brand,
   Category,
   Subcategory,
   ProductType,
@@ -56,7 +62,8 @@ interface ProductFormFieldsProps {
   setValue: UseFormSetValue<FormValues>;
   getValues: UseFormGetValues<FormValues>;
   refs: {
-    brands: Brand[];
+    // El endpoint de marcas devuelve `id` numérico, a diferencia de Brand.id
+    brands: { id: string | number; name: string }[];
     categories: Category[];
     subcategories: Subcategory[];
     types: ProductType[];
@@ -106,80 +113,46 @@ const ProductFormFields = ({
         ))}
       </Box>
 
-      {/* Medidas */}
-      <Typography sx={sectionTitleSx}>Medidas</Typography>
-      <Box sx={twoColumnGrid}>
-        <Controller
-          name="measureValue"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Valor"
-              fullWidth
-              error={!!errors.measureValue}
-              helperText={errors.measureValue?.message}
-              disabled={loading}
+      {measureFields.map(({ valueName, valueLabel, unitName, unitLabel, title }) => (
+        <Box key={valueName}>
+          <Typography sx={sectionTitleSx}>{title}</Typography>
+          <Box sx={twoColumnGrid}>
+            <Controller
+              name={valueName as keyof FormValues}
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  value={field.value ?? ""}
+                  label={valueLabel}
+                  fullWidth
+                  error={!!errors[valueName as keyof FormValues]}
+                  helperText={errors[valueName as keyof FormValues]?.message}
+                  disabled={loading}
+                />
+              )}
             />
-          )}
-        />
-        <Controller
-          control={control}
-          name="measureId"
-          render={({ field }) => (
-            <FormControl size="small" fullWidth>
-              <Select {...field} value={field.value || ""} displayEmpty>
-                <MenuItem disabled value="">
-                  Unidad
-                </MenuItem>
-                {measures.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.abbreviation}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        />
-      </Box>
-
-      {/* Medida secundaria */}
-      <Typography sx={sectionTitleSx}>Medida secundaria</Typography>
-      <Box sx={twoColumnGrid}>
-        <Controller
-          name="secondaryMeasureValue"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              value={field.value || ""}
-              label="Valor secundario"
-              fullWidth
-              error={!!errors.secondaryMeasureValue}
-              helperText={errors.secondaryMeasureValue?.message}
-              disabled={loading}
+            <Controller
+              control={control}
+              name={unitName as keyof FormValues}
+              render={({ field }) => (
+                <FormControl size="small" fullWidth>
+                  <Select {...field} value={field.value || ""} displayEmpty>
+                    <MenuItem disabled value="">
+                      {unitLabel}
+                    </MenuItem>
+                    {measures.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.abbreviation}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
             />
-          )}
-        />
-        <Controller
-          control={control}
-          name="secondaryMeasureId"
-          render={({ field }) => (
-            <FormControl size="small" fullWidth>
-              <Select {...field} value={field.value || ""} displayEmpty>
-                <MenuItem disabled value="">
-                  Unidad secundaria
-                </MenuItem>
-                {measures.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.abbreviation}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        />
-      </Box>
+          </Box>
+        </Box>
+      ))}
 
       {/* Clasificación */}
       <Typography sx={sectionTitleSx}>Clasificación</Typography>
@@ -194,7 +167,21 @@ const ProductFormFields = ({
                 <Typography fontWeight={500} fontSize="0.85rem" mb={0.5}>
                   {label}
                 </Typography>
-                <Select {...field} value={field.value ?? ""}>
+                <Select
+                  {...field}
+                  value={field.value ?? ""}
+                  onChange={(event) => {
+                    field.onChange(event);
+                    // Limpiar los niveles inferiores solo cuando el usuario cambia el select,
+                    // nunca durante la precarga de un producto existente.
+                    if (name === "categoryId") {
+                      setValue("subCategoryId", "", { shouldValidate: true, shouldDirty: true });
+                      setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
+                    } else if (name === "subCategoryId") {
+                      setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
+                    }
+                  }}
+                >
                   <MenuItem disabled value="">
                     {label}
                   </MenuItem>
@@ -204,7 +191,7 @@ const ProductFormFields = ({
                     refs.categories,
                     refs.subcategories,
                     refs.types
-                  ).map((opt: { id: string; name: string }) => (
+                  ).map((opt: { id: string | number; name: string }) => (
                     <MenuItem key={opt.id} value={opt.id}>
                       {toCapitalizeWords(opt.name)}
                     </MenuItem>
@@ -302,70 +289,25 @@ const ProductFormFields = ({
       {/* Precios por tipo de cliente */}
       <Typography sx={sectionTitleSx}>Precios por tipo de cliente</Typography>
       <Box sx={twoColumnGrid}>
-        <Controller
-          name="priceA"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Precio A — Público (requerido)"
-              fullWidth
-              type="number"
-              inputProps={{ min: 0, step: "0.01" }}
-              error={!!errors.priceA}
-              helperText={errors.priceA?.message || "Precio de lista, el más caro"}
-              disabled={loading}
-            />
-          )}
-        />
-        <Controller
-          name="priceB"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Precio B (opcional)"
-              fullWidth
-              type="number"
-              inputProps={{ min: 0, step: "0.01" }}
-              error={!!errors.priceB}
-              helperText={errors.priceB?.message || "Vacío = usa el tier superior"}
-              disabled={loading}
-            />
-          )}
-        />
-        <Controller
-          name="priceC"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Precio C (opcional)"
-              fullWidth
-              type="number"
-              inputProps={{ min: 0, step: "0.01" }}
-              error={!!errors.priceC}
-              helperText={errors.priceC?.message || "Vacío = usa el tier superior"}
-              disabled={loading}
-            />
-          )}
-        />
-        <Controller
-          name="priceD"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              label="Precio D — mejor cliente (opcional)"
-              fullWidth
-              type="number"
-              inputProps={{ min: 0, step: "0.01" }}
-              error={!!errors.priceD}
-              helperText={errors.priceD?.message || "El más barato"}
-              disabled={loading}
-            />
-          )}
-        />
+        {priceFields.map(({ name, label, helper }) => (
+          <Controller
+            key={name}
+            name={name as keyof FormValues}
+            control={control}
+            render={({ field }) => (
+              <TextField
+                {...field}
+                label={label}
+                fullWidth
+                type="number"
+                inputProps={{ min: 0, step: "0.01" }}
+                error={!!errors[name as keyof FormValues]}
+                helperText={errors[name as keyof FormValues]?.message || helper}
+                disabled={loading}
+              />
+            )}
+          />
+        ))}
       </Box>
 
       {/* Disponibilidad */}

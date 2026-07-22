@@ -14,16 +14,15 @@ export default function GlobalAuthWatcher() {
       if (alreadyNotified.current) return;
       alreadyNotified.current = true;
 
-      enqueueSnackbar(
-        "Tu sesión ha expirado. Por favor inicia sesión nuevamente",
-        {
-          variant: "warning",
-          autoHideDuration: 2000,
-        }
-      );
+      enqueueSnackbar("Tu sesión ha expirado. Por favor inicia sesión nuevamente", {
+        variant: "warning",
+        autoHideDuration: 2000,
+      });
 
       // espera 3.5s para que termine el autoHide
       setTimeout(() => {
+        // `signOut` directo y no `logout`: aquí la sesión ya venció, así que
+        // mandar el token a la blacklist del BE sería una llamada muerta.
         signOut({ callbackUrl: "/auth/login" });
       }, 2500);
     };

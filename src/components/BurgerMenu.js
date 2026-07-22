@@ -13,7 +13,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import Image from "next/image";
 import NextLink from "next/link";
-import { signOut } from "next-auth/react";
+import { logout } from "../lib/logout";
 import { usePathname } from "next/navigation";
 
 const BurgerMenuItem = ({ icon, text, href, onClose }) => {
@@ -68,7 +68,7 @@ const BurgerMenuSection = ({ title, items, onClose }) => {
 };
 
 export const BurgerMenu = ({ toggleDrawer, sections, showLogout, src }) => {
-  const logoutButton = <Button onClick={() => signOut({ callbackUrl: "/" })}>Cerrar sesión</Button>;
+  const logoutButton = <Button onClick={() => logout({ callbackUrl: "/" })}>Cerrar sesión</Button>;
 
   return (
     <Box sx={{ pt: 1, px: 2, pb: 2, height: 1 }}>

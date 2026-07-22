@@ -3,7 +3,7 @@ import { Box, Button, IconButton, Popover, Stack, Tooltip, Typography } from "@m
 import Link from "next/link";
 import Image from "next/image";
 import Cart from "../../components/Cart";
-import { signOut } from "next-auth/react";
+import { logout } from "../../lib/logout";
 import { useState } from "react";
 import SearchComponent from "../../components/Search";
 import NotificationsBell from "../../components/NotificationsBell";
@@ -27,7 +27,7 @@ export const MainNavbarDesktop = ({ session }) => {
   };
 
   const Logout = () => {
-    signOut({ callbackUrl: "/" });
+    logout({ callbackUrl: "/" });
   };
 
   const open = Boolean(anchorEl);

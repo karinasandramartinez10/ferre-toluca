@@ -2,6 +2,7 @@ import axios, { type InternalAxiosRequestConfig } from "axios";
 import { getSession } from "next-auth/react";
 import { authEvents } from "../lib/authEvents";
 import { EVENTS_EMITERS } from "../lib/events";
+import { getAccessToken } from "../lib/authToken";
 
 let activeSessionPromise: ReturnType<typeof getSession> | null = null;
 
@@ -21,8 +22,18 @@ export const privateApi = axios.create({
 privateApi.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     try {
-      const session: any = await getSessionDeduplicated();
-      const token: string | null = session?.user?.access_token ?? null;
+      // Desviación consciente del patrón de Auth.js: su guía para APIs externas propone
+      // un Route Handler que haga de proxy y adjunte el token con `auth()` server-side.
+      // Aquí el navegador llama al BE directo, así que el token tiene que vivir en
+      // cliente; leerlo de memoria evita pagar un fetch a /api/auth/session por request.
+      //
+      // AuthTokenSync mantiene el token en memoria; getSession() sólo cubre la ventana
+      // inicial, antes de que SessionProvider resuelva la sesión en el primer render.
+      let token = getAccessToken();
+      if (!token) {
+        const session = await getSessionDeduplicated();
+        token = session?.user?.access_token ?? null;
+      }
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
