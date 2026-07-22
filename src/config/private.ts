@@ -21,8 +21,8 @@ export const privateApi = axios.create({
 privateApi.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     try {
-      const session: any = await getSessionDeduplicated();
-      const token: string | null = session?.user?.access_token ?? null;
+      const session = await getSessionDeduplicated();
+      const token = session?.user?.access_token ?? null;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
