@@ -51,10 +51,9 @@ const CreateProductDialog = ({ open, onClose, onCreated }: CreateProductDialogPr
 
   const { measures } = useMeasures();
   const { productModels } = useProductModels(brandId);
-  const { refs, loadingRefs, errorRefs } = useProductFormRefs({
+  const { refs, loadingRefs, errorRefs, refetchRefs } = useProductFormRefs({
     categoryId,
     subCategoryId,
-    setValue,
   });
 
   const handleClose = () => {
@@ -128,7 +127,7 @@ const CreateProductDialog = ({ open, onClose, onCreated }: CreateProductDialogPr
           </Box>
         ) : errorRefs ? (
           <ErrorUI
-            onRetry={() => window.location.reload()}
+            onRetry={refetchRefs}
             message="No pudimos cargar marcas y categorías. Intenta de nuevo."
           />
         ) : (

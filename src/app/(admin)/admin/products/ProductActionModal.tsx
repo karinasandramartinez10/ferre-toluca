@@ -1,75 +1,52 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { LoadingButton } from "@mui/lab";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { productSchema as Schema, productFormDefaults as defaultValues } from "./productFormSchema";
-import { getBrands } from "../../../../api/admin/brands";
-import { getCategories } from "../../../../api/category";
-import { getProductTypes } from "../../../../api/productTypes";
-import {
-  getProductById,
-  updateProductPricing,
-  updateProductAvailability,
-} from "../../../../api/products";
-import { getSubcategories } from "../../../../api/subcategories";
+import { getProductById } from "../../../../api/products";
 import { useMeasures } from "../../../../hooks/catalog/useMeasures";
 import { useProductModels } from "../../../../hooks/catalog/useProductModels";
+import { useProductFormRefs } from "../../../../hooks/admin/useProductFormRefs";
+import type { ProductUpdatePayload } from "../../../../hooks/admin/useUpdateProduct";
 import type { PhotoPreview } from "../../../../types/ui";
 import { ErrorUI } from "../../../../components/Error";
 import { Loading } from "../../../../components/Loading";
 import { buildProductFormData } from "./buildProductFormData";
+import { productToFormValues } from "./productToFormValues";
 import ProductFormFields, { type FormValues } from "./ProductFormFields";
-import type {
-  Brand,
-  Category,
-  Subcategory,
-  ProductType,
-  ProductModel,
-  Measure,
-} from "../../../../types/catalog";
+import type { ProductModel, Measure } from "../../../../types/catalog";
 
 interface ProductActionModalProps {
   title?: string;
   open: boolean;
   onClose: () => void;
-  onSubmit: (formData: FormData) => Promise<void>;
-  fetchData: () => Promise<void>;
+  onSubmit: (payload: ProductUpdatePayload) => Promise<void>;
   selected: {
     id: string;
-    category?: { id: string };
-    subCategory?: { id: string };
     updatedAt?: string;
   } | null;
   loading: boolean;
 }
 
-interface Refs {
-  brands: Brand[];
-  categories: Category[];
-  subcategories: Subcategory[];
-  types: ProductType[];
-}
+// priceA requerido; B/C/D vacío → null limpia ese tier
+const toTier = (v: unknown) => {
+  const s = v as string;
+  return s !== undefined && s !== "" ? parseFloat(s) : null;
+};
 
 const ProductActionModal = ({
   title = "",
   open,
   onClose,
   onSubmit,
-  fetchData,
   selected,
   loading,
 }: ProductActionModalProps) => {
   const [photo, setPhoto] = useState<PhotoPreview | null>(null);
-
-  const [refs, setRefs] = useState<Refs>({
-    brands: [],
-    categories: [],
-    subcategories: [],
-    types: [],
-  });
-  const [loadingRefs, setLoadingRefs] = useState(false);
-  const [errorRefs, setErrorRefs] = useState(false);
+  const [loadingProduct, setLoadingProduct] = useState(false);
+  const [errorProduct, setErrorProduct] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   const {
     control,
@@ -91,190 +68,47 @@ const ProductActionModal = ({
 
   const { measures } = useMeasures();
   const { productModels } = useProductModels(brandId);
-
-  const isInitialCategoryRunRef = useRef(true);
-  const isInitialSubcategoryRunRef = useRef(true);
+  const { refs, loadingRefs, errorRefs, refetchRefs } = useProductFormRefs({
+    categoryId,
+    subCategoryId,
+  });
 
   useEffect(() => {
-    if (!open) return;
-    setLoadingRefs(true);
-    setErrorRefs(false);
+    if (!open || !selected) return;
+    let active = true;
+    setLoadingProduct(true);
+    setErrorProduct(false);
 
-    const loadModalData = async () => {
-      try {
-        const product = await getProductById(selected!.id);
-
-        const { brands } = await getBrands({ size: 1000 });
-        const { categories } = await getCategories({ size: 1000 });
-        let fetchedSubcategories: Subcategory[] = [];
-        let fetchedTypes: ProductType[] = [];
-        if (product?.category?.id) {
-          try {
-            const res = await getSubcategories({
-              categoryId: product.category.id,
-            });
-            fetchedSubcategories = res.subcategories || [];
-          } catch {
-            fetchedSubcategories = [];
-          }
-        }
-        if (product?.subCategory?.id) {
-          try {
-            const res = await getProductTypes({
-              subcategoryId: product.subCategory.id,
-            });
-            fetchedTypes = res.productTypes || res.data?.productTypes || [];
-          } catch {
-            fetchedTypes = [];
-          }
-        }
-        setRefs({
-          brands,
-          categories,
-          subcategories: fetchedSubcategories,
-          types: fetchedTypes,
-        });
-
-        const initial: FormValues = {
-          ...defaultValues,
-          ...(product && {
-            name: product.name ?? "",
-            code: product.code ?? "",
-            color: product.color ?? "",
-            description: product.description ?? "",
-            specifications: product.specifications ?? "",
-            brandId: product.brand?.id ?? "",
-            categoryId: product.category?.id ?? "",
-            subCategoryId: product.subCategory?.id ?? "",
-            typeId: product.type?.id ?? "",
-            qualifier: product.qualifier ?? "",
-            measureValue: product.measureValue ?? null,
-            measureId: product.measure?.id ?? "",
-            secondaryMeasureValue: product.secondaryMeasureValue ?? "",
-            secondaryMeasureId: product.secondaryMeasureId ?? "",
-            modelName: product.productModel?.name ?? "",
-            modelId: product.productModel?.id ?? "",
-            priceA: product.priceA != null ? String(product.priceA) : "",
-            priceB: product.priceB != null ? String(product.priceB) : "",
-            priceC: product.priceC != null ? String(product.priceC) : "",
-            priceD: product.priceD != null ? String(product.priceD) : "",
-            isAvailable: product.isAvailable !== false,
-          }),
-        };
-
-        reset(initial);
-        isInitialCategoryRunRef.current = true;
-        isInitialSubcategoryRunRef.current = true;
+    getProductById(selected.id)
+      .then((product) => {
+        if (!active) return;
+        reset(productToFormValues(product));
         const existingImage = product?.Files?.[0]?.path ?? null;
         setPhoto(existingImage ? { preview: existingImage } : null);
-      } catch {
-        setErrorRefs(true);
-      } finally {
-        setLoadingRefs(false);
-      }
+      })
+      .catch(() => {
+        if (active) setErrorProduct(true);
+      })
+      .finally(() => {
+        if (active) setLoadingProduct(false);
+      });
+
+    return () => {
+      active = false;
     };
-
-    loadModalData();
-  }, [open, selected, reset]);
-
-  useEffect(() => {
-    if (!categoryId) return;
-
-    const fetchSubcategoriesByCategory = async () => {
-      try {
-        const res = await getSubcategories({ categoryId });
-        setRefs((prev) => ({
-          ...prev,
-          subcategories: res.subcategories || [],
-        }));
-
-        const preserveInitial =
-          isInitialCategoryRunRef.current && selected?.category?.id === categoryId;
-        if (!preserveInitial) {
-          setValue("subCategoryId", "", {
-            shouldValidate: true,
-            shouldDirty: true,
-          });
-          setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
-          setRefs((prev) => ({ ...prev, types: [] }));
-        }
-      } catch {
-        setRefs((prev) => ({ ...prev, subcategories: [] }));
-      } finally {
-        isInitialCategoryRunRef.current = false;
-      }
-    };
-
-    fetchSubcategoriesByCategory();
-  }, [categoryId, selected, setValue]);
-
-  useEffect(() => {
-    if (!subCategoryId) {
-      setRefs((prev) => ({ ...prev, types: [] }));
-      setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
-      return;
-    }
-
-    const fetchTypesBySubcategory = async () => {
-      try {
-        const res = await getProductTypes({ subcategoryId: subCategoryId });
-        setRefs((prev) => ({
-          ...prev,
-          types: res.productTypes || res.data?.productTypes || [],
-        }));
-
-        const preserveInitial =
-          isInitialSubcategoryRunRef.current && selected?.subCategory?.id === subCategoryId;
-        if (!preserveInitial) {
-          setValue("typeId", "", { shouldValidate: true, shouldDirty: true });
-        }
-      } catch {
-        setRefs((prev) => ({ ...prev, types: [] }));
-      } finally {
-        isInitialSubcategoryRunRef.current = false;
-      }
-    };
-
-    fetchTypesBySubcategory();
-  }, [subCategoryId, selected, setValue]);
+  }, [open, selected, reset, retryCount]);
 
   const handleFormSubmit = async (data: FormValues) => {
-    const formData = buildProductFormData(data as unknown as Record<string, unknown>, selected);
-    await onSubmit(formData);
-
-    if (selected?.id) {
-      const errors: string[] = [];
-
-      try {
-        // priceA requerido; B/C/D vacío → null limpia ese tier
-        const toTier = (v: unknown) => {
-          const s = v as string;
-          return s !== undefined && s !== "" ? parseFloat(s) : null;
-        };
-        const pricingBody: Record<string, unknown> = {
-          priceA: parseFloat(data.priceA as string),
-          priceB: toTier(data.priceB),
-          priceC: toTier(data.priceC),
-          priceD: toTier(data.priceD),
-        };
-        await updateProductPricing(selected.id, pricingBody);
-      } catch {
-        errors.push("precios");
-      }
-
-      try {
-        await updateProductAvailability(selected.id, data.isAvailable as boolean);
-      } catch {
-        errors.push("disponibilidad");
-      }
-
-      if (errors.length > 0) {
-        throw new Error(`Error al actualizar ${errors.join(" y ")}`);
-      }
-    }
-
-    await fetchData();
-    reset(defaultValues);
+    await onSubmit({
+      formData: buildProductFormData(data as unknown as Record<string, unknown>, selected),
+      pricing: {
+        priceA: parseFloat(data.priceA as string),
+        priceB: toTier(data.priceB),
+        priceC: toTier(data.priceC),
+        priceD: toTier(data.priceD),
+      },
+      isAvailable: data.isAvailable as boolean,
+    });
   };
 
   const handleCloseModal = () => {
@@ -282,20 +116,18 @@ const ProductActionModal = ({
     onClose();
   };
 
+  const handleRetry = () => {
+    refetchRefs();
+    setRetryCount((count) => count + 1);
+  };
+
+  const isLoadingData = loadingProduct || loadingRefs;
+
   let content;
-  if (loadingRefs) {
+  if (isLoadingData) {
     content = <Loading />;
-  } else if (errorRefs) {
-    content = (
-      <ErrorUI
-        onRetry={() => {
-          // Trigger re-render to reload data
-          setLoadingRefs(true);
-          setErrorRefs(false);
-        }}
-        message="Error cargando datos. Intenta de nuevo."
-      />
-    );
+  } else if (errorProduct || errorRefs) {
+    content = <ErrorUI onRetry={handleRetry} message="Error cargando datos. Intenta de nuevo." />;
   } else {
     content = (
       <ProductFormFields
@@ -309,7 +141,7 @@ const ProductActionModal = ({
         photo={photo}
         setPhoto={setPhoto}
         loading={loading}
-        loadingRefs={loadingRefs}
+        loadingRefs={isLoadingData}
       />
     );
   }
@@ -325,7 +157,7 @@ const ProductActionModal = ({
         <LoadingButton
           onClick={handleSubmit(handleFormSubmit)}
           loading={loading}
-          disabled={loading || !isValid || loadingRefs}
+          disabled={loading || !isValid || isLoadingData}
           variant="contained"
           color="primary"
         >

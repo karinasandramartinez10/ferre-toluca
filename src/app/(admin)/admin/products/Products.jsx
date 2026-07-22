@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useSnackbar } from "notistack";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button, Menu, MenuItem } from "@mui/material";
 import { Add, ArrowDropDown } from "@mui/icons-material";
-import { fetchAllProducts, updateProduct } from "../../../../api/products";
-import { revalidateProduct } from "../../../../actions/revalidate";
+import { fetchAllProducts } from "../../../../api/products";
+import useServerPagination from "../../../../hooks/admin/useServerPagination";
+import { useUpdateProduct } from "../../../../hooks/admin/useUpdateProduct";
 import { getProductColumns } from "./constants";
 import ProductActionModal from "./ProductActionModal";
 import CreateProductDialog from "./CreateProductDialog";
@@ -19,20 +20,6 @@ import { Loading } from "../../../../components/Loading";
 import { ErrorUI } from "../../../../components/Error";
 
 const ProductsPage = () => {
-  // Table and pagination
-  const [data, setData] = useState({
-    products: [],
-    count: 0,
-    page: 0,
-    pageSize: 100,
-  });
-  const [paginationModel, setPaginationModel] = useState({
-    page: 0,
-    pageSize: 100,
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
   // Modal
   const [selected, setSelected] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,22 +30,12 @@ const ProductsPage = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const loadPage = useCallback(async (page1, size) => {
-    setError(false);
-    setLoading(true);
-    try {
-      const d = await fetchAllProducts(page1, size);
-      setData({ ...d, page: page1, pageSize: size });
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const { data, loading, error, paginationModel, setPaginationModel, reload } = useServerPagination(
+    fetchAllProducts,
+    { initialPageSize: 100 }
+  );
 
-  useEffect(() => {
-    loadPage(paginationModel.page + 1, paginationModel.pageSize);
-  }, [paginationModel, loadPage]);
+  const { update, saving } = useUpdateProduct();
 
   const handleOpenEdit = (row) => {
     setSelected(row);
@@ -70,42 +47,28 @@ const ProductsPage = () => {
     setMenuAnchor(null);
   };
 
-  const refetchList = () => loadPage(data.page, data.pageSize);
-
-  const handleEditProduct = async (formData) => {
+  const handleEditProduct = async (payload) => {
     try {
-      setLoading(true);
-      const resp = await updateProduct(selected.id, formData);
-      if (resp.status === 200) {
-        enqueueSnackbar("Producto actualizado exitosamente", {
-          variant: "success",
-        });
-        revalidateProduct(selected.id);
-      }
-      await loadPage(data.page, data.pageSize);
+      await update(selected.id, payload);
+      enqueueSnackbar("Producto actualizado exitosamente", { variant: "success" });
+      setIsModalOpen(false);
+      reload();
     } catch (err) {
       if (err?.response?.status === 409) {
         enqueueSnackbar("El producto fue modificado por otro usuario. Recargando datos...", {
           variant: "warning",
         });
-        await loadPage(data.page, data.pageSize);
+        setIsModalOpen(false);
+        reload();
       } else {
-        enqueueSnackbar("Error al actualizar producto", { variant: "error" });
+        // El modal queda abierto para que el usuario reintente sin perder lo capturado.
+        enqueueSnackbar(err?.message || "Error al actualizar producto", { variant: "error" });
       }
-    } finally {
-      setLoading(false);
-      setIsModalOpen(false);
     }
   };
 
   if (loading) return <Loading />;
-  if (error)
-    return (
-      <ErrorUI
-        onRetry={() => loadPage(paginationModel.page, paginationModel.pageSize)}
-        message="No pudimos cargar los productos"
-      />
-    );
+  if (error) return <ErrorUI onRetry={reload} message="No pudimos cargar los productos" />;
 
   return (
     <>
@@ -128,9 +91,9 @@ const ProductsPage = () => {
       <DataGrid
         localeText={localeText}
         density="compact"
-        rows={Array.isArray(data.products) ? data.products : []}
+        rows={data?.products || []}
         columns={getProductColumns(handleOpenEdit)}
-        rowCount={Number.isFinite(data.count) ? data.count : 0}
+        rowCount={data?.count || 0}
         paginationMode="server"
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
@@ -171,9 +134,8 @@ const ProductsPage = () => {
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleEditProduct}
-        fetchData={() => loadPage(data.page, data.pageSize)}
         selected={selected}
-        loading={loading}
+        loading={saving}
       />
 
       <CreateProductDialog
@@ -181,7 +143,7 @@ const ProductsPage = () => {
         onClose={() => setCreateMode(null)}
         onCreated={() => {
           setCreateMode(null);
-          refetchList();
+          reload();
         }}
       />
 
@@ -189,7 +151,7 @@ const ProductsPage = () => {
         open={createMode === "csv"}
         onClose={() => {
           setCreateMode(null);
-          refetchList();
+          reload();
         }}
       />
     </>
