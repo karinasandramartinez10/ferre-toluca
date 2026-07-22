@@ -36,7 +36,7 @@ import { usePathname, useRouter } from "next/navigation";
 import NextLink from "next/link";
 import { getPageMetadata } from "./routes-metadata";
 import { drawerGroups } from "./drawerItems";
-import { signOut } from "next-auth/react";
+import { logout } from "../../lib/logout";
 import NotificationsBell from "../../components/NotificationsBell";
 import { useNotificationsContext } from "../../context/notifications/useNotificationsContext";
 
@@ -238,7 +238,7 @@ export const AdminLayout = ({ children, session }) => {
               {role && <Chip label={role} size="small" variant="outlined" sx={{ mt: 0.5 }} />}
             </Box>
             <Divider />
-            <MenuItem onClick={() => signOut({ callbackUrl: "/" })}>
+            <MenuItem onClick={() => logout({ callbackUrl: "/" })}>
               <Logout fontSize="small" sx={{ mr: 1 }} />
               Cerrar sesión
             </MenuItem>

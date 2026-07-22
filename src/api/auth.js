@@ -1,5 +1,12 @@
 import { api } from "../config";
+import privateApi from "../config/private";
 import { getApiErrorMessage } from "../utils/apiError";
+
+// Manda el token a la blacklist del BE. Sin esto, cerrar sesión sólo borra la cookie
+// local y el access_token sigue siendo válido hasta que expire.
+export const revokeSession = async () => {
+  await privateApi.get("/auth/logout");
+};
 
 export const registerUser = async (body) => {
   try {
