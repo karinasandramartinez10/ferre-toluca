@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import authConfig from "./auth.config";
+import { jwtCallback } from "./lib/refreshSession";
 
 export const {
   handlers: { GET, POST },
@@ -17,22 +18,10 @@ export const {
   callbacks: {
     async session({ token, session }) {
       session.user = token.data;
+      session.error = token.error;
       return session;
     },
-    async jwt({ token, user }) {
-      if (user) {
-        token.data = {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          access_token: user.access_token,
-          expires_at: user.expires_at,
-          // ...user,
-          // role: user.role
-        };
-      }
-      return token;
-    },
+    jwt: jwtCallback,
   },
   session: { strategy: "jwt", maxAge: 604800 },
   ...authConfig,

@@ -2,7 +2,7 @@ import axios, { type InternalAxiosRequestConfig } from "axios";
 import { getSession } from "next-auth/react";
 import { authEvents } from "../lib/authEvents";
 import { EVENTS_EMITERS } from "../lib/events";
-import { getAccessToken } from "../lib/authToken";
+import { getAccessToken, setAccessToken, clearAccessToken } from "../lib/authToken";
 
 let activeSessionPromise: ReturnType<typeof getSession> | null = null;
 
@@ -50,11 +50,38 @@ privateApi.interceptors.request.use(
 privateApi.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
-      console.warn("[Auth] Token vencido o inválido. Cerrando sesión...");
+    const original = error.config as
+      | (InternalAxiosRequestConfig & { _retried?: boolean })
+      | undefined;
+
+    // El reintento tras refrescar volvió a dar 401 → la sesión está muerta: revocada
+    // (el access seguía vigente, así que el `jwt` callback no rotó y reintentamos con
+    // el mismo token), o el token nuevo también fue rechazado. Cerrar sesión.
+    if (error.response?.status === 401 && original?._retried) {
+      authEvents.emit(EVENTS_EMITERS.AUTH.SESSION_EXPIRED);
+      return Promise.reject(error);
+    }
+
+    if (error.response?.status === 401 && original && !original._retried) {
+      original._retried = true; // sin esto un 401 persistente entra en bucle
+      clearAccessToken();
+
+      // Leer la sesión corre el `jwt` callback de NextAuth → refresh + rotación.
+      // getSessionDeduplicated colapsa las ráfagas de 401 (N queries en paralelo,
+      // prefetch-on-hover) en una sola rotación.
+      const session = await getSessionDeduplicated();
+
+      if (!session?.error && session?.user?.access_token) {
+        setAccessToken(session.user.access_token);
+        original.headers.Authorization = `Bearer ${session.user.access_token}`;
+        return privateApi(original); // reintentar una vez con el token nuevo
+      }
+
+      // El refresh falló (session.error) o no hay sesión → logout aguas abajo.
       authEvents.emit(EVENTS_EMITERS.AUTH.SESSION_EXPIRED);
     }
-    return Promise.reject(error); // sigue lanzando el error para el componente
+
+    return Promise.reject(error);
   }
 );
 

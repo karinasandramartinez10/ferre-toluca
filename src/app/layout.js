@@ -33,7 +33,10 @@ export default function RootLayout({ children }) {
     <html lang="es">
       <body className={`${inter.className} ${montserrat.variable}`}>
         <AppRouterCacheProvider>
-          <SessionProvider refetchOnWindowFocus={false} refetchInterval={0}>
+          {/* Poll de 15 min + refetch al enfocar la pestaña: ambos corren el `jwt`
+              callback, que renueva el access ~20 min antes de expirar. Cubre la ruta
+              feliz; el reintento de 401 del interceptor cubre suspensión / red caída. */}
+          <SessionProvider refetchOnWindowFocus refetchInterval={900}>
             <Providers>
               <GlobalAuthWatcher />
               <AuthTokenSync />
