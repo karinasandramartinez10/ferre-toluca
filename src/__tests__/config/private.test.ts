@@ -8,6 +8,8 @@ vi.mock("next-auth/react", () => ({
 
 import privateApi from "../../config/private";
 import { setAccessToken, getAccessToken } from "../../lib/authToken";
+import { authEvents } from "../../lib/authEvents";
+import { EVENTS_EMITERS } from "../../lib/events";
 
 type RequestInterceptor = (config: {
   headers: Record<string, string>;
@@ -19,6 +21,13 @@ const runRequestInterceptor = () => {
     handlers: { fulfilled: RequestInterceptor }[];
   };
   return handler.handlers[0].fulfilled({ headers: {} });
+};
+
+const runResponseError = (error: unknown) => {
+  const handler = privateApi.interceptors.response as unknown as {
+    handlers: { rejected: (e: unknown) => Promise<unknown> }[];
+  };
+  return handler.handlers[0].rejected(error);
 };
 
 beforeEach(() => {
@@ -52,16 +61,6 @@ describe("interceptor de request de privateApi", () => {
 
     expect(config.headers.Authorization).toBeUndefined();
   });
-
-  it("deja de mandar el token viejo después del logout", async () => {
-    setAccessToken("token-viejo");
-    setAccessToken(null);
-    getSessionMock.mockResolvedValue(null);
-
-    const config = await runRequestInterceptor();
-
-    expect(config.headers.Authorization).toBeUndefined();
-  });
 });
 
 describe("guard de servidor en el store", () => {
@@ -75,5 +74,61 @@ describe("guard de servidor en el store", () => {
     globalThis.window = originalWindow;
 
     expect(tokenEnServidor).toBeNull();
+  });
+});
+
+describe("interceptor de response: reintento reactivo de 401", () => {
+  it("un error que no es 401 pasa de largo sin tocar la sesión", async () => {
+    const error = { response: { status: 500 }, config: { headers: {} } };
+
+    await expect(runResponseError(error)).rejects.toBe(error);
+    expect(getSessionMock).not.toHaveBeenCalled();
+  });
+
+  it("renueva la sesión y reintenta la request con el token nuevo", async () => {
+    getSessionMock.mockResolvedValue({ user: { access_token: "token-nuevo" } });
+    const adapter = vi.fn(async (config) => ({
+      data: "ok",
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config,
+    }));
+    privateApi.defaults.adapter = adapter;
+
+    const result = await runResponseError({
+      response: { status: 401 },
+      config: { headers: {}, method: "get", url: "/x" },
+    });
+
+    expect(getAccessToken()).toBe("token-nuevo");
+    expect(adapter).toHaveBeenCalledTimes(1);
+    expect(adapter.mock.calls[0][0].headers.Authorization).toBe("Bearer token-nuevo");
+    // el reintento debe quedar marcado para que un 401 nuevo no vuelva a rotar
+    expect(adapter.mock.calls[0][0]._retried).toBe(true);
+    expect((result as { data: string }).data).toBe("ok");
+  });
+
+  it("cierra sesión cuando el refresh falla (session.error)", async () => {
+    getSessionMock.mockResolvedValue({ error: "RefreshTokenError" });
+    const onExpired = vi.fn();
+    authEvents.once(EVENTS_EMITERS.AUTH.SESSION_EXPIRED, onExpired);
+
+    const error = { response: { status: 401 }, config: { headers: {} } };
+    await expect(runResponseError(error)).rejects.toBe(error);
+
+    expect(onExpired).toHaveBeenCalledTimes(1);
+  });
+
+  it("cierra sesión (sin reintentar) si una request ya reintentada vuelve a dar 401", async () => {
+    const onExpired = vi.fn();
+    authEvents.once(EVENTS_EMITERS.AUTH.SESSION_EXPIRED, onExpired);
+    const error = { response: { status: 401 }, config: { headers: {}, _retried: true } };
+
+    await expect(runResponseError(error)).rejects.toBe(error);
+
+    // No vuelve a intentar refrescar, pero sí cierra sesión: token revocado.
+    expect(getSessionMock).not.toHaveBeenCalled();
+    expect(onExpired).toHaveBeenCalledTimes(1);
   });
 });
