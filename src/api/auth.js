@@ -8,6 +8,14 @@ export const revokeSession = async () => {
   await privateApi.get("/auth/logout");
 };
 
+// Poke a GET /auth/session para detectar revocación: con AuthGuard stateless, las
+// llamadas normales no dan 401 si la sesión fue revocada pero el access no expiró.
+// El interceptor de private resuelve el 401 resultante (refresca o cierra sesión);
+// esta función sólo dispara la verificación, no interpreta la respuesta.
+export const checkSession = async () => {
+  await privateApi.get("/auth/session");
+};
+
 export const registerUser = async (body) => {
   try {
     await api.post("/auth/signup", body);
