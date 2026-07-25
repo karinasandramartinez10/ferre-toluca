@@ -10,5 +10,7 @@ declare module "next-auth" {
       access_token?: string;
       expires_at?: number;
     } & DefaultSession["user"];
+    // Lo setea el `jwt` callback cuando la rotación del refresh falla.
+    error?: string;
   }
 }

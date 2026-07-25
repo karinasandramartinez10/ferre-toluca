@@ -33,6 +33,7 @@ async function signIn(credentials) {
           email: decodedToken.userName,
           access_token: data.access_token,
           expires_at: decodedToken.exp,
+          refresh_token: data.refresh_token,
         };
 
         return {
