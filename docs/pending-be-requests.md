@@ -1,12 +1,13 @@
 # Requests pendientes para el Backend
 
-> **Estado (2026-07-22):** #1 abierta, más #9 (esperando input del FE). #7 y #8 resueltos por el
-> BE en la rama `fix/product-error-handling` — **aún sin mergear a main ni desplegar a prod**.
-> Las #2–#6 ya se resolvieron — resumen histórico al final del archivo.
+> **Estado (verificado contra el BE el 2026-08-06):** solo **#1 sigue abierta**.
+> Las #2–#8 están resueltas; el resumen histórico va al final del archivo.
 
-> ⚠️ **Orden de despliegue (bloqueante):** el FE ya manda las FK opcionales vacías en el PATCH de
-> producto. Contra el BE de producción actual eso responde **500**. El BE debe mergear y desplegar
-> `fix/product-error-handling` **antes** de que el FE llegue a prod.
+> ✅ **El bloqueo de despliegue quedó resuelto.** La advertencia anterior decía que el FE mandaba
+> FK opcionales vacías en el `PATCH` de producto y el BE de producción respondía **500**, así que
+> el BE tenía que salir primero. Verificado: `fix/product-error-handling` se mergeó y **desplegó a
+> producción el 2026-07-22** (PR #49), y hubo 7 deploys exitosos más desde entonces. **El FE puede
+> ir a prod sin coordinar orden.**
 
 ## 1. Filtro múltiple de status en Contact Requests ⏳ ABIERTO
 
@@ -113,11 +114,16 @@ Contexto: El FE tiene tabs "Activas" (pending+contacted) e "Historial" (invited+
 
 ---
 
-## 9. Schema de validación (Joi) en `PATCH /product/:id` ⏳ ESPERANDO AL BE
+## 9. Schema de validación (Joi) en `PATCH /product/:id` ✅ RESUELTO
 
 El BE quiere agregar validación de schema a ese endpoint (hoy no tiene ninguna) pero su middleware
 corre Joi **sin `allowUnknown`**, así que cualquier campo que el FE mande y el schema no declare
 haría fallar el request con 400. Pidieron el inventario exacto de campos.
+
+> ✅ **Implementado.** El BE aplicó el schema tal cual este inventario: `validatorSchema(productSchema.updateProduct)`
+> está montado en la ruta `PATCH /product/:id`, y `src/validatons/product.js` usa `clearableFk` para las FK
+> opcionales, `presentFk` para las que solo viajan con valor, y cubre las tres ramas de `modelId`/`modelName`.
+> Verificado contra `main` del BE el 2026-08-06.
 
 **Inventario entregado el 2026-07-22** — derivado de `buildProductFormData`
 (`src/app/(admin)/admin/products/`), verificado contra el BE local:
