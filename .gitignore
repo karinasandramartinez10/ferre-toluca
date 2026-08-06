@@ -43,3 +43,9 @@ CLAUDE.md
 .playwright-mcp/
 .mcp.json
 screenshots/
+
+# Material comercial (propuestas, pricing, análisis de ingresos del cliente).
+# Vive fuera del repo en ~/Documents/freelancer/alan comercial proposals/
+docs/tickets/propuesta-*.md
+docs/tickets/*-comercial.md
+docs/tickets/post-sale-*.md
