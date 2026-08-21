@@ -100,4 +100,13 @@ describe("Products: búsqueda server-side", () => {
     resolveSearch({ products: [], count: 0 });
     await waitFor(() => expect(input).toBeInTheDocument());
   });
+
+  it("expone un único buscador, sin el quick filter de MUI", async () => {
+    renderPage();
+    await waitFor(() => expect(fetchAllProducts).toHaveBeenCalled());
+
+    expect(screen.getAllByRole("textbox")).toHaveLength(1);
+    expect(screen.queryByPlaceholderText("Buscar...")).toBeNull();
+    expect(screen.getByPlaceholderText(/Buscar por nombre/i)).toBeInTheDocument();
+  });
 });

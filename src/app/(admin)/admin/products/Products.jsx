@@ -180,6 +180,9 @@ const ProductsPage = () => {
           footer: CustomFooter,
         }}
         slotProps={{
+          // La búsqueda real es server-side y vive arriba del grid; el quick filter
+          // de MUI sólo filtra la página ya cargada y confundía con dos buscadores.
+          toolbar: { showQuickFilter: false },
           noRowsOverlay: {
             message: query ? `Sin resultados para "${query}"` : "Aún no hay productos",
           },
