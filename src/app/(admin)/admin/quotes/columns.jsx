@@ -1,12 +1,5 @@
 import Link from "next/link";
-import {
-  Box,
-  Chip,
-  CircularProgress,
-  IconButton,
-  MenuItem,
-  Select,
-} from "@mui/material";
+import { Box, Chip, CircularProgress, IconButton, MenuItem, Select } from "@mui/material";
 import { DescriptionOutlined, SettingsOutlined } from "@mui/icons-material";
 import { formatPhoneNumber } from "../../../../utils/phoneNumber";
 import { formatDateDayAbrev } from "../../../../utils/date";
@@ -124,8 +117,7 @@ export const getQuoteColumns = ({
     headerName: "Cliente",
     sortable: true,
     width: 150,
-    valueGetter: (_, row) =>
-      `${row?.User?.firstName || ""} ${row?.User?.lastName || ""}`,
+    valueGetter: (_, row) => `${row?.User?.firstName || ""} ${row?.User?.lastName || ""}`,
   },
   {
     field: "email",
@@ -138,7 +130,7 @@ export const getQuoteColumns = ({
     field: "phoneNumber",
     headerName: "Teléfono",
     width: 140,
-    valueGetter: (_, row) => formatPhoneNumber(row?.User?.phoneNumber) || "",
+    valueGetter: (_, row) => formatPhoneNumber(row?.User?.phoneNumber),
   },
   {
     field: "fiscalName",
