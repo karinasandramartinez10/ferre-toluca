@@ -23,7 +23,7 @@ describe("useServerPagination", () => {
     renderHook(() => useServerPagination(mockFetchFn));
 
     await waitFor(() => {
-      expect(mockFetchFn).toHaveBeenCalledWith(1, 20);
+      expect(mockFetchFn).toHaveBeenCalledWith(1, 20, "");
     });
   });
 
@@ -62,7 +62,7 @@ describe("useServerPagination", () => {
     });
 
     await waitFor(() => {
-      expect(mockFetchFn).toHaveBeenCalledWith(2, 20);
+      expect(mockFetchFn).toHaveBeenCalledWith(2, 20, "");
     });
   });
 
@@ -106,5 +106,34 @@ describe("useServerPagination", () => {
     });
 
     expect(result.current.data.items[1].count).toBe(6);
+  });
+
+  it("forwards the query to fetchFn", async () => {
+    renderHook(() => useServerPagination(mockFetchFn, { query: "taladro" }));
+
+    await waitFor(() => {
+      expect(mockFetchFn).toHaveBeenCalledWith(1, 20, "taladro");
+    });
+  });
+
+  it("goes back to the first page when the query changes", async () => {
+    const { result, rerender } = renderHook(
+      ({ query }) => useServerPagination(mockFetchFn, { query }),
+      { initialProps: { query: "" } }
+    );
+
+    await waitFor(() => expect(mockFetchFn).toHaveBeenCalled());
+
+    act(() => {
+      result.current.setPaginationModel({ page: 2, pageSize: 20 });
+    });
+    await waitFor(() => expect(result.current.paginationModel.page).toBe(2));
+
+    rerender({ query: "taladro" });
+
+    await waitFor(() => {
+      expect(result.current.paginationModel.page).toBe(0);
+    });
+    expect(mockFetchFn).toHaveBeenLastCalledWith(1, 20, "taladro");
   });
 });

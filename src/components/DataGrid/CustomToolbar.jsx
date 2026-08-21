@@ -8,8 +8,12 @@ import {
 import useResponsive from "../../hooks/use-responsive";
 import { Print } from "@mui/icons-material";
 
-export const CustomToolbar = ({ onPrint }) => {
+export const CustomToolbar = ({ onPrint, showQuickFilter = true }) => {
   const isMobile = useResponsive("down", "sm");
+
+  // En móvil el bloque de columnas/exportar se oculta, así que sin quick filter
+  // ni print el toolbar quedaría como una franja vacía.
+  if (isMobile && !showQuickFilter && !onPrint) return null;
 
   return (
     <Box
@@ -51,19 +55,21 @@ export const CustomToolbar = ({ onPrint }) => {
           </GridToolbarExportContainer>
         </Stack>
       )}
-      <GridToolbarQuickFilter
-        debounceMs={500}
-        placeholder="Buscar..."
-        sx={{
-          flexGrow: 1,
-          minWidth: isMobile ? "100%" : 200,
-          maxWidth: isMobile ? "100%" : 400,
-          "& .MuiInputBase-root": {
-            fontSize: "0.8rem",
-            padding: "2px 8px",
-          },
-        }}
-      />
+      {showQuickFilter && (
+        <GridToolbarQuickFilter
+          debounceMs={500}
+          placeholder="Buscar..."
+          sx={{
+            flexGrow: 1,
+            minWidth: isMobile ? "100%" : 200,
+            maxWidth: isMobile ? "100%" : 400,
+            "& .MuiInputBase-root": {
+              fontSize: "0.8rem",
+              padding: "2px 8px",
+            },
+          }}
+        />
+      )}
       {onPrint && (
         <IconButton size="small" onClick={onPrint} sx={{ flexShrink: 0 }}>
           <Print fontSize="small" color="action" />

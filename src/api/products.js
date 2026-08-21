@@ -1,5 +1,6 @@
 import { api } from "../config";
 import privateApi from "../config/private";
+import { createApiError } from "../utils/apiError";
 
 export const getGroupedProducts = async (endpoint, { page = 1, size = 10, id, q } = {}) => {
   try {
@@ -52,6 +53,20 @@ export const updateProduct = async (id, body) => {
   } catch (error) {
     console.error("Error updating product:", error);
     throw error;
+  }
+};
+
+// /product/search responde { products, count } en la raíz, mientras /product lo anida
+// bajo data. Se normaliza aquí para que el grid admin pueda alternar entre ambos.
+export const searchAllProducts = async (page = 1, size = 25, query) => {
+  try {
+    const { data } = await privateApi.get("/product/search", {
+      params: { q: query, page, size },
+    });
+
+    return data;
+  } catch (error) {
+    throw createApiError(error);
   }
 };
 
