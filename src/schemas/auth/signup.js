@@ -31,7 +31,7 @@ export const SignUpSchema = yup.object().shape({
     .transform((x) => (x === "" ? undefined : x))
     .required("La confirmación de contraseña es requerida")
     .oneOf([yup.ref("password")], "Las contraseñas deben coincidir"),
-  phoneNumber: requiredTel(),
+  phoneNumber: requiredTel,
   agreeTerms: yup
     .bool()
     .test(

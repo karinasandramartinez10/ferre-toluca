@@ -16,13 +16,15 @@ const isValidTel = (value) => {
   return Boolean(parsed) && parsed.country === TEL_COUNTRY && parsed.isValid();
 };
 
-export const requiredTel = () =>
-  yup
-    .string()
-    .nullable()
-    .transform(emptyToNull)
-    .required("El teléfono es requerido")
-    .test("is-valid-tel", INVALID_TEL, isValidTel);
+export const requiredTel = yup
+  .string()
+  .nullable()
+  .transform(emptyToNull)
+  .required("El teléfono es requerido")
+  .test("is-valid-tel", INVALID_TEL, isValidTel);
 
-export const optionalTel = () =>
-  yup.string().nullable().transform(emptyToNull).test("is-valid-tel", INVALID_TEL, isValidTel);
+export const optionalTel = yup
+  .string()
+  .nullable()
+  .transform(emptyToNull)
+  .test("is-valid-tel", INVALID_TEL, isValidTel);
