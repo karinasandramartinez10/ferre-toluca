@@ -1,18 +1,18 @@
 import * as yup from "yup";
 import { differenceInYears } from "date-fns";
+import { requiredTel } from "../tel";
 
-const phoneRegExp = /^\+\d{9,15}$/;
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
 
 export const SignUpSchema = yup.object().shape({
   companyName: yup.string().nullable(),
-  name: yup.string().required("Nombre es obligatorio"),
-  lastname: yup.string().required("Apellido es requerido"),
-  email: yup.string().email("Email no es válido").required("Email es obligatorio"),
+  name: yup.string().required("El nombre es requerido"),
+  lastname: yup.string().required("El apellido es requerido"),
+  email: yup.string().email("El email no es válido").required("El email es requerido"),
   dateOfBirth: yup
     .string()
     .nullable()
-    .required("La fecha de nacimiento es obligatoria")
+    .required("La fecha de nacimiento es requerida")
     .test(
       "birthday",
       "Para registrarse, debe tener al menos 18 años",
@@ -25,17 +25,13 @@ export const SignUpSchema = yup.object().shape({
       passwordRegex,
       "La contraseña debe tener al menos una mayúscula, una minúscula y un número"
     )
-    .required("Contraseña requerida"),
+    .required("La contraseña es requerida"),
   confirmPassword: yup
     .string()
     .transform((x) => (x === "" ? undefined : x))
-    .required("Se requiere confirmar contraseña")
+    .required("La confirmación de contraseña es requerida")
     .oneOf([yup.ref("password")], "Las contraseñas deben coincidir"),
-  phoneNumber: yup
-    .string()
-    .nullable()
-    .required("Teléfono es requerido")
-    .matches(phoneRegExp, "Teléfono no es válido"),
+  phoneNumber: requiredTel(),
   agreeTerms: yup
     .bool()
     .test(
