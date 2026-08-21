@@ -42,11 +42,7 @@ describe("ContactSchema", () => {
     await expect(ContactSchema.isValid({ ...validData, phoneNumber })).resolves.toBe(false);
   });
 
-  it.each([
-    ["firstName", ""],
-    ["lastName", ""],
-    ["email", ""],
-  ])("rejects missing %s", async (field) => {
+  it.each(["firstName", "lastName", "email"])("rejects missing %s", async (field) => {
     await expect(ContactSchema.isValid({ ...validData, [field]: "" })).resolves.toBe(false);
   });
 
