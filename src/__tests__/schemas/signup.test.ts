@@ -9,7 +9,7 @@ const validData = {
   dateOfBirth: "1990-01-15",
   password: "Secret1234",
   confirmPassword: "Secret1234",
-  phoneNumber: "+5215551234567",
+  phoneNumber: "+525551234567",
   agreeTerms: true,
 };
 
@@ -54,8 +54,35 @@ describe("SignUpSchema", () => {
     );
   });
 
-  it("rejects invalid phone number", async () => {
-    await expect(SignUpSchema.isValid({ ...validData, phoneNumber: "12345" })).resolves.toBe(false);
+  it("accepts a valid Mexican phone number", async () => {
+    await expect(
+      SignUpSchema.isValid({ ...validData, phoneNumber: "+525512345678" })
+    ).resolves.toBe(true);
+  });
+
+  it.each([
+    ["local number without country code", "12345"],
+    ["valid foreign number (France)", "+33123456789"],
+    ["valid foreign number (US)", "+12125551234"],
+    ["too few national digits for MX", "+52123456789"],
+    ["legacy 1-prefixed mobile, retired in 2019", "+5215551234567"],
+    ["too many national digits for MX", "+52155123456789"],
+    ["empty string", ""],
+    ["null", null],
+  ])("rejects invalid phone number: %s", async (_label, phoneNumber) => {
+    await expect(SignUpSchema.isValid({ ...validData, phoneNumber })).resolves.toBe(false);
+  });
+
+  it("reports only the required message for an empty phone", async () => {
+    const errors = await SignUpSchema.validateAt(
+      "phoneNumber",
+      { ...validData, phoneNumber: "" },
+      { abortEarly: false }
+    ).then(
+      () => [],
+      (err) => err.errors
+    );
+    expect(errors).toEqual(["El teléfono es requerido"]);
   });
 
   it("rejects agreeTerms false", async () => {
