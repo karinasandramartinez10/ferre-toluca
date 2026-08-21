@@ -1,15 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 
-/**
- * Hook para manejar paginación server-side en DataGrids admin.
- * Encapsula el patrón: state de paginación + loading + error + fetch.
- *
- * @param {Function} fetchFn - Función async que recibe (page, size) y retorna data.
- * @param {Object} options
- * @param {number} [options.initialPageSize=20] - Tamaño de página inicial.
- * @returns {Object}
- */
-export default function useServerPagination(fetchFn, { initialPageSize = 20, rowsKey } = {}) {
+export default function useServerPagination(
+  fetchFn,
+  { initialPageSize = 20, rowsKey, query = "" } = {}
+) {
   const [data, setData] = useState(null);
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: initialPageSize });
   const [loading, setLoading] = useState(false);
@@ -20,7 +14,7 @@ export default function useServerPagination(fetchFn, { initialPageSize = 20, row
       setError(false);
       setLoading(true);
       try {
-        const result = await fetchFn(page, size);
+        const result = await fetchFn(page, size, query);
         setData(result);
       } catch {
         setError(true);
@@ -28,8 +22,14 @@ export default function useServerPagination(fetchFn, { initialPageSize = 20, row
         setLoading(false);
       }
     },
-    [fetchFn]
+    [fetchFn, query]
   );
+
+  // Al cambiar la búsqueda hay que volver a la primera página: la página actual
+  // puede no existir en el nuevo conjunto de resultados.
+  useEffect(() => {
+    setPaginationModel((prev) => (prev.page === 0 ? prev : { ...prev, page: 0 }));
+  }, [query]);
 
   useEffect(() => {
     loadPage(paginationModel.page + 1, paginationModel.pageSize);
