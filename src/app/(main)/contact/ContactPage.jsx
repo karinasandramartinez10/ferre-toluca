@@ -9,7 +9,7 @@ import { MuiTelInput } from "mui-tel-input";
 import { useSnackbar } from "notistack";
 import { submitContactRequest } from "../../../api/contactRequests";
 import { ContactSchema } from "../../../schemas/contact";
-import { TEL_COUNTRY, TEL_COUNTRIES } from "../../../constants/tel";
+import { TEL_COUNTRY } from "../../../constants/tel";
 
 const ContactPage = () => {
   const [submitting, setSubmitting] = useState(false);
@@ -146,8 +146,9 @@ const ContactPage = () => {
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <MuiTelInput
                 disableFormatting
+                disableDropdown
+                forceCallingCode
                 defaultCountry={TEL_COUNTRY}
-                onlyCountries={TEL_COUNTRIES}
                 value={value}
                 onChange={onChange}
                 variant="outlined"

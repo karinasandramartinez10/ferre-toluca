@@ -68,15 +68,19 @@ describe("SignUpSchema", () => {
     ["legacy 1-prefixed mobile, retired in 2019", "+5215551234567"],
     ["too many national digits for MX", "+52155123456789"],
     ["empty string", ""],
+    ["only the calling code left by forceCallingCode", "+52"],
     ["null", null],
   ])("rejects invalid phone number: %s", async (_label, phoneNumber) => {
     await expect(SignUpSchema.isValid({ ...validData, phoneNumber })).resolves.toBe(false);
   });
 
-  it("reports only the required message for an empty phone", async () => {
+  it.each([
+    ["empty string", ""],
+    ["only the calling code", "+52"],
+  ])("reports only the required message for an empty phone: %s", async (_label, phoneNumber) => {
     const errors = await SignUpSchema.validateAt(
       "phoneNumber",
-      { ...validData, phoneNumber: "" },
+      { ...validData, phoneNumber },
       { abortEarly: false }
     ).then(
       () => [],

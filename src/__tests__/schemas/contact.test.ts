@@ -17,14 +17,18 @@ describe("ContactSchema", () => {
 
   it.each([
     ["empty string", ""],
+    ["only the calling code left by forceCallingCode", "+52"],
     ["null", null],
     ["undefined", undefined],
   ])("accepts an omitted phone number: %s", async (_label, phoneNumber) => {
     await expect(ContactSchema.isValid({ ...validData, phoneNumber })).resolves.toBe(true);
   });
 
-  it("casts an empty phone number to null", async () => {
-    const value = await ContactSchema.validate({ ...validData, phoneNumber: "" });
+  it.each([
+    ["empty string", ""],
+    ["only the calling code", "+52"],
+  ])("casts an omitted phone number to null: %s", async (_label, phoneNumber) => {
+    const value = await ContactSchema.validate({ ...validData, phoneNumber });
     expect(value.phoneNumber).toBeNull();
   });
 
