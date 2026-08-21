@@ -15,15 +15,6 @@ export const getSubcategories = async (
   }
 };
 
-export const deleteSubcategory = async (id: string): Promise<AxiosResponse> => {
-  try {
-    const response = await privateApi.delete(`/subcategories/${id}`);
-    return response;
-  } catch (error) {
-    throw new Error(getApiErrorMessage(error));
-  }
-};
-
 export const createSubcategory = async (body: SubcategoryBody): Promise<AxiosResponse> => {
   try {
     const resp = await privateApi.post("/subcategories", body);

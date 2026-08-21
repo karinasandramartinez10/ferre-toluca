@@ -13,15 +13,6 @@ export const getCategories = async (params: CategoriesParams): Promise<Categorie
   }
 };
 
-export const deleteCategory = async (id: string): Promise<AxiosResponse> => {
-  try {
-    const response = await privateApi.delete(`/category/${id}`);
-    return response;
-  } catch (error) {
-    throw new Error(getApiErrorMessage(error));
-  }
-};
-
 export const createCategory = async (body: CategoryBody): Promise<AxiosResponse> => {
   try {
     const resp = await privateApi.post("/category", body);
