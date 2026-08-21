@@ -5,25 +5,11 @@ import { Box, TextField, Typography, Stack, Grid } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { MuiTelInput } from "mui-tel-input";
 import { useSnackbar } from "notistack";
 import { submitContactRequest } from "../../../api/contactRequests";
-
-const phoneRegExp = /^\+\d{9,15}$/;
-
-const schema = yup.object().shape({
-  firstName: yup.string().required("Nombre es requerido"),
-  lastName: yup.string().required("Apellido es requerido"),
-  email: yup.string().email("Email no válido").required("Email es requerido"),
-  phoneNumber: yup
-    .string()
-    .nullable()
-    .transform((v) => (v === "" ? null : v))
-    .matches(phoneRegExp, { message: "Teléfono no válido", excludeEmptyString: true }),
-  companyName: yup.string().nullable(),
-  message: yup.string().nullable(),
-});
+import { ContactSchema } from "../../../schemas/contact";
+import { TEL_COUNTRY } from "../../../constants/tel";
 
 const ContactPage = () => {
   const [submitting, setSubmitting] = useState(false);
@@ -36,7 +22,7 @@ const ContactPage = () => {
     formState: { isValid },
     reset,
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(ContactSchema),
     mode: "onChange",
     defaultValues: {
       firstName: "",
@@ -160,7 +146,9 @@ const ContactPage = () => {
             render={({ field: { value, onChange }, fieldState: { error } }) => (
               <MuiTelInput
                 disableFormatting
-                defaultCountry="MX"
+                disableDropdown
+                forceCallingCode
+                defaultCountry={TEL_COUNTRY}
                 value={value}
                 onChange={onChange}
                 variant="outlined"
