@@ -1,15 +1,6 @@
 import { api } from "../config";
 import privateApi from "../config/private";
 
-export const getProductsByBrand = async (id, page = 1, size = 10) => {
-  try {
-    const { data } = await privateApi.get(`/product/brand/${id}`, { params: { page, size } });
-    return data.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || "Failed to fetch products by brand");
-  }
-};
-
 export const getGroupedProducts = async (endpoint, { page = 1, size = 10, id, q } = {}) => {
   try {
     const params = { page, size };
@@ -31,15 +22,6 @@ export const getGroupedProducts = async (endpoint, { page = 1, size = 10, id, q 
     };
   } catch (error) {
     throw new Error(error.response?.data?.message || `Failed to fetch from ${endpoint}`);
-  }
-};
-
-export const getProductsByCategory = async (id, page = 1, size = 10) => {
-  try {
-    const { data } = await privateApi.get(`/product/category/${id}`, { params: { page, size } });
-    return data.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || "Failed to fetch products by categories");
   }
 };
 

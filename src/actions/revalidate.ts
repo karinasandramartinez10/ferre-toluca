@@ -23,7 +23,3 @@ export async function revalidateSubcategoryPage(slug: string): Promise<void> {
 export async function revalidateTypePage(slug: string): Promise<void> {
   revalidatePath(`/types/${slug}`);
 }
-
-export async function revalidateHome(): Promise<void> {
-  revalidatePath("/");
-}

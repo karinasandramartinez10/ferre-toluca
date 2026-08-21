@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-export const SOCKET_CONFIG = {
+const SOCKET_CONFIG = {
   SOCKET_URL: process.env.NEXT_PUBLIC_BACKEND_API_URL,
   SOCKET_OPTIONS: {
     path: "/socket.io",

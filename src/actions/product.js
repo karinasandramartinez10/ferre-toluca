@@ -22,32 +22,6 @@ export async function fetchGroupedProductsServer(page = 1, size = 10) {
   }
 }
 
-export async function getProductIdsServer() {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/product/ids`, {
-      cache: "force-cache",
-    });
-
-    if (!res.ok) {
-      console.warn("[getProductIdsServer] Non-OK response. Falling back to []", res.status);
-      return [];
-    }
-
-    const response = await res.json().catch(() => ({ data: [] }));
-
-    const ids = response?.data;
-    if (!Array.isArray(ids)) {
-      console.warn("[getProductIdsServer] Invalid payload shape. Using []");
-      return [];
-    }
-
-    return ids;
-  } catch (error) {
-    console.warn("[getProductIdsServer] Fetch failed. Using []", error?.message);
-    return [];
-  }
-}
-
 export async function getPopularProductIdsServer(limit = 500) {
   try {
     const res = await fetch(

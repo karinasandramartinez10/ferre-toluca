@@ -1,4 +1,4 @@
-export const PAGE_METADATA = {
+const PAGE_METADATA = {
   "/admin/products": {
     title: "Productos",
     subtitle:

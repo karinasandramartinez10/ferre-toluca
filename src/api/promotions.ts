@@ -43,15 +43,6 @@ export const getPromotions = async (
   }
 };
 
-export const getPromotion = async (id: number | string): Promise<Promotion> => {
-  try {
-    const { data } = await privateApi.get(`/promotion/${id}`);
-    return data.data;
-  } catch (error) {
-    throw new Error(getApiErrorMessage(error));
-  }
-};
-
 export const createPromotion = async (body: Record<string, unknown>): Promise<Promotion> => {
   try {
     const { data } = await privateApi.post("/promotion", body);
