@@ -157,7 +157,12 @@ const Clients = () => {
           noRowsOverlay: CustomNoRowsOverlay,
           footer: CustomFooter,
         }}
-        slotProps={{ noRowsOverlay: { message: "Aún no hay clientes" } }}
+        slotProps={{
+          // La búsqueda real es server-side y vive arriba del grid; el quick filter
+          // de MUI sólo filtra la página ya cargada y confundía con dos buscadores.
+          toolbar: { showQuickFilter: false },
+          noRowsOverlay: { message: "Aún no hay clientes" },
+        }}
       />
 
       <TierChangeDialog
