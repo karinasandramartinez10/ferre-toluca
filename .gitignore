@@ -49,3 +49,6 @@ screenshots/
 docs/tickets/propuesta-*.md
 docs/tickets/*-comercial.md
 docs/tickets/post-sale-*.md
+
+# codegraph
+.codegraph/
