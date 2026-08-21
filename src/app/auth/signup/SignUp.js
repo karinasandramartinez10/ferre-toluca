@@ -22,6 +22,7 @@ import { registerUser } from "../../../api/auth";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SignUpSchema } from "../../../schemas/auth/signup";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 import { AlternateEmailOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState, useEffect } from "react";
@@ -117,10 +118,7 @@ const SignUp = ({ token }) => {
     });
 
     if (regError) {
-      enqueueSnackbar(
-        `Hubo un error, contacta al administrador, Error: ${regError?.response?.data?.error}`,
-        { variant: "error" }
-      );
+      enqueueSnackbar(getApiErrorMessage(regError), { variant: "error" });
       return;
     }
 
