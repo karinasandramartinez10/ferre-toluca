@@ -3,7 +3,6 @@ export interface Brand {
   name: string;
   image?: string;
   codeName?: string;
-  imageUrl?: string;
   File?: { path: string };
 }
 

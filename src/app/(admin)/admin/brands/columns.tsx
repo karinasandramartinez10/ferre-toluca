@@ -6,7 +6,7 @@ import type { Brand } from "../../../../types/catalog";
 
 export const brandsColumns: GridColDef[] = [
   {
-    field: "imageUrl",
+    field: "logo",
     headerName: "Logo",
     flex: 0.2,
     renderCell: (params: GridRenderCellParams<Brand>) => (

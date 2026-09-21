@@ -68,12 +68,12 @@ const Brands = () => {
       if (response.status === 201) {
         const { brand, file } = response.data as {
           brand: Brand;
-          file: { path: string };
+          file?: { path: string };
         };
+        const path = brand.File?.path ?? file?.path;
         const newBrand: Brand = {
           ...brand,
-          id: brand.id,
-          imageUrl: file.path,
+          File: path ? { ...brand.File, path } : brand.File,
         };
 
         setRows((prevRows) => [...prevRows, newBrand]);
@@ -120,10 +120,10 @@ const Brands = () => {
           brand: Brand;
           file?: { path: string };
         };
+        const path = brand.File?.path ?? file?.path ?? selectedBrand!.File?.path;
         const updatedBrand: Brand = {
           ...brand,
-          id: brand.id,
-          imageUrl: file?.path || selectedBrand!.File?.path,
+          File: path ? { ...brand.File, path } : brand.File,
         };
 
         setRows((prevRows) =>
