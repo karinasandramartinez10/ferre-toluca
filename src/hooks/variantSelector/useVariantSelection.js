@@ -6,6 +6,10 @@ function formatMeasure(value, abbreviation) {
   return `${value} ${abbreviation || ""}`.trim();
 }
 
+function sameColor(a, b) {
+  return (a || null) === (b || null);
+}
+
 function matchesPrimary(a, b) {
   return a.measureValue === b.measureValue && a.measure?.id === b.measure?.id;
 }
@@ -97,7 +101,7 @@ export function useVariantSelection(variants, initialId) {
   );
 
   const filteredByColor = useMemo(
-    () => variants.filter((v) => v.color === selectedColor),
+    () => variants.filter((v) => sameColor(v.color, selectedColor)),
     [variants, selectedColor]
   );
 
@@ -127,7 +131,7 @@ export function useVariantSelection(variants, initialId) {
   }, [filteredByColor, selectedVariant]);
 
   const handleColorChange = (color) => {
-    const withColor = variants.filter((v) => v.color === color);
+    const withColor = variants.filter((v) => sameColor(v.color, color));
 
     // Best: same primary + secondary measure
     const match =

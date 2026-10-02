@@ -390,4 +390,18 @@ describe("useVariantSelection", () => {
       ]);
     });
   });
+
+  describe("variants without color", () => {
+    it("treats empty-string and null colors as the same group", () => {
+      const variants = [
+        { id: "v-1", color: "", measureValue: 1, measure: awg },
+        { id: "v-2", color: null, measureValue: 2, measure: awg },
+        { id: "v-3", color: null, measureValue: 3, measure: awg },
+      ];
+      const { result } = renderHook(() => useVariantSelection(variants, "v-1"));
+
+      expect(result.current.variantOptions.map((o) => o.id)).toEqual(["v-1", "v-2", "v-3"]);
+      expect(result.current.colorOptions).toEqual([]);
+    });
+  });
 });
