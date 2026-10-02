@@ -15,6 +15,7 @@ import ProductTypesTable from "../../../../components/CrudAdminTable";
 import { productTypesColumns } from "./productTypesColumns";
 import type { ProductType, Subcategory } from "../../../../types/catalog";
 import type { GridPaginationModel } from "@mui/x-data-grid";
+import { ADMIN_PAGE_SIZE } from "../../../../constants/x-datagrid/pagination";
 
 interface ProductTypesProps {
   parentId?: string;
@@ -25,7 +26,7 @@ const ProductTypes = ({ parentId, parentName }: ProductTypesProps) => {
   const [rows, setRows] = useState<ProductType[]>([]);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 10,
+    pageSize: ADMIN_PAGE_SIZE,
   });
   const [rowCount, setRowCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);

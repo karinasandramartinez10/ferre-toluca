@@ -16,6 +16,7 @@ import SubcategoriesTable from "../../../../components/CrudAdminTable";
 import { subcategoriesColumns } from "./subcategoriesColumns";
 import type { Category, Subcategory } from "../../../../types/catalog";
 import type { GridPaginationModel } from "@mui/x-data-grid";
+import { ADMIN_PAGE_SIZE } from "../../../../constants/x-datagrid/pagination";
 
 interface SubcategoriesProps {
   parentId?: string;
@@ -27,7 +28,7 @@ const Subcategories = ({ parentId, parentName, onDrill }: SubcategoriesProps) =>
   const [rows, setRows] = useState<Subcategory[]>([]);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 10,
+    pageSize: ADMIN_PAGE_SIZE,
   });
   const [rowCount, setRowCount] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);

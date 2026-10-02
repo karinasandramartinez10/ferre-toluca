@@ -11,6 +11,7 @@ import { categoriesColumns } from "./categoriesColumns";
 import type { Category } from "../../../../types/catalog";
 import type { ModalMode } from "../../../../types/ui";
 import type { GridPaginationModel } from "@mui/x-data-grid";
+import { ADMIN_PAGE_SIZE } from "../../../../constants/x-datagrid/pagination";
 
 interface CategoriesProps {
   onDrill?: (row: Category) => void;
@@ -20,7 +21,7 @@ const Categories = ({ onDrill }: CategoriesProps) => {
   const [rows, setRows] = useState<Category[]>([]);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 10,
+    pageSize: ADMIN_PAGE_SIZE,
   });
   const [rowCount, setRowCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);

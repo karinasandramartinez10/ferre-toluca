@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
+import { ADMIN_PAGE_SIZE } from "../../constants/x-datagrid/pagination";
 
 export default function useServerPagination(
   fetchFn,
-  { initialPageSize = 20, rowsKey, query = "" } = {}
+  { initialPageSize = ADMIN_PAGE_SIZE, rowsKey, query = "" } = {}
 ) {
   const [data, setData] = useState(null);
   const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: initialPageSize });

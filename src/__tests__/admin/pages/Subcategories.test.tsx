@@ -40,6 +40,7 @@ vi.mock("@/actions/revalidate", () => ({
 }));
 
 import Subcategories from "@/app/(admin)/admin/taxonomy/Subcategories";
+import { ADMIN_PAGE_SIZE } from "../../../constants/x-datagrid/pagination";
 
 const sampleSubcategories = [
   { id: "sc1", name: "taladros", category: { id: "c1", name: "herramientas" } },
@@ -62,7 +63,7 @@ describe("Subcategories page", () => {
     render(<Subcategories />);
 
     await waitFor(() => {
-      expect(mockGetSubcategories).toHaveBeenCalledWith({ page: 1, size: 10 });
+      expect(mockGetSubcategories).toHaveBeenCalledWith({ page: 1, size: ADMIN_PAGE_SIZE });
     });
   });
 

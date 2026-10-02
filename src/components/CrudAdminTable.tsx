@@ -8,6 +8,7 @@ import type {
   GridRenderCellParams,
 } from "@mui/x-data-grid";
 import { localeText } from "../constants/x-datagrid/localeText";
+import { ADMIN_PAGE_SIZE_OPTIONS } from "../constants/x-datagrid/pagination";
 
 interface CrudToolbarProps {
   title: string;
@@ -164,17 +165,10 @@ const CrudAdminTable = ({
         paginationModel={paginationModel}
         onPaginationModelChange={onPaginationModelChange}
         rowCount={rowCount}
-        pageSizeOptions={[10, 25, 50]}
+        pageSizeOptions={ADMIN_PAGE_SIZE_OPTIONS}
         paginationMode="server"
         disableRowSelectionOnClick
         onRowClick={onDrillClick ? (params) => onDrillClick(params.row) : undefined}
-        initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 10,
-            },
-          },
-        }}
         sx={{
           gap: 1,
           ...(onDrillClick && {

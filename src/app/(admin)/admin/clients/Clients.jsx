@@ -19,6 +19,7 @@ import FilterSelect from "../../../../components/FilterSelect";
 import { formatShortDate } from "../../../../utils/date";
 import { PRICE_TIERS, TIER_LABELS } from "../../../../constants/pricing";
 import TierChangeDialog from "./TierChangeDialog";
+import { ADMIN_PAGE_SIZE_OPTIONS } from "../../../../constants/x-datagrid/pagination";
 
 const TIER_FILTER_OPTIONS = [
   { value: "", label: "Todos los tipos" },
@@ -146,7 +147,7 @@ const Clients = () => {
         paginationMode="server"
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
-        pageSizeOptions={[10, 20, 50]}
+        pageSizeOptions={ADMIN_PAGE_SIZE_OPTIONS}
         disableRowSelectionOnClick
         sx={{
           height: 700,
