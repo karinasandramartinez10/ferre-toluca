@@ -1,25 +1,17 @@
 "use server";
 
 export async function fetchGroupedProductsServer(page = 1, size = 10) {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/product/grouped?page=${page}&size=${size}`,
-      { cache: "force-cache" }
-    );
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/product/grouped?page=${page}&size=${size}`,
+    { cache: "force-cache" }
+  );
 
-    if (!res.ok) {
-      throw new Error(`Error ${res.status}: ${await res.text()}`);
-    }
-
-    const response = await res.json();
-
-    const products = response?.products ?? [];
-
-    return products;
-  } catch (error) {
-    console.error("Error fetching grouped products:", error);
-    return [];
+  if (!res.ok) {
+    throw new Error(`[fetchGroupedProductsServer] ${res.status}`);
   }
+
+  const response = await res.json();
+  return response?.products ?? [];
 }
 
 export async function getPopularProductIdsServer(limit = 500) {
@@ -50,20 +42,16 @@ export async function getPopularProductIdsServer(limit = 500) {
 }
 
 export const getProductById = async (id) => {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/product/${id}`, {
-      cache: "force-cache",
-    });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/v1/product/${id}`, {
+    cache: "force-cache",
+  });
 
-    if (!res.ok) {
-      console.warn(`[getProductById] Non-OK response for id=${id}:`, res.status);
-      return null;
-    }
+  if (res.status === 404) return null;
 
-    const response = await res.json();
-    return response.data;
-  } catch (error) {
-    console.warn(`[getProductById] Fetch failed for id=${id}:`, error?.message);
-    return null;
+  if (!res.ok) {
+    throw new Error(`[getProductById] ${res.status} for id=${id}`);
   }
+
+  const response = await res.json();
+  return response.data;
 };
