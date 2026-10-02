@@ -19,6 +19,7 @@ import { PROMOTION_TYPE_OPTIONS } from "../../../../constants/promotions";
 import type { Promotion } from "../../../../types/promotion";
 import PromotionModal from "./PromotionModal";
 import { getPromotionColumns } from "./promotionColumns";
+import { ADMIN_PAGE_SIZE_OPTIONS } from "../../../../constants/x-datagrid/pagination";
 
 const STATUS_FILTERS = [
   { value: "", label: "Todos los estados" },
@@ -101,7 +102,7 @@ const Promotions = () => {
         paginationMode="server"
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
-        pageSizeOptions={[10, 20, 50]}
+        pageSizeOptions={ADMIN_PAGE_SIZE_OPTIONS}
         disableRowSelectionOnClick
         sx={{
           height: 700,

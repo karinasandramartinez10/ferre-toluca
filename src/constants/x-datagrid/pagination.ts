@@ -1,0 +1,3 @@
+export const ADMIN_PAGE_SIZE = 100;
+
+export const ADMIN_PAGE_SIZE_OPTIONS = [25, 50, ADMIN_PAGE_SIZE];

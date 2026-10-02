@@ -17,6 +17,7 @@ import { localeText } from "../../../../constants/x-datagrid/localeText";
 import { CustomToolbar } from "../../../../components/DataGrid/CustomToolbar";
 import { CustomFooter } from "../../../../components/DataGrid/CustomFooter";
 import { ErrorUI } from "../../../../components/Error";
+import { ADMIN_PAGE_SIZE_OPTIONS } from "../../../../constants/x-datagrid/pagination";
 
 // Los tres diálogos sólo se abren bajo demanda; en estático arrastraban al chunk
 // inicial de la ruta todo el flujo de CSV, papaparse incluido. next/dynamic sólo
@@ -55,7 +56,7 @@ const ProductsPage = () => {
 
   const { data, loading, error, paginationModel, setPaginationModel, reload } = useServerPagination(
     fetchProducts,
-    { initialPageSize: 25, query }
+    { query }
   );
 
   const { update, saving } = useUpdateProduct();
@@ -149,7 +150,7 @@ const ProductsPage = () => {
         paginationMode="server"
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
-        pageSizeOptions={[10, 25, 50, 100]}
+        pageSizeOptions={ADMIN_PAGE_SIZE_OPTIONS}
         disableRowSelectionOnClick
         sx={{
           height: 900,

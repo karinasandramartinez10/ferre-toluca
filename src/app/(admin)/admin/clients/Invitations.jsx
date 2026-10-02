@@ -23,6 +23,7 @@ import {
   INVITATION_STATUS_COLORS,
   INVITATION_STATUS_LABELS,
 } from "../../../../constants/statusMaps";
+import { ADMIN_PAGE_SIZE_OPTIONS } from "../../../../constants/x-datagrid/pagination";
 
 const STATUS_FILTERS = [
   { value: "pending", label: "Pendientes" },
@@ -194,7 +195,7 @@ const Invitations = () => {
         paginationMode="server"
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
-        pageSizeOptions={[10, 20, 50]}
+        pageSizeOptions={ADMIN_PAGE_SIZE_OPTIONS}
         disableRowSelectionOnClick
         getRowClassName={({ row }) =>
           row.status === "expired" || row.status === "revoked" ? "row-muted" : ""

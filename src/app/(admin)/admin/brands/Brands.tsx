@@ -13,12 +13,13 @@ import type { Brand } from "../../../../types/catalog";
 import type { ModalMode } from "../../../../types/ui";
 import type { BrandFormData } from "./BrandModal";
 import type { GridPaginationModel } from "@mui/x-data-grid";
+import { ADMIN_PAGE_SIZE } from "../../../../constants/x-datagrid/pagination";
 
 const Brands = () => {
   const [rows, setRows] = useState<Brand[]>([]);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 10,
+    pageSize: ADMIN_PAGE_SIZE,
   });
   const [rowCount, setRowCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);

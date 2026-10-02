@@ -35,6 +35,7 @@ vi.mock("@/actions/revalidate", () => ({
 }));
 
 import Categories from "@/app/(admin)/admin/taxonomy/Categories";
+import { ADMIN_PAGE_SIZE } from "../../../constants/x-datagrid/pagination";
 
 const sampleCategories = [
   { id: "c1", name: "herramientas", path: "herramientas" },
@@ -51,7 +52,7 @@ describe("Categories page", () => {
     render(<Categories />);
 
     await waitFor(() => {
-      expect(mockGetCategories).toHaveBeenCalledWith({ page: 1, size: 10 });
+      expect(mockGetCategories).toHaveBeenCalledWith({ page: 1, size: ADMIN_PAGE_SIZE });
     });
   });
 

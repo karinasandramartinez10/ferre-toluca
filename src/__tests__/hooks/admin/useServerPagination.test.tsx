@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
 import useServerPagination from "../../../hooks/admin/useServerPagination";
+import { ADMIN_PAGE_SIZE } from "../../../constants/x-datagrid/pagination";
 
 const mockData = {
   items: [
@@ -23,7 +24,7 @@ describe("useServerPagination", () => {
     renderHook(() => useServerPagination(mockFetchFn));
 
     await waitFor(() => {
-      expect(mockFetchFn).toHaveBeenCalledWith(1, 20, "");
+      expect(mockFetchFn).toHaveBeenCalledWith(1, ADMIN_PAGE_SIZE, "");
     });
   });
 
@@ -112,7 +113,7 @@ describe("useServerPagination", () => {
     renderHook(() => useServerPagination(mockFetchFn, { query: "taladro" }));
 
     await waitFor(() => {
-      expect(mockFetchFn).toHaveBeenCalledWith(1, 20, "taladro");
+      expect(mockFetchFn).toHaveBeenCalledWith(1, ADMIN_PAGE_SIZE, "taladro");
     });
   });
 

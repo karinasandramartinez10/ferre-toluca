@@ -14,6 +14,10 @@ import { getQuoteColumns } from "./columns";
 import { useStatusLogs } from "../../../../hooks/logs/useStatusLogs";
 import { buildTableHtml, escapeHtml, openPrintWindow } from "../../../../utils/print";
 import { statusLabelMap } from "../../../../helpers/quotes";
+import {
+  ADMIN_PAGE_SIZE,
+  ADMIN_PAGE_SIZE_OPTIONS,
+} from "../../../../constants/x-datagrid/pagination";
 
 export const Quotes = ({
   statusFilter = null,
@@ -29,7 +33,7 @@ export const Quotes = ({
   const [totalCount, setTotalCount] = useState(0);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 10,
+    pageSize: ADMIN_PAGE_SIZE,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -171,7 +175,7 @@ export const Quotes = ({
       paginationMode="server"
       paginationModel={paginationModel}
       onPaginationModelChange={setPaginationModel}
-      pageSizeOptions={[10, 25, 50]}
+      pageSizeOptions={ADMIN_PAGE_SIZE_OPTIONS}
       disableRowSelectionOnClick
       sx={{
         "& .MuiDataGrid-columnHeaderTitle": {

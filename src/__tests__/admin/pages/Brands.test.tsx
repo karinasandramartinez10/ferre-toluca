@@ -42,6 +42,7 @@ vi.mock("@/actions/revalidate", () => ({
 }));
 
 import Brands from "@/app/(admin)/admin/brands/Brands";
+import { ADMIN_PAGE_SIZE } from "../../../constants/x-datagrid/pagination";
 
 const sampleBrands = [
   { id: "b1", name: "dewalt", codeName: "dewalt", File: { path: "/dewalt.png" } },
@@ -58,7 +59,7 @@ describe("Brands page", () => {
     render(<Brands />);
 
     await waitFor(() => {
-      expect(mockGetBrands).toHaveBeenCalledWith({ page: 1, size: 10 });
+      expect(mockGetBrands).toHaveBeenCalledWith({ page: 1, size: ADMIN_PAGE_SIZE });
     });
   });
 

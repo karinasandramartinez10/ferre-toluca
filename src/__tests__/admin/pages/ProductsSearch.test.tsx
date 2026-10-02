@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { SnackbarProvider } from "notistack";
 import Products from "../../../app/(admin)/admin/products/Products";
 import { fetchAllProducts, searchAllProducts } from "../../../api/products";
+import { ADMIN_PAGE_SIZE } from "../../../constants/x-datagrid/pagination";
 
 vi.mock("../../../api/products", () => ({
   fetchAllProducts: vi.fn().mockResolvedValue({ products: [], count: 0 }),
@@ -32,9 +33,9 @@ describe("Products: búsqueda server-side", () => {
     vi.mocked(searchAllProducts).mockResolvedValue({ products: [], count: 0 });
   });
 
-  it("carga la primera página con 25 productos", async () => {
+  it("carga la primera página con el tamaño máximo", async () => {
     renderPage();
-    await waitFor(() => expect(fetchAllProducts).toHaveBeenCalledWith(1, 25));
+    await waitFor(() => expect(fetchAllProducts).toHaveBeenCalledWith(1, ADMIN_PAGE_SIZE));
     expect(searchAllProducts).not.toHaveBeenCalled();
   });
 
@@ -55,9 +56,12 @@ describe("Products: búsqueda server-side", () => {
 
     await typeSearch(user, "taladro");
 
-    await waitFor(() => expect(searchAllProducts).toHaveBeenCalledWith(1, 25, "taladro"), {
-      timeout: 3000,
-    });
+    await waitFor(
+      () => expect(searchAllProducts).toHaveBeenCalledWith(1, ADMIN_PAGE_SIZE, "taladro"),
+      {
+        timeout: 3000,
+      }
+    );
   });
 
   it("vuelve al listado completo al limpiar la búsqueda", async () => {
@@ -70,7 +74,9 @@ describe("Products: búsqueda server-side", () => {
     vi.mocked(fetchAllProducts).mockClear();
     await user.click(screen.getByLabelText("Limpiar búsqueda"));
 
-    await waitFor(() => expect(fetchAllProducts).toHaveBeenCalledWith(1, 25), { timeout: 3000 });
+    await waitFor(() => expect(fetchAllProducts).toHaveBeenCalledWith(1, ADMIN_PAGE_SIZE), {
+      timeout: 3000,
+    });
   });
 
   it("mantiene el grid y el campo montados mientras carga, sin tapar la página", async () => {
