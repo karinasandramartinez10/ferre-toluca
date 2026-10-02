@@ -17,6 +17,10 @@ async function signIn(credentials) {
     };
     const response = await POST(path, body, options);
 
+    if (response.status === 429) {
+      return { status: "rate_limited" };
+    }
+
     if (response.status === 200) {
       const data = await response.json();
 

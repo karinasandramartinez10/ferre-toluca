@@ -8,6 +8,7 @@ import { LoadingButton } from "@mui/lab";
 import LoginContainer from "./LoginContainer";
 import LoginForm from "./LoginForm";
 import { useRouter } from "next/navigation";
+import { signInErrorMessage } from "../../../modules/auth/signinErrors";
 
 const Login = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -21,7 +22,7 @@ const Login = () => {
     });
 
     if (res?.error) {
-      enqueueSnackbar("Correo o contraseña incorrectos", {
+      enqueueSnackbar(signInErrorMessage(res), {
         variant: "error",
       });
       return;
