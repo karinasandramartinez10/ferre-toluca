@@ -28,6 +28,7 @@ import MessageSection from "./MessageSection";
 import TotalRow from "./TotalRow";
 import FiscalDialog from "./FiscalDialog";
 import { parseQuoteError } from "./parseQuoteError";
+import { signInErrorMessage } from "../../../modules/auth/signinErrors";
 
 const ActionsRow = ({ onClear, onSubmit, disabled, loading }) => (
   <Box
@@ -215,7 +216,7 @@ const CheckoutPage = () => {
       });
 
       if (res?.error) {
-        enqueueSnackbar("Correo o contraseña incorrectos", {
+        enqueueSnackbar(signInErrorMessage(res), {
           variant: "error",
         });
         return;

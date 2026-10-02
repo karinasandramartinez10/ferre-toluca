@@ -2,8 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 
-export async function revalidateProduct(productId: string): Promise<void> {
-  revalidatePath(`/product/${productId}`);
+const MAX_PRODUCT_PATHS = 100;
+
+export async function revalidateProduct(
+  productId: string,
+  variantIds: Array<string | number> = []
+): Promise<void> {
+  const ids = new Set([productId, ...variantIds].map(String).filter((id) => /^\d+$/.test(id)));
+  Array.from(ids)
+    .slice(0, MAX_PRODUCT_PATHS)
+    .forEach((id) => revalidatePath(`/product/${id}`));
   revalidatePath("/");
 }
 

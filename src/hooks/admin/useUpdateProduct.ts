@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { updateProduct, updateProductPricing, updateProductAvailability } from "../../api/products";
+import {
+  getProductById,
+  updateProduct,
+  updateProductPricing,
+  updateProductAvailability,
+} from "../../api/products";
 import { revalidateProduct } from "../../actions/revalidate";
 
 export interface ProductUpdatePayload {
@@ -8,12 +13,19 @@ export interface ProductUpdatePayload {
   isAvailable: boolean;
 }
 
+const variantIdsOf = async (id: string): Promise<string[]> => {
+  const product = await getProductById(id);
+  return (product?.variants ?? []).map((v: { id: string | number }) => String(v.id));
+};
+
 export function useUpdateProduct() {
   const [saving, setSaving] = useState(false);
 
   const update = async (id: string, { formData, pricing, isAvailable }: ProductUpdatePayload) => {
     setSaving(true);
     try {
+      const previousVariantIds = await variantIdsOf(id);
+
       await updateProduct(id, formData);
 
       const failed: string[] = [];
@@ -31,7 +43,8 @@ export function useUpdateProduct() {
       // Revalidar hasta el final: hacerlo antes de los PATCH de precio deja la
       // página pública cacheada con el valor anterior, y con `revalidate = false`
       // nadie la vuelve a regenerar.
-      await revalidateProduct(id);
+      const currentVariantIds = await variantIdsOf(id);
+      await revalidateProduct(id, [...previousVariantIds, ...currentVariantIds]);
 
       if (failed.length > 0) {
         throw new Error(`Error al actualizar ${failed.join(" y ")}`);
