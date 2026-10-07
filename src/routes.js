@@ -22,33 +22,19 @@ export const publicRoutes = [
   "/contact", // Formulario de contacto
 ];
 
-/**
- * An array of routes that are used for admin
- */
-export const adminRoutes = [
-  "/admin/quotes",
-  /^\/admin\/quotes\/.*/,
-  "/admin/contact-requests",
-  "/admin/clients",
-  "/admin/promotions",
-];
+export const ADMIN_PREFIX = "/admin";
 
-export const superAdminRoutes = [
-  /^\/admin\/quotes\/.*/,
-  "/admin/quotes",
+export const superAdminPrefixes = [
   "/admin/brands",
   "/admin/products",
   "/admin/taxonomy",
   "/admin/invitations",
-  "/admin/contact-requests",
-  "/admin/clients",
-  "/admin/promotions",
 ];
 
-/**
- * An array of routes that are used for user
- */
-export const userRoutes = [/^\/user\/.*$/];
+export const USER_PREFIX = "/user";
+
+export const isUnderPrefix = (pathname, prefix) =>
+  pathname === prefix || pathname.startsWith(`${prefix}/`);
 
 /**
  * An array of routes that are used for authentication
@@ -72,3 +58,16 @@ export const apiAuthPrefix = "/api/auth";
  */
 export const DEFAULT_LOGIN_REDIRECT = "/";
 export const DEFAULT_ADMIN_LOGIN_REDIRECT = "/admin/quotes";
+
+const matchesRoute = (pathname, route) =>
+  typeof route === "string" ? pathname === route : route.test(pathname);
+
+export const classifyRoute = (pathname) => {
+  if (pathname.startsWith(apiAuthPrefix)) return "apiAuth";
+  if (authRoutes.includes(pathname)) return "auth";
+  if (isUnderPrefix(pathname, USER_PREFIX)) return "user";
+  if (superAdminPrefixes.some((prefix) => isUnderPrefix(pathname, prefix))) return "superAdmin";
+  if (isUnderPrefix(pathname, ADMIN_PREFIX)) return "admin";
+  if (publicRoutes.some((route) => matchesRoute(pathname, route))) return "public";
+  return "private";
+};
